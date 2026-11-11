@@ -1,0 +1,259 @@
+# Бэкенд: архитектура и зоны ответственности
+
+Статус: **проектная схема по [BACKEND_PLAN.md](BACKEND_PLAN.md), реализации пока нет**. Диаграммы описывают предлагаемые компоненты и поток данных; это не отчёт о работающей системе.
+
+Обозначения: сплошная стрелка — синхронный вызов, пунктирная — асинхронный/одноразовый процесс, `[ ]` — контейнер, `( )` — внешний ресурс.
+
+---
+
+## 1. Контекст: кто с кем взаимодействует
+
+```mermaid
+flowchart LR
+    U["Сотрудник<br/>(браузер / чат)"] -->|HTTPS, JSON| API
+
+    subgraph DOCKER["Docker Compose"]
+        API["api<br/>FastAPI"]
+        PG[("postgres<br/>+ pgvector")]
+        LLM["llm<br/>llama-server (Qwen3-8B GGUF)"]
+        ING["ingest<br/>одноразовый контейнер"]
+    end
+
+    API -->|SQL + векторный/лексический поиск| PG
+    API -->|chat completions, JSON schema| LLM
+    API -->|чтение оригинала по source_id| VOL[("volume: originals<br/>read-only")]
+
+    ING -->|парсинг, OCR, embeddings| PG
+    ING -->|чтение| VOL
+
+    EXT["Интернет / облачные API"] -.->|по умолчанию ЗАПРЕЩЕНО| API
+```
+
+Три процесса, одна БД. Тяжёлая индексация не живёт внутри HTTP-запроса: `ingest` запускается отдельно и публикует готовую генерацию индекса атомарно.
+
+---
+
+## 2. Компоненты API (внутреннее устройство)
+
+```mermaid
+flowchart TB
+    subgraph API["api (FastAPI)"]
+        direction TB
+
+        subgraph HTTP["HTTP-слой"]
+            R_SESS["routers/sessions<br/>POST /sessions<br/>POST /sessions/{id}/messages<br/>GET /sessions/{id}"]
+            R_STEP["routers/steps<br/>PATCH /sessions/{id}/steps/{step_id}"]
+            R_SRC["routers/sources<br/>GET /sources/{source_id}"]
+            R_HLTH["routers/health<br/>GET /health/live, /health/ready"]
+        end
+
+        subgraph SCHEMA["Контракты (Pydantic)"]
+            P_REQ["Request-схемы<br/>валидация входа, лимиты длины"]
+            P_RESP["Response-схемы<br/>result_type, summary, steps,<br/>clarifications, citations,<br/>missing_information, conflicts,<br/>plan_revision, corpus_revision"]
+        end
+
+        subgraph CORE["Доменные сервисы"]
+            S_SESS["SessionService<br/>цель, факты пользователя,<br/>история, версия корпуса"]
+            S_RETR["RetrievalService<br/>hybrid search + RRF,<br/>фильтр применимости"]
+            S_VER["AuthorityService<br/>реквизиты, редакции,<br/>приложения и изменения"]
+            S_COV["CoverageService<br/>покрытие подзадач,<br/>выбор статуса результата"]
+            S_GEN["GenerationService<br/>prompt + JSON schema,<br/>1 ограниченный retry"]
+            S_VERIFY["CitationVerifier<br/>ID существуют, версии совпадают,<br/>цитата подтверждает вывод"]
+            S_PLAN["PlanService<br/>ревизии плана, шаги,<br/>зависимости, пересчёт"]
+        end
+
+        subgraph INFRA["Инфраструктура"]
+            DB["Repo / SQL-слой<br/>psycopg + pgvector"]
+            EMB["EmbeddingClient<br/>multilingual-e5-small локально"]
+            LLMC["LLMClient<br/>llama-server, schema-constrained"]
+            STORE["SourceStore<br/>доступ к оригиналам"]
+            LOG["Структурные логи<br/>ID, длительность, код ошибки —<br/>без текстов и вопросов"]
+        end
+    end
+
+    R_SESS --> P_REQ --> S_SESS
+    R_STEP --> P_REQ --> S_PLAN
+    R_SRC --> STORE
+    R_HLTH --> DB
+    R_HLTH --> LLMC
+
+    S_SESS --> S_RETR
+    S_RETR --> EMB
+    S_RETR --> DB
+    S_SESS --> S_VER --> DB
+    S_SESS --> S_COV
+    S_COV --> S_GEN --> LLMC
+    S_GEN --> S_VERIFY --> DB
+    S_VERIFY --> S_PLAN --> DB
+    S_SESS --> P_RESP
+    S_PLAN --> P_RESP
+    S_SESS --> LOG
+    S_GEN --> LOG
+```
+
+Разделение намеренное: **модель предлагает, сервер проверяет**. LLM не формирует URL, названия документов и локаторы — их подставляет сервер из реестра.
+
+---
+
+## 3. Поток подготовки базы (`ingest`)
+
+```mermaid
+flowchart LR
+    RAW[("data/raw<br/>20 оригиналов")] --> VAL["1. Валидация<br/>тип, размер, SHA-256,<br/>страницы, таймауты"]
+
+    VAL --> PDF["2a. PDF<br/>pypdf постранично"]
+    VAL --> DOCX["2b. DOCX<br/>python-docx + XML нумерации"]
+    VAL --> XLSX["2c. XLSX<br/>openpyxl: формулы<br/>и кэш-значения отдельно"]
+
+    PDF --> OCR{"Смешанная<br/>страница?"}
+    OCR -->|да| TESS["3. OCR<br/>Tesseract rus+eng,<br/>Linux, производный артефакт"]
+    OCR -->|нет| BLK
+
+    TESS --> BLK["4. Структурные блоки<br/>заголовки, пункты, таблицы,<br/>приложения, порядок"]
+    DOCX --> BLK
+    XLSX --> BLK
+
+    BLK --> REL["5. Реестр версий и связей<br/>DocumentVersion,<br/>DocumentRelation"]
+    REL --> CHUNK["6. Фрагменты<br/>смысловой пункт + дочерние<br/>в лимите embedding-модели"]
+    CHUNK --> EMB2["7. Embeddings<br/>query:/passage:, 512 токенов"]
+    EMB2 --> IDX[("8. Индексы<br/>pgvector + русский FTS")]
+    IDX --> REP["9. Отчёт импорта<br/>успех/частично/ошибка по файлу"]
+
+    IDX -.->|новая генерация<br/>публикуется атомарно| OLD[("старая генерация<br/>сохраняется для<br/>уже выданных ссылок")]
+```
+
+Ключевые инварианты:
+
+- оригинал не перезаписывается результатами извлечения;
+- OCR — отдельный артефакт с пометкой метода, не «безошибочная транскрипция»;
+- номер страницы для DOCX не выдумывается (локатор = путь заголовков + индекс блока + точный фрагмент);
+- пустой кэш формулы в XLSX не превращается в ноль и не называется проверенным расчётом;
+- повторный импорт того же хеша не создаёт дублей, изменённый файл создаёт новую версию.
+
+---
+
+## 4. Поток ответа на вопрос
+
+```mermaid
+flowchart TB
+    Q["POST /sessions/{id}/messages<br/>вопрос или уточнение"] --> L1["1. Контекст сессии<br/>цель + подтверждённые факты"]
+    L1 --> L2["2. Декомпозиция<br/>подзадачи без смены намерения"]
+    L2 --> L3["3. Hybrid retrieval<br/>FTS + dense → RRF top-k"]
+    L3 --> L4["4. Authority-фильтр<br/>даты, область действия,<br/>изменения, приложения"]
+    L4 --> L5{"5. Факт пользователя<br/>нужен для ветки?"}
+    L5 -->|да| CLR["needs_clarification<br/>+ основание вопроса"]
+    L5 -->|нет| L6["6. Покрытие подзадач"]
+
+    L6 --> L7{"Ответ подтверждён?"}
+    L7 -->|полностью| GEN["7. Генерация JSON<br/>по схеме, только по фрагментам"]
+    L7 -->|частично| GEN
+    L7 -->|нет| NF["not_found"]
+    L7 -->|конфликт редакций| CONF["conflict<br/>показать оба положения"]
+
+    GEN --> V1["8a. Schema-валидация"]
+    V1 --> V2["8b. CitationVerifier<br/>ID, версии, локаторы,<br/>смысловое соответствие"]
+    V2 -->|fail| RETRY["1 ограниченный retry<br/>с теми же основаниями"]
+    RETRY --> V2
+    V2 -->|fail повторно| ERR["явная ошибка/ограничение<br/>не выдуманный успешный ответ"]
+    V2 -->|ok| PLAN["9. PlanService<br/>ревизия шагов + пересчёт<br/>затронутой части"]
+    PLAN --> OUT["10. Ответ<br/>summary, steps, citations,<br/>missing_information, conflicts,<br/>plan_revision, corpus_revision"]
+```
+
+Статусы результата: `answered`, `needs_clarification`, `partial`, `not_found`, `conflict`. Технические сбои (нет индекса, недоступна модель, ошибка БД) — **отдельные коды**, никогда не `not_found`.
+
+Похожесть поиска не равна наличию ответа: низкое покрытие отличается от поломки индекса, и пользователю показывается разная причина.
+
+---
+
+## 5. Модель данных
+
+```mermaid
+erDiagram
+    DOCUMENT_VERSION ||--o{ SOURCE_BLOCK : "содержит"
+    DOCUMENT_VERSION ||--o{ DOCUMENT_RELATION : "источник"
+    DOCUMENT_VERSION ||--o{ DOCUMENT_RELATION : "цель"
+    SOURCE_BLOCK ||--o{ CHUNK : "дробится на"
+    SOURCE_BLOCK ||--o{ CHUNK : "родитель"
+    CHUNK ||--o{ CITATION_REF : "используется в"
+    SESSION ||--o{ MESSAGE : "имеет"
+    SESSION ||--o{ SESSION_FACT : "фиксирует"
+    SESSION ||--o{ PLAN_REVISION : "ведёт"
+    PLAN_REVISION ||--o{ STEP : "содержит"
+    STEP ||--o{ STEP_EVENT : "журнал"
+    STEP ||--o{ CITATION_REF : "основание"
+    CORPUS_REVISION ||--o{ DOCUMENT_VERSION : "включает"
+```
+
+| Сущность | Ответственность | Что важно не потерять |
+|---|---|---|
+| `DocumentVersion` | Стабильный ID документа + конкретная версия, хеш, реквизиты, дата подписания, период действия, статус применимости и конфиденциальности, результат импорта | Дата подписания ≠ дата вступления в силу ≠ период применения |
+| `DocumentRelation` | Приложение / изменение / отмена / замена, область изменения, основание-фрагмент, статус подтверждения | Точечное изменение не означает полную замену документа |
+| `SourceBlock` / `Chunk` | Исходный и нормализованный текст, заголовки, пункт, локатор, метод извлечения, родитель, версия embedding-модели | У каждого фрагмента есть ID, локатор и исходный текст для проверки цитаты |
+| `Session` / `Message` / `SessionFact` | Цель, сообщения, подтверждённые факты пользователя, нерешённые уточнения, версия корпуса | Факт «со слов пользователя» ≠ нормативное утверждение |
+| `PlanRevision` / `Step` | Действие, условия применимости, зависимости, статус, ссылки на основания | Нормативное требование отделено от состояния пользователя |
+| `StepEvent` | Кто и когда отметил шаг, версия плана | `done_by_user` ≠ фактическое согласование или проверка организацией |
+| `CorpusRevision` | Атомарная публикация генерации индекса | Уже выданные ссылки продолжают указывать на ту версию, по которой отвечали |
+
+---
+
+## 6. Развёртывание
+
+```mermaid
+flowchart TB
+    subgraph HOST["Хост / Docker host"]
+        direction LR
+        subgraph COMPOSE["docker compose"]
+            A["api<br/>порт 8000<br/>CPU-профиль по умолчанию"]
+            P[("postgres + pgvector<br/>volume: pgdata")]
+            L["llm<br/>llama-server<br/>CPU / GPU-профиль"]
+        end
+        subgraph ONESHOT["docker compose run --rm ingest"]
+            I["ingest<br/>парсинг + OCR + embeddings"]
+        end
+        O[("volume: originals<br/>read-only")]
+        R[("volume: ingest artifacts")]
+    end
+
+    A --- P
+    A --- L
+    I --- P
+    I --- O
+    I --- R
+    A --- R
+    O -.->|не в Git,<br/>не в build context| X["."]
+```
+
+- `api` — единственный публичный процесс; `postgres`, `llm`, `ingest` наружу не смотрят.
+- Оригиналы монтируются read-only; `.dockerignore` исключает данные, логи, секреты.
+- Версии Python, зависимостей, контейнеров, весов, токенизаторов, GGUF, chat template и схем фиксируются; плавающий `latest` не считается воспроизводимой конфигурацией.
+- Вариант «модель на хосте (Metal на Mac)» — только через конфиг адреса, не скрытая зависимость; самостоятельный Linux CPU/GPU путь обязателен.
+
+---
+
+## 7. Здоровье, ошибки и границы
+
+| Проверка / ситуация | Поведение |
+|---|---|
+| `GET /health/live` | Процесс жив; не проверяет зависимости |
+| `GET /health/ready` | Проверяет БД, доступность модели и наличие корпуса; при провале — причина, а не общий `not_found` |
+| Нет индекса / модели / БД | Технический код ошибки + понятная причина; readiness неуспешна |
+| Повреждённый или неподдерживаемый файл | Ошибка импорта с именем файла; импорт помечается частичным |
+| Долгая операция | Таймауты, лимиты контекста и параллелизма, отмена запроса |
+| Невалидная генерация | Один retry, затем явное ограничение |
+| Внешний API | По умолчанию выключен; автоматического fallback в облако нет |
+| Логи | Технические ID, длительность, коды; тексты документов, вопросов и ответов не пишутся |
+
+Сознательно **не входит** в первую реализацию: Redis, Celery, отдельная векторная БД, Elasticsearch, LangChain/LangGraph, многоагентность, авторизация и внешние интеграции, генератор тренажёра.
+
+---
+
+## 8. Что где менять
+
+| Хочу изменить | Модуль |
+|---|---|
+| Новый формат документа | `ingest`: новый extractor + регистрация в отчёте импорта |
+| Качество поиска | `RetrievalService` (веса RRF, top-k), `EmbeddingClient` |
+| Правила приоритета редакций | `AuthorityService` + `DocumentRelation`, не промпт |
+| Формат ответа | Pydantic response-схемы + `CitationVerifier` |
+| Логику шагов и пересчёта | `PlanService`, `PlanRevision`/`Step` |
+| Модель генерации | `LLMClient` + конфиг, без изменения доменных сервисов |

@@ -76,7 +76,7 @@ uv run pytest -q --tb=short
 ## Два синтетических примера
 
 ```sh
-uv run python examples/make_documents.py
+uv run python code-samples/make_documents.py
 uv run navigator extract --input data/processed/demo-input --output data/processed/demo-output
 ```
 

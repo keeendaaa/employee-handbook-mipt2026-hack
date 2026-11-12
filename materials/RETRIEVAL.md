@@ -74,7 +74,7 @@ docker compose run --rm -v ./data/review/eval/questions.json:/app/questions.json
 
 Исходный вопрос и три перефразирования проверены при k=5: основание каждый раз на первой позиции, цитаты открываются точно по сохранённым смещениям. После исправления прошли 63 теста с PostgreSQL. В обновлённом Docker-образе отдельно воспроизведены первая позиция `R13` при limit=5 и открытие той же цитаты по `source_id`.
 
-Синтетический пример для клонированного репозитория генерируется командой `uv run python examples/make_documents.py`: документы и `data/processed/demo-cases.json`. Индексируйте его в отдельную БД, затем запускайте `evaluate --dataset data/processed/demo-cases.json --split dev`. Успех этого примера не подтверждает качество на реальной базе.
+Синтетический пример для клонированного репозитория генерируется командой `uv run python code-samples/make_documents.py`: документы и `data/processed/demo-cases.json`. Индексируйте его в отдельную БД, затем запускайте `evaluate --dataset data/processed/demo-cases.json --split dev`. Успех этого примера не подтверждает качество на реальной базе.
 
 ## Проверка предупреждений
 

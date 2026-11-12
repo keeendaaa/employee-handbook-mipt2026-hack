@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Навигатор сотрудника</title>
+<style>
+  :root {
+    --green-900: #0f3d24;
+    --green-800: #14532d;
+    --green-700: #166534;
+    --green-050: #eef6f1;
+    --green-100: #dcece2;
+    --ink: #1f2933;
+    --muted: #5b6770;
+    --line: #d9e2dc;
+    --line-soft: #eef2f0;
+    --warn: #8a4b00;
+    --warn-bg: #fdf6ec;
+    --err: #8c1d1d;
+    --err-bg: #fdf1f1;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+  :focus-visible { outline: 2px solid var(--green-700); outline-offset: 2px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 26px 18px 72px; }
+  header.app-header { border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 22px; }
+  h1 { font-size: 1.35rem; line-height: 1.3; margin: 0 0 6px; color: var(--green-900); letter-spacing: -0.01em; }
+  .subtitle { margin: 0; color: var(--muted); font-size: 0.94rem; }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 16px 14px;
+    background: #fff;
+  }
+  label.field-label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; color: var(--green-900); }
+  textarea {
+    width: 100%;
+    font: inherit;
+    color: var(--ink);
+    padding: 10px 12px;
+    min-height: 92px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+  }
+  textarea:focus { border-color: var(--green-700); outline: 2px solid rgba(22, 101, 52, 0.25); outline-offset: 1px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+  .btn {
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    background: var(--green-800);
+    color: #fff;
+  }
+  .btn:hover:not(:disabled) { background: var(--green-700); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-secondary { background: #fff; color: var(--green-800); border-color: #b9d2c4; }
+  .btn-secondary:hover:not(:disabled) { background: var(--green-050); }
+  .btn-ghost {
+    background: #fff;
+    color: var(--muted);
+    border-color: var(--line);
+    font-weight: 500;
+    padding: 9px 14px;
+  }
+  .btn-ghost:hover:not(:disabled) { background: #f7faf8; color: var(--ink); }
+  .hint { margin: 12px 0 0; font-size: 0.86rem; color: var(--muted); }
+  .status {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    margin-top: 16px;
+    font-size: 0.94rem;
+    color: var(--muted);
+  }
+  .status[hidden] { display: none; }
+  .status-text { flex: 1 1 auto; }
+  .spinner {
+    flex: 0 0 auto;
+    width: 14px; height: 14px;
+    margin-top: 5px;
+    border: 2px solid #cfded6;
+    border-top-color: var(--green-700);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; border-top-color: var(--green-700); border-color: var(--green-700); } }
+  .error-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--err);
+    background: var(--err-bg);
+    border-radius: 8px;
+    color: #571515;
+    font-size: 0.94rem;
+  }
+  .error-box[hidden] { display: none; }
+  .error-title { font-weight: 600; margin: 0 0 4px; }
+  .error-box p { margin: 0 0 4px; }
+  .error-box p:last-child { margin-bottom: 0; }
+  section.result { margin-top: 26px; }
+  section.result[hidden] { display: none; }
+  h2.section-title { font-size: 1.08rem; margin: 0 0 12px; color: var(--green-900); }
+  h2.section-title:focus { outline: none; }
+  .result-badge-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid #b9d2c4;
+    background: var(--green-050);
+    color: var(--green-900);
+  }
+  .badge.muted { background: #f5f7f6; border-color: var(--line); color: var(--muted); }
+  .badge.warn { background: var(--warn-bg); border-color: #e6d2b0; color: var(--warn); }
+  .note { font-size: 0.86rem; color: var(--muted); margin: 0; }
+  .block { margin-top: 20px; }
+  .block > h3 { font-size: 0.95rem; margin: 0 0 8px; color: var(--green-900); }
+  ul.plain, ol.plain { margin: 0; padding-left: 22px; }
+  ul.plain li, ol.plain li { margin: 8px 0; }
+  .stmt-text { vertical-align: baseline; }
+  .cite-btns { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 7px; vertical-align: baseline; }
+  .cite-btn {
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    line-height: 1;
+    min-width: 21px;
+    height: 21px;
+    padding: 0 5px;
+    border-radius: 6px;
+    border: 1px solid #b9d2c4;
+    background: #fff;
+    color: var(--green-700);
+    cursor: pointer;
+  }
+  .cite-btn:hover { background: var(--green-050); }
+  .cite-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin: 12px 0;
+    background: #fff;
+  }
+  .cite-card.is-target { border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.14); }
+  .cite-card:focus { outline: none; }
+  .cite-head { display: flex; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+  .cite-num {
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--green-900);
+    background: var(--green-100);
+    border-radius: 6px;
+    padding: 1px 7px;
+  }
+  .cite-title { font-size: 0.98rem; margin: 0; color: var(--green-900); font-weight: 600; word-break: break-word; }
+  .cite-sections { font-size: 0.85rem; color: var(--muted); margin: 0 0 6px; }
+  blockquote.cite-quote {
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-left: 3px solid #b9d2c4;
+    background: #fbfdfc;
+    color: #2b3740;
+    font-size: 0.94rem;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .meta { font-size: 0.85rem; color: var(--muted); display: grid; gap: 2px; }
+  .cite-card .btn { margin-top: 10px; font-size: 0.9rem; padding: 7px 14px; }
+  .caption { margin-top: 20px; font-size: 0.84rem; color: var(--muted); border-top: 1px solid var(--line-soft); padding-top: 10px; }
+  details.usage { margin-top: 6px; font-size: 0.84rem; color: var(--muted); }
+  details.usage summary { cursor: pointer; color: var(--green-800); }
+  details.usage ul { margin: 6px 0 0; padding-left: 20px; }
+  .search-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin: 12px 0; background: #fff; }
+  .search-card h3 { font-size: 1rem; margin: 0 0 8px; color: var(--green-900); word-break: break-word; }
+  .search-card p.text { margin: 0 0 10px; white-space: pre-wrap; word-break: break-word; font-size: 0.94rem; }
+  dialog#fragment-dialog {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    width: min(880px, 94vw);
+    max-height: 88vh;
+    color: var(--ink);
+    background: #fff;
+    box-shadow: 0 18px 50px rgba(15, 23, 20, 0.25);
+  }
+  dialog#fragment-dialog::backdrop { background: rgba(15, 23, 20, 0.45); }
+  .dlg-head {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    position: sticky;
+    top: 0;
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+  }
+  .dlg-head h2 { font-size: 1.02rem; margin: 0; color: var(--green-900); word-break: break-word; }
+  .dlg-body { padding: 14px 18px 18px; overflow: auto; max-height: calc(88vh - 64px); }
+  .lines {
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: auto;
+    max-height: 44vh;
+    background: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+  .line { display: grid; grid-template-columns: 3.6em 1fr; }
+  .line .ln {
+    text-align: right;
+    padding: 1px 8px;
+    color: #8a979b;
+    background: #fafcfb;
+    border-right: 1px solid var(--line-soft);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .line .lt { padding: 1px 10px; white-space: pre-wrap; word-break: break-word; min-height: 1.5em; }
+  .line.hl { background: #eaf5ee; }
+  .line.hl .ln { background: var(--green-100); color: var(--green-900); }
+  .frag-meta { font-size: 0.85rem; color: var(--muted); display: grid; gap: 3px; margin-bottom: 10px; }
+  .frag-quote { margin: 10px 0; padding: 8px 12px; border-left: 3px solid #b9d2c4; background: #fbfdfc; white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; }
+  .frag-caption { font-size: 0.82rem; color: var(--muted); margin: 14px 0 2px; }
+  .frag-loading { display: flex; gap: 9px; align-items: center; color: var(--muted); }
+  .noscript { margin-top: 16px; padding: 12px 14px; border-left: 3px solid var(--warn); background: var(--warn-bg); border-radius: 8px; font-size: 0.92rem; }
+  @media (max-width: 560px) {
+    .wrap { padding: 20px 14px 60px; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .actions .btn { width: 100%; }
+    .line { grid-template-columns: 2.9em 1fr; }
+    .dlg-body { padding: 12px 12px 16px; }
+    .dlg-head { padding: 14px 12px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-header">
+    <h1>Навигатор сотрудника</h1>
+    <p class="subtitle">Ответы по внутренним документам со ссылками на источники.</p>
+  </header>
+
+  <form id="ask-form" class="card" novalidate aria-busy="false">
+    <label class="field-label" for="question">Вопрос</label>
+    <textarea id="question" name="question" rows="3" autocomplete="off"
+      placeholder="Например: как оформить заявку на отпуск?" aria-describedby="question-hint"></textarea>
+    <div class="actions">
+      <button type="submit" id="btn-ask" class="btn">Спросить</button>
+      <button type="button" id="btn-search" class="btn btn-secondary">Только поиск</button>
+      <button type="button" id="btn-cancel" class="btn btn-ghost" hidden>Отменить запрос</button>
+    </div>
+    <p class="hint" id="question-hint">
+      «Спросить» формирует ответ по документам. «Только поиск» показывает найденные фрагменты без готового ответа.
+      Полнота ответа не гарантируется — проверяйте источники.
+    </p>
+  </form>
+
+  <div id="status" class="status" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <div id="error" class="error-box" role="alert" hidden></div>
+
+  <section id="answer" class="result" aria-labelledby="answer-title" hidden>
+    <h2 class="section-title" id="answer-title" tabindex="-1">Результат</h2>
+    <div id="answer-body"></div>
+  </section>
+
+  <section id="search" class="result" aria-labelledby="search-title" hidden>
+    <h2 class="section-title" id="search-title" tabindex="-1">Результаты поиска</h2>
+    <div id="search-body"></div>
+  </section>
+
+  <noscript>
+    <div class="noscript">Для работы приложения нужен JavaScript. Без него отправка запросов недоступна.</div>
+  </noscript>
+</div>
+
+<dialog id="fragment-dialog" aria-labelledby="dlg-title">
+  <div class="dlg-head">
+    <h2 id="dlg-title">Фрагмент источника</h2>
+    <button type="button" id="dlg-close" class="btn btn-ghost">Закрыть</button>
+  </div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  var TIMEOUT_MS = 260000;
+  var SEARCH_LIMIT = 6;
+  var API = {
+    ask: '/api/ask',
+    search: '/api/search',
+    source: function (id) { return '/api/sources/' + encodeURIComponent(id); }
+  };
+
+  var RESULT_LABELS = {
+    answered: 'Ответ найден',
+    partial: 'Частичный ответ',
+    not_found: 'Сведений не найдено',
+    needs_clarification: 'Нужно уточнение',
+    conflict: 'Противоречивые сведения'
+  };
+
+  var RESULT_CLASSES = {
+    answered: 'badge',
+    partial: 'badge',
+    not_found: 'badge muted',
+    needs_clarification: 'badge warn',
+    conflict: 'badge warn'
+  };
+
+  var form = document.getElementById('ask-form');
+  var questionEl = document.getElementById('question');
+  var askBtn = document.getElementById('btn-ask');
+  var searchBtn = document.getElementById('btn-search');
+  var cancelBtn = document.getElementById('btn-cancel');
+  var statusEl = document.getElementById('status');
+  var errorEl = document.getElementById('error');
+  var answerSection = document.getElementById('answer');
+  var answerTitle = document.getElementById('answer-title');
+  var answerBody = document.getElementById('answer-body');
+  var searchSection = document.getElementById('search');
+  var searchTitle = document.getElementById('search-title');
+  var searchBody = document.getElementById('search-body');
+  var dlg = document.getElementById('fragment-dialog');
+  var dlgTitle = document.getElementById('dlg-title');
+  var dlgBody = document.getElementById('dlg-body');
+  var dlgClose = document.getElementById('dlg-close');
+
+  var busy = false;
+  var activeReq = null;
+  var dialogReq = null;
+
+  /* ---------- утилиты ---------- */
+
+  function AppError(message, kind) {
+    this.message = message;
+    this.kind = kind || 'error';
+  }
+
+  function h(tag, className, text) {
+    var n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+
+  function clear(node) {
+    while (node && node.firstChild) node.removeChild(node.firstChild);
+  }
+
+  function str(v) {
+    if (v === null || v === undefined) return '';
+    return typeof v === 'string' ? v : String(v);
+  }
+
+  function arr(v) {
+    return Array.isArray(v) ? v : [];
+  }
+
+  function isObj(v) {
+    return v !== null && typeof v === 'object';
+  }
+
+  function formatCount(v) {
+    return (typeof v === 'number' && isFinite(v)) ? String(v) : '';
+  }
+
+  function formatLocatorParts(loc) {
+    var parts = [];
+    if (!isObj(loc)) return parts;
+    if (loc.page !== undefined && loc.page !== null && str(loc.page) !== '') parts.push('страница ' + str(loc.page));
+    if (loc.sheet !== undefined && loc.sheet !== null && str(loc.sheet) !== '') parts.push('лист ' + str(loc.sheet));
+    if (loc.range !== undefined && loc.range !== null && str(loc.range) !== '') parts.push('диапазон ' + str(loc.range));
+    if (loc.block !== undefined && loc.block !== null && str(loc.block) !== '') parts.push('блок ' + str(loc.block));
+    return parts;
+  }
+
+  function lineRangeText(start, end) {
+    var s = formatCount(start);
+    var e = formatCount(end);
+    if (s && e) return 'строки ' + s + '–' + e;
+    if (s) return 'строка ' + s;
+    if (e) return 'до строки ' + e;
+    return '';
+  }
+
+  function sourceLabel(item) {
+    if (typeof item === 'string') return item;
+    if (isObj(item)) {
+      return str(item.document_name) || str(item.name) || str(item.source_id) || 'Источник';
+    }
+    return '';
+  }
+
+  function makeRequest() {
+    var controller = new AbortController();
+    var state = { timedOut: false, cancelled: false };
+    var timer = setTimeout(function () {
+      state.timedOut = true;
+      try { controller.abort(); } catch (e) { /* noop */ }
+    }, TIMEOUT_MS);
+    return {
+      controller: controller,
+      state: state,
+      clear: function () { clearTimeout(timer); }
+    };
+  }
+
+  async function fetchJSON(url, init, req) {
+    var res = await fetch(url, Object.assign({}, init, { signal: req.controller.signal }));
+    var ctype = (res.headers.get('content-type') || '').toLowerCase();
+    var data = null;
+    if (ctype.indexOf('json') !== -1) {
+      try { data = await res.json(); } catch (e) { data = null; }
+    }
+    if (!res.ok) {
+      var detail = (isObj(data) && typeof data.detail === 'string') ? data.detail.trim() : '';
+      if (!detail) {
+        detail = 'Сервер вернул ошибку ' + res.status + (res.statusText ? ' (' + res.statusText + ')' : '');
+      }
+      throw new AppError(detail, 'http');
+    }
+    if (data === null) {
+      throw new AppError('Ответ сервера не распознан: ожидался JSON.', 'parse');
+    }
+    return data;
+  }
+
+  /* ---------- интерфейс: статус, ошибки, блокировка ---------- */
+
+  function setStatus(text, kind) {
+    clear(statusEl);
+    if (!text) {
+      statusEl.hidden = true;
+      statusEl.className = 'status';
+      return;
+    }
+    statusEl.hidden = false;
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+    if (kind === 'loading') statusEl.appendChild(h('span', 'spinner', ''));
+    statusEl.appendChild(h('span', 'status-text', text));
+  }
+
+  function showError(message) {
+    clear(errorEl);
+    errorEl.hidden = false;
+    errorEl.appendChild(h('p', 'error-title', 'Не удалось выполнить запрос'));
+    errorEl.appendChild(h('p', null, message));
+    errorEl.appendChild(h('p', 'note', 'Ваш вопрос сохранён в поле выше — можно отправить его снова.'));
+  }
+
+  function hideError() {
+    errorEl.hidden = true;
+    clear(errorEl);
+  }
+
+  function setBusy(value) {
+    busy = value;
+    askBtn.disabled = value;
+    searchBtn.disabled = value;
+    cancelBtn.hidden = !value;
+    form.setAttribute('aria-busy', value ? 'true' : 'false');
+  }
+
+  function clearResults() {
+    answerSection.hidden = true;
+    searchSection.hidden = true;
+    clear(answerBody);
+    clear(searchBody);
+  }
+
+  /* ---------- отправка запросов ---------- */
+
+  async function sendJSON(url, payload) {
+    var req = makeRequest();
+    activeReq = req;
+    try {
+      return await fetchJSON(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }, req);
+    } catch (err) {
+      if (err instanceof AppError) throw err;
+      if (req.state.cancelled) throw new AppError('Запрос отменён.', 'cancel');
+      if (req.state.timedOut) {
+        throw new AppError('Превышено время ожидания (260 секунд). Вопрос сохранён — можно повторить отправку.', 'timeout');
+      }
+      throw new AppError('Не удалось связаться с сервером. Проверьте соединение и повторите попытку.', 'network');
+    } finally {
+      req.clear();
+      if (activeReq === req) activeReq = null;
+    }
+  }
+
+  function currentQuestion() {
+    return (questionEl.value || '').trim();
+  }
+
+  async function onAsk(event) {
+    if (event) event.preventDefault();
+    if (busy) return;
+    var question = currentQuestion();
+    hideError();
+    if (!question) {
+      showError('Введите вопрос — поле не должно быть пустым.');
+      questionEl.focus();
+      return;
+    }
+    clearResults();
+    setBusy(true);
+    setStatus('Отправляем вопрос и готовим ответ…', 'loading');
+    try {
+      var data = await sendJSON(API.ask, { question: question });
+      renderAnswer(data);
+      setStatus('Ответ получен. Проверьте источники: полнота ответа не гарантируется.', 'done');
+      answerTitle.focus();
+    } catch (err) {
+      if (err.kind === 'cancel') {
+        setStatus('Запрос отменён. Вопрос сохранён — можно отправить снова.', 'idle');
+      } else {
+        setStatus('', 'idle');
+        showError(err.message);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onSearch() {
+    if (busy) return;
+    var question = currentQuestion();
+    hideError();
+    if (!question) {
+      showError('Введите вопрос или ключевые слова для поиска.');
+      questionEl.focus();
+      return;
+    }
+    clearResults();
+    setBusy(true);
+    setStatus('Ищем фрагменты в документах…', 'loading');
+    try {
+      var data = await sendJSON(API.search, { question: question, limit: SEARCH_LIMIT });
+      renderSearch(data);
+      setStatus('Поиск завершён. Показаны найденные фрагменты, ответ не формировался.', 'done');
+      searchTitle.focus();
+    } catch (err) {
+      if (err.kind === 'cancel') {
+        setStatus('Запрос отменён. Вопрос сохранён — можно отправить снова.', 'idle');
+      } else {
+        setStatus('', 'idle');
+        showError(err.message);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  form.addEventListener('submit', onAsk);
+  searchBtn.addEventListener('click', onSearch);
+  cancelBtn.addEventListener('click', function () {
+    if (activeReq && !activeReq.state.cancelled) {
+      activeReq.state.cancelled = true;
+      try { activeReq.controller.abort(); } catch (e) { /* noop */ }
+    }
+    if (dialogReq && !dialogReq.state.cancelled) {
+      dialogReq.state.cancelled = true;
+      try { dialogReq.controller.abort(); } catch (e) { /* noop */ }
+    }
+  });
+
+  /* ---------- ссылки на цитаты ---------- */
+
+  function buildCitationContext(citations) {
+    var list = arr(citations).filter(isObj);
+    var byId = new Map();
+    var indexById = new Map();
+    list.forEach(function (c, i) {
+      var key = str(c.source_id);
+      if (!key) return;
+      if (!indexById.has(key)) {
+        indexById.set(key, i + 1);
+        byId.set(key, c);
+      }
+    });
+    return { list: list, byId: byId, indexById: indexById, cardById: new Map() };
+  }
+
+  function focusCitation(key, ctx) {
+    var card = ctx.cardById.get(key);
+    if (!card) return;
+    var previous = document.querySelector('.cite-card.is-target');
+    if (previous && previous !== card) previous.classList.remove('is-target');
+    card.classList.add('is-target');
+    if (typeof card.scrollIntoView === 'function') {
+      card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    card.focus();
+  }
+
+  function citationButton(id, ctx) {
+    var key = str(id);
+    if (!key) return null;
+    var num = ctx.indexById.get(key);
+    var cit = ctx.byId.get(key);
+    var label = 'Источник' + (num ? ' ' + num : '');
+    var name = cit ? str(cit.document_name) : '';
+    var b = h('button', 'cite-btn', num ? String(num) : '•');
+    b.type = 'button';
+    b.title = label + (name ? ': ' + name : '');
+    b.setAttribute('aria-label', label + (name ? ' — ' + name : '') + ': перейти к карточке источника');
+    b.addEventListener('click', function () { focusCitation(key, ctx); });
+    return b;
+  }
+
+  function statementItem(item, ctx, listTag) {
+    var li = document.createElement(listTag || 'li');
+    var text = typeof item === 'string' ? item : str(isObj(item) ? item.text : '');
+    var ids = isObj(item) ? arr(item.citation_ids) : [];
+    li.appendChild(h('span', 'stmt-text', text));
+    var buttons = [];
+    ids.forEach(function (id) {
+      var b = citationButton(id, ctx);
+      if (b) buttons.push(b);
+    });
+    if (buttons.length) {
+      var wrap = h('span', 'cite-btns');
+      wrap.setAttribute('role', 'group');
+      wrap.setAttribute('aria-label', 'Ссылки на источники для этого утверждения');
+      buttons.forEach(function (b) { wrap.appendChild(b); });
+      li.appendChild(wrap);
+    }
+    return li;
+  }
+
+  function listBlock(title, items, ctx, ordered) {
+    var list = arr(items);
+    if (!list.length) return null;
+    var wrap = h('div', 'block');
+    wrap.appendChild(h('h3', null, title));
+    var ul = document.createElement(ordered ? 'ol' : 'ul');
+    ul.className = 'plain';
+    list.forEach(function (item) {
+      ul.appendChild(statementItem(item, ctx, 'li'));
+    });
+    wrap.appendChild(ul);
+    return wrap;
+  }
+
+  function textListBlock(title, items, className) {
+    var list = arr(items).map(function (v) { return isObj(v) ? str(v.text) : str(v); }).filter(function (v) { return v !== ''; });
+    if (!list.length) return null;
+    var wrap = h('div', 'block');
+    wrap.appendChild(h('h3', null, title));
+    var ul = h('ul', 'plain' + (className ? ' ' + className : ''));
+    list.forEach(function (text) { ul.appendChild(h('li', null, text)); });
+    wrap.appendChild(ul);
+    return wrap;
+  }
+
+  /* ---------- источники (карточки) ---------- */
+
+  function citationCard(citation, number, ctx) {
+    var card = document.createElement('article');
+    card.className = 'cite-card';
+    card.tabIndex = -1;
+
+    var key = str(citation.source_id);
+    if (key) ctx.cardById.set(key, card);
+
+    var head = h('div', 'cite-head');
+    head.appendChild(h('span', 'cite-num', String(number)));
+    head.appendChild(h('h3', 'cite-title', str(citation.document_name) || 'Документ без названия'));
+    card.appendChild(head);
+
+    var labels = arr(citation.section_labels).map(str).filter(function (v) { return v !== ''; });
+    if (labels.length) card.appendChild(h('div', 'cite-sections', 'Разделы: ' + labels.join(' · ')));
+
+    var quote = str(citation.quote);
+    if (quote) {
+      var bq = document.createElement('blockquote');
+      bq.className = 'cite-quote';
+      bq.textContent = quote;
+      card.appendChild(bq);
+    }
+
+    var meta = h('div', 'meta');
+    var locParts = formatLocatorParts(citation.locator);
+    var pagePart = null;
+    if (isObj(citation.locator) && citation.locator.page !== undefined && citation.locator.page !== null && str(citation.locator.page) !== '') {
+      pagePart = 'Страница: ' + str(citation.locator.page);
+    }
+    if (pagePart) meta.appendChild(h('div', null, pagePart));
+    var otherParts = locParts.filter(function (p) { return p.indexOf('страница ') !== 0; });
+    if (otherParts.length) meta.appendChild(h('div', null, 'Расположение: ' + otherParts.join(', ')));
+    var lines = lineRangeText(citation.line_start, citation.line_end);
+    if (lines) meta.appendChild(h('div', null, 'Строки: ' + lines.replace(/^строки /, '').replace(/^строка /, '') + (lines.indexOf('строки') === 0 ? '' : '')));
+    var method = str(citation.extraction_method);
+    if (method === 'ocr') meta.appendChild(h('div', null, 'Распознано со скана: возможны ошибки текста и нумерации.'));
+    var sid = str(citation.source_id);
+    if (meta.childNodes.length) card.appendChild(meta);
+
+    if (key) {
+      var open = h('button', 'btn btn-secondary', 'Открыть фрагмент');
+      open.type = 'button';
+      open.setAttribute('aria-label', 'Открыть фрагмент документа «' + (str(citation.document_name) || 'без названия') + '»');
+      open.addEventListener('click', function () { openFragment(key, str(citation.document_name)); });
+      card.appendChild(open);
+    }
+
+    return card;
+  }
+
+  function citationsBlock(citations, ctx) {
+    if (!ctx.list.length) return null;
+    var wrap = h('div', 'block');
+    wrap.appendChild(h('h3', null, 'Источники (' + ctx.list.length + ')'));
+    ctx.list.forEach(function (c, i) {
+      wrap.appendChild(citationCard(c, i + 1, ctx));
+    });
+    return wrap;
+  }
+
+  /* ---------- рендер ответа ---------- */
+
+  function usageBlock(data) {
+    var usage = isObj(data.usage) ? data.usage : null;
+    if (!usage) return null;
+    var rows = [];
+    var pt = formatCount(usage.prompt_tokens);
+    var ct = formatCount(usage.completion_tokens);
+    if (pt) rows.push('Токены запроса: ' + pt);
+    if (ct) rows.push('Токены ответа: ' + ct);
+    if (typeof usage.cost_usd_estimate === 'number' && isFinite(usage.cost_usd_estimate)) {
+      rows.push('Оценка стоимости: ' + usage.cost_usd_estimate.toFixed(4) + ' USD');
+    }
+    if (!rows.length) return null;
+    var details = document.createElement('details');
+    details.className = 'usage';
+    details.appendChild(h('summary', null, 'Служебные данные'));
+    var ul = h('ul', null, '');
+    rows.forEach(function (r) { ul.appendChild(h('li', null, r)); });
+    details.appendChild(ul);
+    return details;
+  }
+
+  function renderAnswer(data) {
+    clear(answerBody);
+    data = isObj(data) ? data : {};
+
+    var type = str(data.result_type) || 'unknown';
+    var badgeRow = h('div', 'result-badge-row');
+    badgeRow.appendChild(h('span', RESULT_CLASSES[type] || 'badge muted', RESULT_LABELS[type] || ('Тип результата: ' + type)));
+    answerBody.appendChild(badgeRow);
+
+    answerBody.appendChild(h('p', 'note',
+      'Нажмите на ссылку у вывода, чтобы открыть подтверждающий фрагмент.'));
+
+    var ctx = buildCitationContext(data.citations);
+
+    var summary = arr(data.summary);
+    if (summary.length) {
+      var sum = listBlock('Краткий ответ', summary, ctx, false);
+      if (sum) answerBody.appendChild(sum);
+    } else if (type === 'not_found') {
+      var nf = h('div', 'block');
+      nf.appendChild(h('p', null, 'В документах не найдено сведений, отвечающих на вопрос. Попробуйте переформулировать вопрос или выполнить поиск по ключевым словам.'));
+      answerBody.appendChild(nf);
+    } else {
+      var empty = h('div', 'block');
+      empty.appendChild(h('p', null, 'Краткий ответ не сформирован. Ознакомьтесь с дополнительными разделами и источниками ниже.'));
+      answerBody.appendChild(empty);
+    }
+
+    var steps = listBlock('Шаги', data.steps, ctx, true);
+    if (steps) answerBody.appendChild(steps);
+
+    var missing = textListBlock('Недостающие сведения', data.missing_information);
+    if (missing) answerBody.appendChild(missing);
+
+    var clar = textListBlock('Что нужно уточнить', data.clarifications);
+    if (clar) answerBody.appendChild(clar);
+
+    var conflicts = textListBlock('Противоречия', data.conflicts);
+    if (conflicts) answerBody.appendChild(conflicts);
+
+    var cits = citationsBlock(data.citations, ctx);
+    if (cits) answerBody.appendChild(cits);
+
+    var lim = textListBlock('Ограничения', data.limitations);
+    if (lim) answerBody.appendChild(lim);
+
+    var model = str(data.model);
+    var caption = h('div', 'caption');
+    caption.appendChild(h('div', null, model ? ('Модель, сформировавшая ответ: ' + model) : 'Модель в ответе не указана.'));
+    var usage = usageBlock(data);
+    if (usage) caption.appendChild(usage);
+    answerBody.appendChild(caption);
+
+    answerSection.hidden = false;
+    searchSection.hidden = true;
+  }
+
+  /* ---------- рендер поиска ---------- */
+
+  function renderSearch(data) {
+    clear(searchBody);
+    data = isObj(data) ? data : {};
+
+    var badgeRow = h('div', 'result-badge-row');
+    badgeRow.appendChild(h('span', 'badge warn', 'Найденные фрагменты; ответ не сформирован'));
+    searchBody.appendChild(badgeRow);
+    searchBody.appendChild(h('p', 'note',
+      'Поиск возвращает только найденные фрагменты документов. Содержательный ответ не формировался и не проверялся; оценка ответа не проводилась.'));
+
+    var results = arr(data.results).filter(isObj);
+    if (!results.length) {
+      var none = h('div', 'block');
+      none.appendChild(h('p', null, 'Ничего не найдено. Попробуйте изменить формулировку или ключевые слова.'));
+      searchBody.appendChild(none);
+    }
+
+    results.forEach(function (item) {
+      var card = document.createElement('article');
+      card.className = 'search-card';
+      card.appendChild(h('h3', null, str(item.document_name) || str(item.name) || 'Без названия'));
+
+      var text = str(item.text);
+      if (text) card.appendChild(h('p', 'text', text));
+
+      var cit = isObj(item.citation) ? item.citation : null;
+      if (cit) {
+        var labels = arr(cit.section_labels).map(str).filter(function (v) { return v !== ''; });
+        if (labels.length) card.appendChild(h('div', 'cite-sections', 'Разделы: ' + labels.join(' · ')));
+        var quote = str(cit.quote);
+        if (quote) {
+          var bq = document.createElement('blockquote');
+          bq.className = 'cite-quote';
+          bq.textContent = quote;
+          card.appendChild(bq);
+        }
+        var meta = h('div', 'meta');
+        var pagePart = null;
+        if (isObj(cit.locator) && cit.locator.page !== undefined && cit.locator.page !== null && str(cit.locator.page) !== '') {
+          pagePart = 'Страница: ' + str(cit.locator.page);
+        }
+        if (pagePart) meta.appendChild(h('div', null, pagePart));
+        var other = formatLocatorParts(cit.locator).filter(function (p) { return p.indexOf('страница ') !== 0; });
+        if (other.length) meta.appendChild(h('div', null, 'Расположение: ' + other.join(', ')));
+        var lines = lineRangeText(cit.line_start, cit.line_end);
+        if (lines) meta.appendChild(h('div', null, lines));
+        var method = str(cit.extraction_method);
+        if (method === 'ocr') meta.appendChild(h('div', null, 'Распознано со скана: возможны ошибки текста и нумерации.'));
+        if (meta.childNodes.length) card.appendChild(meta);
+
+        var sid = str(cit.source_id);
+        if (sid) {
+          var open = h('button', 'btn btn-secondary', 'Открыть фрагмент');
+          open.type = 'button';
+          open.setAttribute('aria-label', 'Открыть фрагмент документа «' + (str(cit.document_name) || str(item.name) || 'без названия') + '»');
+          open.addEventListener('click', function () {
+            openFragment(sid, str(cit.document_name) || str(item.name));
+          });
+          card.appendChild(open);
+        }
+      }
+
+      var contextSources = arr(item.context_sources).map(sourceLabel).filter(function (v) { return v !== ''; });
+      if (contextSources.length) {
+        var cs = h('div', 'meta');
+        cs.appendChild(h('div', null, 'Связанные источники: ' + contextSources.join(' · ')));
+        card.appendChild(cs);
+      }
+
+      searchBody.appendChild(card);
+    });
+
+    var lim = textListBlock('Ограничения', data.limitations);
+    if (lim) searchBody.appendChild(lim);
+
+    var status = str(data.answer_status);
+    var caption = h('div', 'caption');
+    caption.appendChild(h('div', null,
+      status === 'not_assessed' || !status
+        ? 'Статус ответа: не оценивался.'
+        : 'Статус ответа: ' + status));
+    searchBody.appendChild(caption);
+
+    searchSection.hidden = false;
+    answerSection.hidden = true;
+  }
+
+  /* ---------- диалог фрагмента ---------- */
+
+  function closeDialog() {
+    if (typeof dlg.close === 'function' && dlg.open) {
+      dlg.close();
+    } else {
+      dlg.removeAttribute('open');
+    }
+    abortDialogRequest();
+  }
+
+  function abortDialogRequest() {
+    if (dialogReq && !dialogReq.state.cancelled) {
+      dialogReq.state.cancelled = true;
+      try { dialogReq.controller.abort(); } catch (e) { /* noop */ }
+    }
+    dialogReq = null;
+  }
+
+  function renderDialogLoading(documentName) {
+    clear(dlgBody);
+    dlgTitle.textContent = 'Фрагмент: ' + (documentName || 'источник');
+    var loading = h('div', 'frag-loading');
+    loading.appendChild(h('span', 'spinner', ''));
+    loading.appendChild(h('span', null, 'Загружаем фрагмент документа…'));
+    dlgBody.appendChild(loading);
+  }
+
+  function renderDialogError(message, sourceId, documentName) {
+    clear(dlgBody);
+    dlgTitle.textContent = 'Фрагмент: ' + (documentName || 'источник');
+    var box = h('div', 'error-box');
+    box.appendChild(h('p', 'error-title', 'Не удалось открыть фрагмент'));
+    box.appendChild(h('p', null, message));
+    var retry = h('button', 'btn btn-secondary', 'Повторить');
+    retry.type = 'button';
+    retry.addEventListener('click', function () { loadFragment(sourceId, documentName); });
+    box.appendChild(retry);
+    dlgBody.appendChild(box);
+  }
+
+  function renderFragment(data, documentName) {
+    clear(dlgBody);
+    data = isObj(data) ? data : {};
+    var docName = str(data.document_name) || documentName || 'Документ';
+    dlgTitle.textContent = 'Фрагмент: ' + docName;
+
+    var meta = h('div', 'frag-meta');
+    meta.appendChild(h('div', null, 'Документ: ' + docName));
+    var labels = arr(data.section_labels).map(str).filter(function (v) { return v !== ''; });
+    if (labels.length) meta.appendChild(h('div', null, 'Разделы: ' + labels.join(' · ')));
+    var locParts = formatLocatorParts(data.locator);
+    if (locParts.length) meta.appendChild(h('div', null, 'Расположение: ' + locParts.join(', ')));
+    var lines = lineRangeText(data.line_start, data.line_end);
+    if (lines) meta.appendChild(h('div', null, lines));
+    var method = str(data.extraction_method);
+    if (method === 'ocr') meta.appendChild(h('div', null, 'Распознано со скана: возможны ошибки текста и нумерации.'));
+    dlgBody.appendChild(meta);
+
+    var blockText = str(data.block_text);
+    dlgBody.appendChild(h('p', 'frag-caption', 'Строки извлечённого текста (нумерация от 1, подсвечены строки извлечённого фрагмента):'));
+
+    if (!blockText) {
+      dlgBody.appendChild(h('p', 'note', 'Текст фрагмента не получен.'));
+      return;
+    }
+
+    var startLine = typeof data.line_start === 'number' && isFinite(data.line_start) ? data.line_start : null;
+    var endLine = typeof data.line_end === 'number' && isFinite(data.line_end) ? data.line_end : null;
+    if (startLine === null && str(data.line_start) !== '' && isFinite(Number(data.line_start))) startLine = Number(data.line_start);
+    if (endLine === null && str(data.line_end) !== '' && isFinite(Number(data.line_end))) endLine = Number(data.line_end);
+
+    var linesArr = blockText.split(/\r\n|\r|\n/);
+    var container = h('div', 'lines');
+    container.setAttribute('role', 'group');
+    container.setAttribute('aria-label', 'Извлечённый текст документа с номерами строк');
+    var highlighted = 0;
+    linesArr.forEach(function (lineText, idx) {
+      var number = idx + 1;
+      var row = h('div', 'line');
+      var isHl = (startLine !== null || endLine !== null) &&
+        (startLine === null || number >= startLine) &&
+        (endLine === null || number <= endLine);
+      if (isHl) { row.className = 'line hl'; highlighted += 1; }
+      var ln = h('span', 'ln', String(number));
+      ln.setAttribute('aria-hidden', 'true');
+      var lt = h('span', 'lt', lineText);
+      row.appendChild(ln);
+      row.appendChild(lt);
+      container.appendChild(row);
+    });
+    dlgBody.appendChild(container);
+
+    if (highlighted > 0) {
+      var hs = (startLine !== null ? startLine : 1) + '–' + (endLine !== null ? endLine : linesArr.length);
+      dlgBody.appendChild(h('p', 'frag-caption', 'Подсвеченные строки соответствуют границам извлечённого фрагмента: ' + hs + '.'));
+    } else {
+      dlgBody.appendChild(h('p', 'frag-caption', 'Границы подсветки в ответе сервера не указаны — показан весь извлечённый текст.'));
+    }
+  }
+
+  async function loadFragment(sourceId, documentName) {
+    abortDialogRequest();
+    renderDialogLoading(documentName);
+    var req = makeRequest();
+    dialogReq = req;
+    try {
+      var data = await fetchJSON(API.source(sourceId), {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      }, req);
+      if (dialogReq !== req) return;
+      renderFragment(data, documentName);
+      requestAnimationFrame(function () {
+        var highlighted = dlgBody.querySelector('.line.hl');
+        if (highlighted) highlighted.scrollIntoView({block: 'center'});
+      });
+    } catch (err) {
+      if (dialogReq !== req) return;
+      var message;
+      if (err instanceof AppError) {
+        message = err.message;
+      } else if (req.state.timedOut) {
+        message = 'Превышено время ожидания (260 секунд). Попробуйте открыть фрагмент снова.';
+      } else {
+        message = 'Не удалось связаться с сервером. Проверьте соединение и повторите попытку.';
+      }
+      renderDialogError(message, sourceId, documentName);
+    } finally {
+      req.clear();
+      if (dialogReq === req) dialogReq = null;
+    }
+  }
+
+  function openFragment(sourceId, documentName) {
+    if (!sourceId) return;
+    if (typeof dlg.showModal === 'function') {
+      if (!dlg.open) dlg.showModal();
+    } else {
+      dlg.setAttribute('open', '');
+    }
+    try { dlgClose.focus(); } catch (e) { /* noop */ }
+    loadFragment(sourceId, documentName);
+  }
+
+  dlgClose.addEventListener('click', closeDialog);
+  dlg.addEventListener('close', abortDialogRequest);
+  dlg.addEventListener('cancel', function () { abortDialogRequest(); });
+
+  questionEl.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      onAsk(event);
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "employee-navigator"
+version = "0.1.0"
+description = "Local document ingestion and evidence retrieval"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "pypdf==5.9.0",
+  "python-docx==1.2.0",
+  "openpyxl==3.1.5",
+  "defusedxml==0.7.1",
+  "pillow==13.0.0",
+  "psycopg[binary]==3.2.9",
+  "sentence-transformers==5.1.0",
+  "transformers==4.56.2",
+  "torch==2.8.0",
+  "huggingface-hub==0.34.4",
+  "fastapi==0.116.1",
+  "uvicorn==0.35.0",
+  "httpx==0.28.1",
+  "pydantic==2.11.7",
+]
+
+[project.scripts]
+navigator = "navigator.cli:main"
+
+[dependency-groups]
+dev = ["pytest==8.4.2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/navigator"]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

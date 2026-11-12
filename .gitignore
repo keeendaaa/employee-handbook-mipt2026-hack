@@ -10,3 +10,18 @@
 .env.*
 !.env.example
 .DS_Store
+
+# Local models, extraction artifacts and development environments.
+/models/
+/data/processed/
+/.venv/
+/.cache/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+/secrets/
+
+# Rebuildable local code-navigation graph and agent memory.
+/graphify-out/

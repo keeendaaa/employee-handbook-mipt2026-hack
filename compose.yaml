@@ -1,0 +1,60 @@
+services:
+  postgres:
+    restart: unless-stopped
+    image: pgvector/pgvector:0.8.0-pg17@sha256:40b404964359299eefdd5f8518facf1886c562848cf4de13b6eaf91cb70c2b87
+    environment:
+      POSTGRES_DB: navigator
+      POSTGRES_USER: navigator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U navigator -d navigator"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  ingest:
+    build: .
+    profiles: ["tools"]
+    environment:
+      DATABASE_URL: postgresql://navigator:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/navigator
+    volumes:
+      - ./data/raw:/app/data/raw:ro
+      - ./models:/app/models
+      - ./data/processed:/app/data/processed
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["ingest"]
+    mem_limit: 4g
+  api:
+    build: .
+    restart: unless-stopped
+    entrypoint: ["uvicorn", "navigator.api:app"]
+    command: ["--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+    ports:
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgresql://navigator:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/navigator
+      MODEL_DIR: /app/models/multilingual-e5-small
+      LLM_API_KEY_FILE: /run/secrets/llm_api_key
+      LLM_MODEL: ${LLM_MODEL:-Qwen/Qwen3.8-27B}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.commandcode.ai/provider/v1}
+      EMBEDDING_THREADS: "2"
+    volumes:
+      - ./models:/app/models:ro
+      - ./secrets/llm_api_key:/run/secrets/llm_api_key:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 3g
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+volumes:
+  pgdata:

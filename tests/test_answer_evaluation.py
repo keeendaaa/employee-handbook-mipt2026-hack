@@ -40,3 +40,23 @@ def test_forged_quote_and_unknown_claim_reference_fail_evaluation():
     ref['quote'] = 'Выдуманный текст'
     with pytest.raises(ValueError, match='canonical source'):
         helpers['verify_response'](response, {'synthetic': doc})
+
+
+review_helpers = runpy.run_path(str(Path(__file__).parents[1] / 'misc' / 'scripts' / 'review_answers.py'))
+
+
+@pytest.mark.parametrize('ids', [[], ['invented'], ['summary:0', 'summary:0']])
+def test_automated_reviewer_cannot_omit_duplicate_or_invent_claims(ids):
+    import json
+    content = {'claims': [{'id': id, 'verdict': 'supported', 'reason': 'Синтетическая проверка'} for id in ids],
+               'missing_facts': [], 'answer_type_assessment': 'appropriate', 'notes': []}
+    with pytest.raises(ValueError):
+        review_helpers['validate_review'](json.dumps(content), [{'id': 'summary:0'}])
+
+
+def test_optional_review_retains_a_flagged_claim_for_human_inspection():
+    import json
+    content = {'claims': [{'id': 'steps:0', 'verdict': 'unsupported', 'reason': 'Срок отсутствует в цитате.'}],
+               'missing_facts': [], 'answer_type_assessment': 'too_confident', 'notes': []}
+    review = review_helpers['validate_review'](json.dumps(content), [{'id': 'steps:0'}])
+    assert review['claims'][0]['verdict'] == 'unsupported'

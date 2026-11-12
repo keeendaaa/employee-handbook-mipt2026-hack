@@ -33,6 +33,26 @@ curl --fail http://127.0.0.1:8000/health/ready
 
 Для VPS установите `HTTP_BIND=0.0.0.0` и `HTTP_PORT=80` в `.env`. Страница доступна по адресу сервера. Это HTTP-демонстрация; для HTTPS нужен отдельный прокси и сертификат. PostgreSQL публикуется только на loopback `127.0.0.1:5433`.
 
+### Домен и HTTPS на VPS
+
+Конфигурация Caddy находится в `misc/deploy/Caddyfile`: основной домен `smena-mipt.ru`, перенаправление с `www.smena-mipt.ru` и сохранение HTTP-доступа по IP. Для обоих имён нужны DNS-записи A со значением `178.20.47.178`.
+
+При использовании прокси задайте в закрытом `.env` `HTTP_BIND=127.0.0.1`, `HTTP_PORT=8000`. Узнать шлюз Docker-сети можно командой `docker inspect navigator-api-1 --format '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}'`; это значение укажите в `FORWARDED_ALLOW_IPS` (на текущем VPS — `172.18.0.1`). Приложение доверяет заголовкам адреса клиента только от этого шлюза, чтобы лимиты запросов различали посетителей. Порт приложения публикуется только на loopback.
+
+На VPS, из корня проекта:
+
+```sh
+sudo apt-get install -y caddy
+sudo install -m 644 misc/deploy/Caddyfile /etc/caddy/Caddyfile
+sudo caddy validate --config /etc/caddy/Caddyfile
+docker compose up -d api
+sudo systemctl enable --now caddy
+# После изменения конфигурации:
+sudo systemctl reload caddy
+```
+
+Снаружи должны быть доступны TCP 80 и 443. Caddy [автоматически получает и обновляет сертификаты](https://caddyserver.com/docs/automatic-https) после публикации DNS. Добавление записей в панели регистратора само по себе ещё не подтверждает доступность домена: проверяйте публичное разрешение имён и HTTPS без отключения проверки сертификата.
+
 Если извлечение уже выполнено этой версией кода, его можно проверить и индексировать без повторного OCR:
 
 ```sh

@@ -1,0 +1,19 @@
+(navigator) {
+	reverse_proxy 127.0.0.1:8000 {
+		transport http {
+			response_header_timeout 270s
+		}
+	}
+}
+
+smena-mipt.ru {
+	import navigator
+}
+
+www.smena-mipt.ru {
+	redir https://smena-mipt.ru{uri} permanent
+}
+
+http://178.20.47.178 {
+	import navigator
+}

@@ -136,3 +136,24 @@ def test_explicit_year_recovers_enactment_clause_without_guessing_authority(requ
     assert any(s['locator'] == {'page': 1} for s in sources) is include_introduction
     assert result['results'][0]['citation']['quote'] == texts[1]
     assert all(s['citation']['quote'] == texts[s['citation']['block_index']][s['citation']['start']:s['citation']['end']] for s in sources)
+
+
+def test_date_question_recovers_split_docx_header_without_using_filename():
+    from navigator.retrieval import introduction_contexts
+    doc = {'name': 'Синтетический файл без даты.docx', 'blocks': [
+        {'kind': 'paragraph', 'text': 'СИНТЕТИЧЕСКИЙ ПРИКАЗ'},
+        {'kind': 'table_row', 'text': 'от 04.04.2023 | № 42'},
+        {'kind': 'paragraph', 'text': 'О тестовом запуске'},
+        {'kind': 'paragraph', 'text': 'ПРИКАЗЫВАЮ:'},
+        {'kind': 'paragraph', 'text': '1. Тестовый процесс действует с даты подписания.'},
+    ]}
+    ranges = introduction_contexts(doc, 'Когда введён тестовый процесс?')
+    assert (1, 0, len(doc['blocks'][1]['text'])) in ranges
+    assert introduction_contexts(doc, 'Как подать учебную заявку?') == []
+
+
+def test_date_in_repealed_act_is_not_a_signature_date():
+    from navigator.retrieval import introduction_contexts
+    doc = {'blocks': [{'kind': 'page', 'text':
+        'СИНТЕТИЧЕСКИЙ ПРИКАЗ\nДата не распознана\nПРИКАЗЫВАЮ:\n1. Отменить тестовый акт от 01.02.2010.'}]}
+    assert introduction_contexts(doc, 'Когда подписан приказ?') == []

@@ -70,6 +70,42 @@ def query_parts(query: str, tokenizer) -> list[str]:
     return unique
 
 
+DATE_QUESTION = re.compile(r"\bкогда\b|\bдат[а-яё]*\b|\bкако(?:м|го)\s+год[ауе]?\b", re.I)
+YEAR = re.compile(r"(?<!\d)(?:19|20)\d{2}(?!\d)")
+HEADER_DATE = re.compile(r"(?<!\d)\d{1,2}[./]\d{1,2}[./](?:19|20)\d{2}(?!\d)")
+
+
+def introduction_contexts(document: dict, query: str) -> list[tuple[int, int, int]]:
+    """Return literal requested years or header dates, without choosing authority."""
+    years = set(YEAR.findall(query))
+    if not years and not DATE_QUESTION.search(query):
+        return []
+    blocks = document["blocks"]
+    page_based = blocks[0]["kind"] == "page"
+    scanned_chars = 0
+    for index, block in enumerate(blocks[:1 if page_based else 12]):
+        text = block["text"]
+        if not page_based:
+            if re.match(r"\s*ПРИКАЗЫВАЮ\b", text, re.I) or scanned_chars > 3200:
+                break
+            scanned_chars += len(text)
+        if years:
+            match = next((m for m in YEAR.finditer(text) if m.group() in years), None)
+        else:
+            # Do not mistake a date of a repealed act in numbered body clauses
+            # for the signing date of the current document.
+            header = re.split(r"\bПРИКАЗЫВАЮ\b|(?m:^\s*1[.)]\s)", text, maxsplit=1, flags=re.I)[0]
+            match = HEADER_DATE.search(header)
+        if match:
+            result = [(index, max(0, match.start() - 700), min(len(text), match.end() + 700))]
+            if not page_based:
+                for neighbor in (index - 1, index + 1):
+                    if 0 <= neighbor < len(blocks):
+                        result.append((neighbor, 0, min(len(blocks[neighbor]["text"]), 700)))
+            return result
+    return []
+
+
 class RetrievalService:
     def __init__(self, store, embedder):
         self.store, self.embedder = store, embedder
@@ -160,7 +196,6 @@ class RetrievalService:
             if len(selected) == limit:
                 break
         docs = {d["version_id"]: d for d in documents}
-        requested_years = set(re.findall(r"\b(?:19|20)\d{2}\b", query))
         introduction_seen = set()
         for row in selected:
             document = docs[row["version_id"]]
@@ -176,16 +211,11 @@ class RetrievalService:
                         neighbor = document["blocks"][index]
                         if neighbor["heading_path"] == block["heading_path"] and neighbor["kind"] == block["kind"]:
                             contexts.append((index, 0, min(len(neighbor["text"]), 1800)))
-            # A requested edition year may be stated only in an introductory
-            # enactment clause. Quote that text; don't infer authority from dates.
-            if requested_years and document["version_id"] not in introduction_seen:
+            if document["version_id"] not in introduction_seen:
                 introduction_seen.add(document["version_id"])
-                introduction = document["blocks"][0]["text"]
-                year_match = next((match for match in re.finditer(r"(?<!\d)(?:19|20)\d{2}(?!\d)", introduction)
-                                   if match.group() in requested_years), None)
-                if year_match and not any(index == 0 and begin <= year_match.start() and finish >= year_match.end()
-                                          for index, begin, finish in contexts):
-                    contexts.append((0, max(0, year_match.start() - 700), min(len(introduction), year_match.end() + 700)))
+                for index, begin, finish in introduction_contexts(document, query):
+                    if not any(i == index and a <= begin and b >= finish for i, a, b in contexts):
+                        contexts.append((index, begin, finish))
             row["context_sources"] = []
             for index, begin, finish in contexts:
                 if not begin < finish:

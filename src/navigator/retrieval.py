@@ -160,6 +160,8 @@ class RetrievalService:
             if len(selected) == limit:
                 break
         docs = {d["version_id"]: d for d in documents}
+        requested_years = set(re.findall(r"\b(?:19|20)\d{2}\b", query))
+        introduction_seen = set()
         for row in selected:
             document = docs[row["version_id"]]
             row["citation"] = reference(document, row["block_index"], row["start"], row["end"])
@@ -174,6 +176,16 @@ class RetrievalService:
                         neighbor = document["blocks"][index]
                         if neighbor["heading_path"] == block["heading_path"] and neighbor["kind"] == block["kind"]:
                             contexts.append((index, 0, min(len(neighbor["text"]), 1800)))
+            # A requested edition year may be stated only in an introductory
+            # enactment clause. Quote that text; don't infer authority from dates.
+            if requested_years and document["version_id"] not in introduction_seen:
+                introduction_seen.add(document["version_id"])
+                introduction = document["blocks"][0]["text"]
+                year_match = next((match for match in re.finditer(r"(?<!\d)(?:19|20)\d{2}(?!\d)", introduction)
+                                   if match.group() in requested_years), None)
+                if year_match and not any(index == 0 and begin <= year_match.start() and finish >= year_match.end()
+                                          for index, begin, finish in contexts):
+                    contexts.append((0, max(0, year_match.start() - 700), min(len(introduction), year_match.end() + 700)))
             row["context_sources"] = []
             for index, begin, finish in contexts:
                 if not begin < finish:

@@ -116,3 +116,23 @@ def test_reference_only_question_does_not_send_empty_lexical_query():
     result = RetrievalService(store, embedder).search("Приказ № 4821-7")
     assert calls == ["Приказ № 4821-7"]
     assert result["answer_status"] == "not_assessed"
+
+
+@pytest.mark.parametrize('requested_year,include_introduction', [('2017', True), ('2026', False)])
+def test_explicit_year_recovers_enactment_clause_without_guessing_authority(requested_year, include_introduction):
+    texts = ['4. Ввести синтетический регламент в действие с 1 мая 2017г.',
+             'Тестовая процедура: заполните учебную карточку.']
+    blocks = [{'text': text, 'locator': {'page': i + 1}, 'kind': 'page', 'heading_path': [], 'method': 'native'}
+              for i, text in enumerate(texts)]
+    doc = {'document_id': 'demo', 'version_id': 'a' * 64, 'sha256': 'b' * 64,
+           'name': 'Синтетический регламент', 'blocks': blocks, 'warnings': []}
+    row = {'document_id': 'demo', 'version_id': doc['version_id'], 'chunk_id': 'procedure',
+           'text': texts[1], 'block_index': 1, 'start': 0, 'end': len(texts[1]), 'locator': blocks[1]['locator'], 'heading_path': []}
+    store = SimpleNamespace(active_revision=lambda: {'corpus_key': 'snapshot', 'model_revision': 'test'},
+                            documents=lambda key: [doc], search=lambda *args, **kwargs: [dict(row)])
+    embedder = SimpleNamespace(tokenizer=Tokenizer(), revision='test', encode=lambda p, **kw: [[1.] * 384 for _ in p])
+    result = RetrievalService(store, embedder).search('Как заполнить карточку по порядку ' + requested_year + ' года?')
+    sources = result['results'][0]['context_sources']
+    assert any(s['locator'] == {'page': 1} for s in sources) is include_introduction
+    assert result['results'][0]['citation']['quote'] == texts[1]
+    assert all(s['citation']['quote'] == texts[s['citation']['block_index']][s['citation']['start']:s['citation']['end']] for s in sources)

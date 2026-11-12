@@ -95,3 +95,30 @@ def test_truncated_answer_retries_and_accounts_for_both_requests():
     assert result['usage']['completion_tokens'] == 5020
     assert result['usage']['prompt_tokens'] == 200
     assert result['citations'][0]['source_id'] == retrieved['results'][0]['citation']['source_id']
+
+
+def test_temporary_provider_outage_retries_once(monkeypatch):
+    monkeypatch.setattr('navigator.generation.time.sleep', lambda seconds: None)
+    _, retrieved, answer = fixture()
+    attempts = []
+    def handler(request):
+        attempts.append(request)
+        if len(attempts) == 1:
+            return httpx.Response(503, json={"error": {"message": "temporarily unavailable"}})
+        content = json.dumps(answer).replace(retrieved['results'][0]['citation']['source_id'], "S1")
+        return httpx.Response(200, json={"choices": [{"finish_reason": "stop", "message": {"content": content}}], "usage": {}})
+    result = Generator("synthetic-key", transport=httpx.MockTransport(handler)).answer("Вопрос", retrieved)
+    assert result['result_type'] == 'answered'
+    assert len(attempts) == 2
+
+
+def test_persistent_provider_outage_stays_a_technical_error(monkeypatch):
+    monkeypatch.setattr('navigator.generation.time.sleep', lambda seconds: None)
+    _, retrieved, answer = fixture()
+    attempts = []
+    def handler(request):
+        attempts.append(request)
+        return httpx.Response(503, json={"error": {"message": "temporarily unavailable"}})
+    with pytest.raises(GenerationError, match='HTTP 503'):
+        Generator('synthetic-key', transport=httpx.MockTransport(handler)).answer('Вопрос', retrieved)
+    assert len(attempts) == 2

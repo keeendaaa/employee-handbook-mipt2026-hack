@@ -1,6 +1,7 @@
 """Grounded generation through an explicitly configured external API."""
 
 import json
+import time
 from typing import Literal
 
 import httpx
@@ -101,6 +102,9 @@ class Generator:
                     "reasoning_effort": "low"})
             except httpx.HTTPError:
                 raise GenerationError("Не удалось связаться с API модели. Повторите запрос позже.") from None
+            if response.status_code in (500, 502, 503, 504) and attempt == 0:
+                time.sleep(1)
+                continue
             if response.status_code != 200:
                 code = response.status_code
                 reason = "Проверьте доступ и баланс API модели." if code in (401, 403, 402, 429) else "API модели временно недоступен."

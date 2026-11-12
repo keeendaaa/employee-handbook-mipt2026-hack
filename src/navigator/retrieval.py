@@ -4,6 +4,7 @@ from collections import Counter
 import re
 
 from .sources import reference
+from .campus import expand_campus_names
 
 
 DOCUMENT_NUMBER = re.compile(
@@ -37,7 +38,7 @@ def query_parts(query: str, tokenizer) -> list[str]:
     parts = []
     if len(tokenizer.encode("query: " + query, verbose=False)) <= 512:
         parts.append(query)
-    # Preserve all content; no generated expansion or topic-specific synonym lists.
+    # Preserve all content; optional glossary expansion is a separate search route.
     spans = re.split(r"[?;\n]+\s*|(?<=\.)\s+|\s+(?:и|а также)\s+(?=(?:как|кто|когда|куда|где|что|какие|какой)\b)", query, flags=re.I)
     spans = [s.strip() for s in spans if s.strip()]
     if parts and len(spans) == 1:
@@ -82,14 +83,40 @@ class RetrievalService:
             active = {"corpus_key": corpus_key, "model_revision": self.embedder.revision}
         if active["model_revision"] != self.embedder.revision:
             raise ValueError("Модель не совпадает с активным индексом")
-        vectors = self.embedder.encode(parts, query=True)
+        search_queries = list(parts)
+        expansion_indices, expansions = {}, []
+        _, terminology_hints = expand_campus_names(query)
+        for index, part in enumerate(parts):
+            expanded, _ = expand_campus_names(part)
+            if (expanded != part and len(expansions) < 8 and
+                    len(self.embedder.tokenizer.encode("query: " + expanded, verbose=False)) <= 512):
+                expansion_indices[index] = len(search_queries)
+                search_queries.append(expanded)
+                expansions.append({"query_part": index, "text": expanded, "source": "user_glossary"})
+        vectors = self.embedder.encode(search_queries, query=True)
         documents = self.store.documents(active["corpus_key"])
         scores, by_id, matches, ranked_parts = Counter(), {}, {}, []
         scoped_candidates, document_hints = [], set()
-        for part_index, (part, vector) in enumerate(zip(parts, vectors, strict=True)):
+        for part_index, (part, vector) in enumerate(zip(parts, vectors[:len(parts)], strict=True)):
             rows = self.store.search(part, vector, limit=min(100, max(20, limit * 2)),
                                      model_revision=self.embedder.revision,
                                      corpus_key=active["corpus_key"], mode=mode)
+            if part_index in expansion_indices:
+                expanded_index = expansion_indices[part_index]
+                expanded_rows = self.store.search(search_queries[expanded_index], vectors[expanded_index],
+                    limit=min(100, max(20, limit * 2)), model_revision=self.embedder.revision,
+                    corpus_key=active["corpus_key"], mode=mode)
+                # Fuse alternate spellings once per original question part. A hint
+                # never becomes a new required subquestion or a second RRF vote.
+                variant_scores, variant_rows, order = Counter(), {}, {}
+                for variant in (expanded_rows, rows):
+                    for rank, row in enumerate(variant, 1):
+                        key = row["chunk_id"]
+                        variant_scores[key] += 1 / (60 + rank)
+                        variant_rows.setdefault(key, row)
+                        order.setdefault(key, len(order))
+                rows = sorted(variant_rows.values(),
+                              key=lambda row: (-variant_scores[row["chunk_id"]], order[row["chunk_id"]]))
             ranked_parts.append(rows)
             for rank, row in enumerate(rows, 1):
                 key = row["chunk_id"]
@@ -157,6 +184,7 @@ class RetrievalService:
         return {"corpus_revision": active["corpus_key"], "model_revision": self.embedder.revision,
                 "retrieval_status": "candidates_found" if selected else "no_candidates",
                 "answer_status": "not_assessed", "query_parts": parts,
+                "query_expansions": expansions, "terminology_hints": terminology_hints,
                 "referenced_document_hints": sorted(document_hints),
                 "unrepresented_query_parts": sorted(set(range(len(parts))) - {
                     i for row in selected for i in row["matched_query_parts"]}),

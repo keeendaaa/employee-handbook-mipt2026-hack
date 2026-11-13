@@ -81,7 +81,7 @@ class Generator:
     def close(self):
         self.client.close()
 
-    def answer(self, question: str, retrieved: dict) -> dict:
+    def answer(self, question: str, retrieved: dict, *, progress=None) -> dict:
         refs = evidence(retrieved)
         if not refs:
             return {**Answer(result_type="not_found", summary=[], steps=[], missing_information=["В индексе не найдены фрагменты для ответа."], clarifications=[], conflicts=[]).model_dump(),
@@ -100,6 +100,8 @@ class Generator:
                     {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}]
         usage = {"prompt_tokens": 0, "completion_tokens": 0}
         for attempt in range(2):
+            if progress:
+                progress({'type': 'stage', 'stage': 'generation', 'attempt': attempt+1})
             try:
                 response = self.client.post("chat/completions", json={"model": self.model, "messages": messages,
                     "temperature": 0, "max_tokens": 10000, "response_format": {"type": "json_object"},

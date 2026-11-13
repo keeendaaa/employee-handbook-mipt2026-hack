@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import threading
 import time
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
@@ -30,6 +31,10 @@ class Query(BaseModel):
         if not value.strip():
             raise ValueError("Введите вопрос")
         return value.strip()
+
+
+class LiveQuery(Query):
+    mode: Literal['ask', 'search'] = 'ask'
 
 
 def create_app(*, service=None, generator=None, import_repository=None, import_directory=None,
@@ -75,10 +80,12 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     calls = defaultdict(deque)
     global_calls = deque()
 
-    def retrieve(query):
+    def retrieve(query, progress=None):
         if not search_lock.acquire(blocking=False):
             raise HTTPException(429, "Поиск занят. Повторите запрос через несколько секунд.")
         try:
+            if progress is not None:
+                return app.state.service.search(query.question, limit=query.limit, progress=progress)
             return app.state.service.search(query.question, limit=query.limit)
         finally:
             search_lock.release()
@@ -128,8 +135,7 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     def search(query: Query):
         return retrieve(query)
 
-    @app.post("/api/ask")
-    def ask(query: Query, request: Request):
+    def answer_query(query: Query, request: Request, *, progress=None):
         if app.state.generator is None:
             raise HTTPException(503, "API модели не настроен. Доступен поиск без генерации.")
         if not ask_lock.acquire(blocking=False):
@@ -150,10 +156,43 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
                     raise HTTPException(429, "Лимит демонстрации исчерпан. Повторите позже или используйте поиск.")
                 calls[ip].append(now)
                 global_calls.append(now)
-            retrieved = retrieve(query)
+            retrieved = retrieve(query, progress)
+            if progress is not None:
+                send_retrieval(progress, retrieved)
+                result = app.state.generator.answer(query.question, retrieved, progress=progress)
+                progress({'type': 'answer', 'answer': result})
+                return result
             return app.state.generator.answer(query.question, retrieved)
         finally:
             ask_lock.release()
+
+    @app.post("/api/ask")
+    def ask(query: Query, request: Request):
+        return answer_query(query, request)
+
+    def send_retrieval(progress, retrieved, *, include_context=True):
+        from .live import retrieval_trace
+        try:
+            trace = retrieval_trace(retrieved, app.state.knowledge_map, include_context=include_context)
+        except Exception:
+            # Optional visual grouping must not invalidate a valid RAG result.
+            trace = retrieval_trace(retrieved, None, include_context=include_context)
+        progress({'type': 'retrieval', 'retrieval': retrieved, 'trace': trace})
+
+    @app.post('/api/query/stream')
+    def live_query(query: LiveQuery, request: Request):
+        from .live import stream_response
+        if query.mode == 'ask' and app.state.generator is None:
+            raise HTTPException(503, 'API модели не настроено. Используйте «Только поиск».')
+        def run(progress):
+            progress({'type': 'started', 'mode': query.mode})
+            if query.mode == 'ask':
+                answer_query(query, request, progress=progress)
+            else:
+                retrieved = retrieve(query, progress)
+                send_retrieval(progress, retrieved, include_context=False)
+                progress({'type': 'search_complete', 'retrieval': retrieved})
+        return stream_response(run)
 
     @app.get("/api/sources/{source_id}")
     def source(source_id: str):

@@ -110,7 +110,7 @@ class RetrievalService:
     def __init__(self, store, embedder):
         self.store, self.embedder = store, embedder
 
-    def search(self, query: str, limit: int = 10, *, mode: str = "hybrid", corpus_key: str | None = None) -> dict:
+    def search(self, query: str, limit: int = 10, *, mode: str = "hybrid", corpus_key: str | None = None, progress=None) -> dict:
         if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 30:
             raise ValueError("limit должен быть целым числом от 1 до 30")
         parts = query_parts(query, self.embedder.tokenizer)
@@ -129,11 +129,18 @@ class RetrievalService:
                 expansion_indices[index] = len(search_queries)
                 search_queries.append(expanded)
                 expansions.append({"query_part": index, "text": expanded, "source": "user_glossary"})
+        if progress:
+            progress({'type': 'stage', 'stage': 'embedding', 'corpus_revision': active['corpus_key'],
+                      'query_parts': len(parts), 'status': 'running'})
         vectors = self.embedder.encode(search_queries, query=True)
+        if progress:
+            progress({'type': 'stage', 'stage': 'embedding', 'status': 'complete'})
         documents = self.store.documents(active["corpus_key"])
         scores, by_id, matches, ranked_parts = Counter(), {}, {}, []
         scoped_candidates, document_hints = [], set()
         for part_index, (part, vector) in enumerate(zip(parts, vectors[:len(parts)], strict=True)):
+            if progress:
+                progress({'type': 'stage', 'stage': 'retrieval', 'part': part_index+1, 'parts': len(parts)})
             rows = self.store.search(part, vector, limit=min(100, max(20, limit * 2)),
                                      model_revision=self.embedder.revision,
                                      corpus_key=active["corpus_key"], mode=mode)
@@ -195,6 +202,8 @@ class RetrievalService:
                 block_counts[key] += 1
             if len(selected) == limit:
                 break
+        if progress:
+            progress({'type': 'stage', 'stage': 'context', 'selected': len(selected)})
         docs = {d["version_id"]: d for d in documents}
         introduction_seen = set()
         for row in selected:

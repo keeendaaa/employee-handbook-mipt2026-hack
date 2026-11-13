@@ -14,9 +14,14 @@ RESPONSE_LIMIT = 2_000_000
 ANSWER_TYPES = {
     "answered": "",
     "partial": "В найденных фрагментах есть ответ на часть вопроса.",
-    "not_found": "В найденных фрагментах ответ на вопрос не найден.",
     "needs_clarification": "Для ответа нужно уточнение.",
     "conflict": "В источниках найдены противоречащие друг другу положения.",
+}
+
+GENERIC_MISSING_INFORMATION = {
+    "В индексе не найдены фрагменты для ответа.",
+    "В найденных фрагментах ответ на вопрос не найден.",
+    "В найденных фрагментах не удалось подтвердить ответ на вопрос.",
 }
 
 
@@ -75,6 +80,19 @@ def ask(url, body, *, subject="", reply_without_issue=False):
 
 
 def format_answer(answer, url):
+    if answer["result_type"] == "not_found":
+        missing = [item.strip() for item in answer["missing_information"]
+                   if item.strip() and item.strip() not in GENERIC_MISSING_INFORMATION]
+        sections = ["По найденным регламентам не удалось подтвердить порядок действий в этой ситуации."]
+        if missing:
+            sections.append("Каких сведений не хватает\n" + "\n".join(missing))
+        sections.append(
+            "Если вопрос срочный, уточни порядок и сроки у сотрудника, который ведёт этот вопрос. "
+            "Если у тебя есть ссылка на применимый регламент, пришли её вместе с вопросом, "
+            "чтобы было понятно, какой документ искать в базе."
+        )
+        return "\n\n".join(sections)
+
     status = ANSWER_TYPES[answer["result_type"]]
     sources = {source["source_id"]: source for source in answer["citations"]}
     numbers = {}

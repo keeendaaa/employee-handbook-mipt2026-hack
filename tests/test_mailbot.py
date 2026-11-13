@@ -78,6 +78,26 @@ class MailbotIntegrationTest(unittest.TestCase):
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
+    def test_not_found_replies_once_with_a_next_step(self, opener, deliver):
+        answer = {
+            **ANSWER,
+            "result_type": "not_found",
+            "summary": [],
+            "steps": [],
+            "citations": [],
+            "missing_information": ["В найденных фрагментах не удалось подтвердить ответ на вопрос."],
+        }
+        opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(
+            json.dumps(answer).encode()
+        )
+        self.process("Нужно оформить пропуск для прессы.")
+        reply = deliver.call_args.args[5]
+        self.assertNotIn("Каких сведений не хватает", reply)
+        self.assertEqual(reply.count("не удалось подтвердить"), 1)
+        self.assertIn("уточни порядок и сроки", reply)
+
+    @patch.object(app, "deliver")
+    @patch.object(navigator_client, "build_opener")
     def test_no_action_respects_panel_setting(self, opener, deliver):
         for enabled in (False, True):
             with self.subTest(enabled=enabled):

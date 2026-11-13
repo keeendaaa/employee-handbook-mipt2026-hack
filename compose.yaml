@@ -43,10 +43,12 @@ services:
       LLM_MODEL: ${LLM_MODEL:-Qwen/Qwen3.8-27B}
       LLM_BASE_URL: ${LLM_BASE_URL:-https://api.commandcode.ai/provider/v1}
       EMBEDDING_THREADS: "2"
+      IMPORT_DIR: /app/data/imports
       FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
     volumes:
       - ./models:/app/models:ro
       - ./secrets/llm_api_key:/run/secrets/llm_api_key:ro
+      - ./data/imports:/app/data/imports
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,5 +59,28 @@ services:
       timeout: 10s
       start_period: 60s
       retries: 3
+  import-worker:
+    build: .
+    restart: unless-stopped
+    entrypoint: ["python", "-m", "navigator.imports.worker"]
+    environment:
+      DATABASE_URL: postgresql://navigator:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/navigator
+      MODEL_DIR: /app/models/multilingual-e5-small
+      IMPORT_DIR: /app/data/imports
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    volumes:
+      - ./models:/app/models:ro
+      - ./data/imports:/app/data/imports
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 3g
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+
 volumes:
   pgdata:

@@ -46,3 +46,25 @@ CREATE TABLE IF NOT EXISTS active_corpus (
     singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton),
     corpus_key text NOT NULL REFERENCES corpus_revisions(corpus_key)
 );
+
+CREATE TABLE IF NOT EXISTS import_jobs (
+    id uuid PRIMARY KEY,
+    status text NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','downloading','extracting','indexing','ready','partial','failed')),
+    filename text,
+    source_url text,
+    replace_existing boolean NOT NULL DEFAULT false,
+    attempts integer NOT NULL DEFAULT 0,
+    lease_until timestamptz,
+    owner uuid,
+    message text NOT NULL DEFAULT 'Ожидание обработки',
+    warnings jsonb NOT NULL DEFAULT '[]',
+    corpus_key text,
+    document_id text,
+    duplicate boolean NOT NULL DEFAULT false,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS import_worker_heartbeat (
+    singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton),
+    touched_at timestamptz NOT NULL DEFAULT now()
+);

@@ -257,6 +257,17 @@
     .dlg-body { padding: 12px 12px 16px; }
     .dlg-head { padding: 14px 12px 10px; }
   }
+  .import-panel { margin-bottom: 20px; }
+  .import-panel summary { cursor: pointer; font-weight: 650; color: var(--green-900); }
+  .import-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+  .import-panel input[type="url"], .import-panel input[type="file"] { width: 100%; box-sizing: border-box; font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; }
+  .import-drop { display: block; border: 1px dashed #8daea0; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+  .import-drop.drag { background: #eaf5ee; }
+  .import-check { display: flex; align-items: flex-start; gap: 9px; margin: 12px 0; font-size: .9rem; }
+  .import-check input { margin-top: 4px; flex-shrink: 0; }
+  .import-jobs { margin-top: 16px; }
+  .import-jobs:empty { display: none; }
+  @media (max-width: 650px) { .import-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -265,6 +276,30 @@
     <h1>Навигатор сотрудника</h1>
     <p class="subtitle">Ответы по внутренним документам со ссылками на источники.</p>
   </header>
+
+  <details class="card import-panel" id="import-panel">
+    <summary>Добавить документы в общую базу</summary>
+    <p class="hint">PDF, DOCX и XLSX, до 25 МБ на файл. После обработки документы станут доступны всем пользователям. Найденные фрагменты могут передаваться внешнему API модели для ответа.</p>
+    <label class="import-check"><input id="import-public" type="checkbox">Подтверждаю, что документы неконфиденциальные и разрешены для общей базы и обработки внешним API.</label>
+    <label class="import-check"><input id="import-replace" type="checkbox">Обновить документ с таким же именем. Предыдущие версии и ссылки на цитаты сохранятся.</label>
+    <div class="import-grid">
+      <form id="import-file-form">
+        <label class="import-drop" id="import-drop" for="import-files">Перетащите файлы сюда или выберите их
+          <input id="import-files" type="file" accept=".pdf,.docx,.xlsx" multiple>
+        </label>
+        <p class="hint" id="import-selection">До пяти файлов за одну отправку.</p>
+        <button type="submit" class="btn btn-secondary" id="import-file-button">Загрузить файлы</button>
+      </form>
+      <form id="import-url-form">
+        <label class="field-label" for="import-url">Ссылка на файл</label>
+        <input id="import-url" type="url" placeholder="https://…/document.pdf" required>
+        <p class="hint">Прямая публичная ссылка, Google Drive или экспорт Google Docs/Sheets. Документ должен открываться без входа в аккаунт.</p>
+        <button type="submit" class="btn btn-secondary" id="import-url-button">Добавить по ссылке</button>
+      </form>
+    </div>
+    <p id="import-message" class="hint" role="status" aria-live="polite"></p>
+    <div id="import-jobs" class="import-jobs" aria-live="polite"></div>
+  </details>
 
   <form id="ask-form" class="card" novalidate aria-busy="false">
     <label class="field-label" for="question">Вопрос</label>
@@ -1073,6 +1108,104 @@
       onAsk(event);
     }
   });
+
+  // Import requests and polling are independent from the question request.
+  var importConsent = document.getElementById('import-public');
+  var importReplace = document.getElementById('import-replace');
+  var importFiles = document.getElementById('import-files');
+  var importDrop = document.getElementById('import-drop');
+  var importMessage = document.getElementById('import-message');
+  var importJobs = document.getElementById('import-jobs');
+  var selectedFiles = [];
+  var jobNodes = new Map();
+  var importBusy = false;
+  var JOB_STORAGE = 'navigator-import-jobs-v1';
+  function savedJobs() {
+    try { var data = JSON.parse(localStorage.getItem(JOB_STORAGE) || '[]'); return Array.isArray(data) ? data.filter(function(id) { return typeof id === 'string' && /^[a-f0-9-]{36}$/i.test(id); }).slice(-15) : []; }
+    catch (error) { return []; }
+  }
+  function rememberJob(id) {
+    try { localStorage.setItem(JOB_STORAGE, JSON.stringify(Array.from(new Set(savedJobs().concat([id]))).slice(-15))); }
+    catch (error) { importMessage.textContent = 'Задача сохранена на сервере; история загрузок в этом браузере недоступна.'; }
+  }
+  function importing(value) {
+    importBusy = value;
+    document.getElementById('import-file-button').disabled = value;
+    document.getElementById('import-url-button').disabled = value;
+  }
+  async function importRequest(url, options) {
+    var controller = new AbortController();
+    var timer = setTimeout(function() { controller.abort(); }, 180000);
+    try {
+      var response = await fetch(url, Object.assign({}, options || {}, {signal: controller.signal}));
+      var data;
+      try { data = await response.json(); } catch (error) { throw new Error('Сервер не смог обработать загрузку (HTTP ' + response.status + ').'); }
+      if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Проверьте формат, ссылку и подтверждение неконфиденциальности.');
+      return data;
+    } finally { clearTimeout(timer); }
+  }
+  function showJob(data) {
+    var nodes = jobNodes.get(data.id);
+    if (!nodes) {
+      var card = h('article', 'search-card');
+      nodes = {title: h('h3'), badge: h('span', 'badge'), message: h('p'), warnings: h('ul')};
+      card.appendChild(nodes.title); card.appendChild(nodes.badge); card.appendChild(nodes.message); card.appendChild(nodes.warnings);
+      importJobs.prepend(card); jobNodes.set(data.id, nodes);
+    }
+    var labels = {queued:'В очереди',downloading:'Скачивание',extracting:'Чтение и OCR',indexing:'Индексирование',ready:'Готово',partial:'Готово с предупреждениями',failed:'Ошибка'};
+    nodes.title.textContent = data.filename || 'Документ по ссылке';
+    nodes.badge.textContent = labels[data.status] || data.status;
+    nodes.badge.className = 'badge' + (data.status === 'failed' || data.status === 'partial' ? ' warn' : '');
+    nodes.message.textContent = data.worker_available === false ? 'Обработчик временно недоступен. Задача сохранена и будет продолжена.' : data.message;
+    clear(nodes.warnings);
+    arr(data.warnings).slice(0,20).forEach(function(warning) { nodes.warnings.appendChild(h('li', null, typeof warning === 'string' ? warning : (warning.message || warning.code || JSON.stringify(warning)))); });
+    if (data.status === 'ready' || data.status === 'partial') nodes.message.textContent += ' Можно задавать вопросы по обновлённой общей базе.';
+  }
+  async function pollImport(id) {
+    try {
+      var data = await importRequest('/api/imports/' + encodeURIComponent(id));
+      showJob(data);
+      if (['ready','partial','failed'].indexOf(data.status) === -1) setTimeout(function() { pollImport(id); }, 2500);
+    } catch (error) {
+      importMessage.textContent = 'Не удалось обновить статус загрузки. Задача остаётся на сервере; обновите страницу для повторной проверки.';
+    }
+  }
+  function selectFiles(files) {
+    selectedFiles = Array.from(files);
+    document.getElementById('import-selection').textContent = selectedFiles.length ? selectedFiles.map(function(file) {return file.name;}).join(', ') : 'До пяти файлов за одну отправку.';
+  }
+  importFiles.addEventListener('change',function(){selectFiles(importFiles.files);});
+  importDrop.addEventListener('dragover',function(event){event.preventDefault();importDrop.classList.add('drag');});
+  importDrop.addEventListener('dragleave',function(){importDrop.classList.remove('drag');});
+  importDrop.addEventListener('drop',function(event){event.preventDefault();importDrop.classList.remove('drag');selectFiles(event.dataTransfer.files);});
+  document.getElementById('import-file-form').addEventListener('submit',async function(event) {
+    event.preventDefault(); if(importBusy)return;
+    if(!importConsent.checked){importMessage.textContent='Подтвердите неконфиденциальность и добавление в общую базу.';return;}
+    if(!selectedFiles.length || selectedFiles.length>5){importMessage.textContent='Выберите от одного до пяти файлов.';return;}
+    if(selectedFiles.some(function(file){return !/\.(pdf|docx|xlsx)$/i.test(file.name)||file.size>25*1024*1024||!file.size;})){importMessage.textContent='Нужны непустые PDF, DOCX или XLSX размером до 25 МБ.';return;}
+    importing(true);importMessage.textContent='Передача файлов на сервер…';
+    try {
+      for(var file of selectedFiles){
+        var formData=new FormData();formData.append('file',file);formData.append('public_data','true');formData.append('replace_existing',String(importReplace.checked));
+        var job=await importRequest('/api/imports/file',{method:'POST',body:formData});showJob(job);rememberJob(job.id);pollImport(job.id);
+      }
+      importMessage.textContent='Файлы приняты. Обработка выполняется в фоне; можно продолжать задавать вопросы.';
+      selectFiles([]);importFiles.value='';
+    } catch(error){importMessage.textContent=error.name==='AbortError'?'Превышено время передачи. Повторите загрузку меньшего файла.':error.message;}
+    finally{importing(false);}
+  });
+  document.getElementById('import-url-form').addEventListener('submit',async function(event){
+    event.preventDefault();if(importBusy)return;
+    if(!importConsent.checked){importMessage.textContent='Подтвердите неконфиденциальность и добавление в общую базу.';return;}
+    importing(true);importMessage.textContent='Создание задачи скачивания…';
+    try {
+      var job=await importRequest('/api/imports/url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:document.getElementById('import-url').value.trim(),public_data:true,replace_existing:importReplace.checked})});
+      showJob(job);rememberJob(job.id);pollImport(job.id);importMessage.textContent='Ссылка принята. Статус скачивания и обработки показан ниже.';
+    }catch(error){importMessage.textContent=error.name==='AbortError'?'Сервер не ответил вовремя. Повторите позже.':error.message;}
+    finally{importing(false);}
+  });
+  savedJobs().forEach(pollImport);
+
 })();
 </script>
 </body>

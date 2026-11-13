@@ -7,12 +7,17 @@ PostgreSQL connection. It does not emit document text or connection parameters.
 from __future__ import annotations
 
 import math
+import json
 from importlib.resources import files
 from typing import Any
 
 import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
+
+
+class IndexConflictError(RuntimeError):
+    """The active corpus changed while an incremental import was prepared."""
 
 
 class IndexUnavailableError(RuntimeError):
@@ -50,6 +55,7 @@ class Store:
         *,
         model_revision: str,
         corpus_key: str,
+        expected_active: str | None = None,
     ) -> str:
         """Publish a complete snapshot, preserving all earlier snapshot sources.
 
@@ -96,6 +102,10 @@ class Store:
         with self._connect() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(783419421)")
             conn.execute("SET LOCAL statement_timeout = '120s'")
+            if expected_active is not None:
+                active = conn.execute("SELECT corpus_key FROM active_corpus WHERE singleton=true").fetchone()
+                if active is None or active["corpus_key"] != expected_active:
+                    raise IndexConflictError("Активный индекс изменился во время подготовки импорта")
             existing = conn.execute(
                 "SELECT model_revision FROM corpus_revisions WHERE corpus_key = %s",
                 (corpus_key,),
@@ -303,3 +313,19 @@ class Store:
         if row is None:
             raise ValueError("Версия источника отсутствует")
         return row
+
+
+    def snapshot_chunks(self, corpus_key: str) -> list[dict]:
+        """Reuse verified existing vectors; new imports do not re-embed the base."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT c.chunk_id,d.document_id,c.version_id,c.block_index,c.text,"
+                "c.start_offset AS start,c.end_offset AS end,c.locator,c.heading_path,"
+                "coalesce(c.embedding_text,c.text) AS embedding_text,c.embedding::text AS vector_text "
+                "FROM chunks c JOIN corpus_chunks m USING(chunk_id) "
+                "JOIN document_versions d USING(version_id) WHERE m.corpus_key=%s ORDER BY c.chunk_id",
+                (corpus_key,),
+            ).fetchall()
+        for row in rows:
+            row["embedding"] = json.loads(row.pop("vector_text"))
+        return rows

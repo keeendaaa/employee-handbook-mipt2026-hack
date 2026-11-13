@@ -25,3 +25,5 @@ __pycache__/
 
 # Rebuildable local code-navigation graph and agent memory.
 /graphify-out/
+
+/data/imports/

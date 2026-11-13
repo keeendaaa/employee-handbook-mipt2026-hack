@@ -31,7 +31,7 @@ class Query(BaseModel):
         return value.strip()
 
 
-def create_app(*, service=None, generator=None) -> FastAPI:
+def create_app(*, service=None, generator=None, import_repository=None, import_directory=None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app):
         if service is not None:
@@ -48,6 +48,11 @@ def create_app(*, service=None, generator=None) -> FastAPI:
             key = Path(key_path).read_text().strip() if key_path else os.environ.get("LLM_API_KEY", "")
             app.state.generator = Generator(key, model=os.environ.get("LLM_MODEL", "Qwen/Qwen3.8-27B"),
                 base_url=os.environ.get("LLM_BASE_URL", "https://api.commandcode.ai/provider/v1")) if key else None
+        from .imports.repository import ImportRepository
+        app.state.import_repository = import_repository if import_repository is not None else (ImportRepository(app.state.service.store) if service is None else None)
+        app.state.import_directory = Path(import_directory or os.environ.get("IMPORT_DIR", "data/imports"))
+        if app.state.import_repository is not None:
+            app.state.import_directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         yield
         if service is None and app.state.generator:
             app.state.generator.close()
@@ -145,6 +150,8 @@ def create_app(*, service=None, generator=None) -> FastAPI:
         except (ValueError, KeyError):
             raise HTTPException(404, "Фрагмент не найден или ссылка некорректна.") from None
 
+    from .imports.routes import install_routes
+    install_routes(app)
     return app
 
 

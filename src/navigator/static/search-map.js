@@ -95,7 +95,7 @@ window.SmenaSearchMap={
    if(event.stage==='context'){stages(1);setStatus('Отбираем фрагменты и соседний контекст…');}
    if(event.stage==='generation'){stages(2);setStatus(event.attempt>1?'Повторяем запрос к модели после проверки предыдущего ответа…':'Фрагменты найдены. Модель формирует ответ по выбранным источникам…');}
   }else if(event.type==='retrieval'){trace=event.trace;state='retrieved';stages(2);setStatus(trace.retrieved_count?'Найденные области раскрыты в фрагменты. Подготавливаем ответ…':'Выполненный поиск не нашёл кандидатов.');build(true);if(trace.map_status!=='ready')$('sm-detail').replaceChildren(element('p','Группировка тем обновляется или недоступна. На карте показаны фактически найденные фрагменты.'));
-  }else if(event.type==='map_update'&&trace&&event.trace.corpus_revision===trace.corpus_revision){trace=event.trace;build(true);
+  }else if(event.type==='map_update'&&trace&&event.trace.corpus_revision===trace.corpus_revision){trace=event.trace;build(true);if(!selected)$('sm-detail').replaceChildren(element('p','Темы готовы. Выберите фрагмент, чтобы открыть источник со строками.'));
   }else if(event.type==='answer'){answer=event.answer;state='answered';stages(3);setStatus(answer.result_type==='not_found'?'В найденных фрагментах ответ не подтверждён.':'Ответ получен: зелёным выделены процитированные источники.');build(true);
   }else if(event.type==='search_complete'){state='searched';stages(1);setStatus('Поиск завершён. Показаны кандидаты; ответ не генерировался и не проверялся.');build();}
  },

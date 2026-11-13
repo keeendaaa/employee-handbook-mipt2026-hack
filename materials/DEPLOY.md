@@ -119,6 +119,7 @@ docker compose up -d api import-worker
 - `GET /health/ready` — доступен активный индекс; `generation_configured` сообщает только о настройке генерации, а не о текущем балансе или доступности внешнего API.
 - `POST /api/search` — `{"question":"…","limit":10}`, поиск без вызова LLM.
 - `POST /api/ask` — такой же запрос, ответ `answered/partial/not_found/needs_clarification/conflict`, утверждения и шаги с `citation_ids`, канонические `citations`, фактическая модель и расход токенов.
+- `POST /api/mail/analyze` принимает `subject` и `body`. Сначала модель определяет, нужна ли помощь по регламенту. Результат `no_action` завершает обработку без поиска. Для остальных писем используется тот же поиск и формат ответа, что в `/api/ask`. Таймаут прокси для этого маршрута должен быть не меньше 300 секунд.
 - `POST /api/imports/file` — multipart: `file`, `public_data=true`, необязательный `replace_existing=true`; HTTP 202 и идентификатор задачи.
 - `POST /api/imports/url` — JSON: `{"url":"https://example.org/file.pdf","public_data":true,"replace_existing":false}`; HTTP 202.
 - `GET /api/imports/{job_id}` — статус, предупреждения и идентификатор опубликованного индекса, без исходной ссылки и её параметров.

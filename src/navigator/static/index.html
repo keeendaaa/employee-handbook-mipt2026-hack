@@ -889,7 +889,7 @@
       if (sum) answerBody.appendChild(sum);
     } else if (type === 'not_found') {
       var nf = h('div', 'block');
-      nf.appendChild(h('p', null, 'В документах не найдено сведений, отвечающих на вопрос. Попробуйте переформулировать вопрос или выполнить поиск по ключевым словам.'));
+      nf.appendChild(h('p', null, 'В найденных фрагментах не удалось подтвердить ответ на вопрос. Попробуйте переформулировать вопрос или выполнить поиск по ключевым словам.'));
       answerBody.appendChild(nf);
     } else {
       var empty = h('div', 'block');

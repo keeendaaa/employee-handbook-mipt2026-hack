@@ -60,12 +60,13 @@ td small{font-size:.78rem}
     <small id="connection"></small>
     <form id="settings">
       <label><input type="checkbox" id="enabled" checked> Обрабатывать письма</label>
+      <label><input type="checkbox" id="reply-without-issue"> Отвечать на письма, где помощь не нужна</label>
       <label for="senders">Разрешённые отправители</label>
       <textarea id="senders" placeholder="name@example.org" aria-describedby="senders-hint"></textarea>
       <small id="senders-hint">По одному адресу в строке. Пустой список разрешает письма с любых адресов.</small>
       <label for="api-url">Адрес API разбора</label>
-      <input type="url" id="api-url" placeholder="https://smena-mipt.ru/api/ask" aria-describedby="api-hint">
-      <small id="api-hint">Укажи HTTPS-адрес /api/ask. Бот передаёт текст письма как вопрос. Пустое поле включает тестовый ответ.</small>
+      <input type="url" id="api-url" placeholder="https://smena-mipt.ru/api/mail/analyze" aria-describedby="api-hint">
+      <small id="api-hint">Укажи HTTPS-адрес /api/mail/analyze. Бот анализирует тему и текст письма. Пустое поле включает тестовый ответ.</small>
       <button class="primary" id="save" disabled>Сохранить настройки</button>
       <p id="feedback" role="status"></p>
     </form>
@@ -105,6 +106,7 @@ async function refresh() {
     $('connection').textContent = detail || (updated ? 'Последняя проверка ' + date.format(updated * 1000) : '');
     if (!dirty && !saving) {
       $('enabled').checked = data.settings.enabled;
+      $('reply-without-issue').checked = data.settings.reply_without_issue;
       $('senders').value = data.settings.senders.join('\n');
       $('api-url').value = data.settings.api_url;
     }
@@ -140,9 +142,10 @@ $('settings').addEventListener('submit', async event => {
   if (!loaded || saving) return;
   saving = true;
   $('save').disabled = true;
-  const fields = [$('enabled'), $('senders'), $('api-url')];
+  const fields = [$('enabled'), $('reply-without-issue'), $('senders'), $('api-url')];
   const body = JSON.stringify({
     enabled: $('enabled').checked,
+    reply_without_issue: $('reply-without-issue').checked,
     senders: $('senders').value.split('\n').map(line => line.trim()).filter(Boolean),
     api_url: $('api-url').value.trim()
   });

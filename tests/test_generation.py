@@ -122,3 +122,38 @@ def test_persistent_provider_outage_stays_a_technical_error(monkeypatch):
     with pytest.raises(GenerationError, match='HTTP 503'):
         Generator('synthetic-key', transport=httpx.MockTransport(handler)).answer('Вопрос', retrieved)
     assert len(attempts) == 2
+
+
+@pytest.mark.parametrize("question", [None, "Как оформить гостевой пропуск для представителей СМИ?"])
+def test_mail_endpoint_classifies_before_retrieval(question):
+    _, retrieved, answer = fixture()
+    calls = []
+
+    def handler(request):
+        payload = json.loads(request.content)
+        messages = payload["messages"]
+        if len(calls) == 0:
+            assert messages[0]["role"] == "system"
+            assert json.loads(messages[1]["content"])["body"] == "Нужно оформить пропуск для прессы."
+            content = json.dumps({"question": question})
+        else:
+            assert json.loads(messages[1]["content"])["question"] == question
+            content = json.dumps(answer).replace(retrieved["results"][0]["citation"]["source_id"], "S1")
+        calls.append(payload)
+        return httpx.Response(200, json={"choices": [{"message": {"content": content}}]})
+
+    def search(text, **kwargs):
+        assert text == question and question is not None
+        return retrieved
+
+    service = SimpleNamespace(search=search)
+    generator = Generator("synthetic-key", transport=httpx.MockTransport(handler))
+    with TestClient(create_app(service=service, generator=generator)) as client:
+        response = client.post("/api/mail/analyze", json={"body": "Нужно оформить пропуск для прессы."})
+    assert response.status_code == 200
+    if question is None:
+        assert response.json() == {"result_type": "no_action"}
+        assert len(calls) == 1
+    else:
+        assert response.json()["citations"] == [retrieved["results"][0]["citation"]]
+        assert len(calls) == 2

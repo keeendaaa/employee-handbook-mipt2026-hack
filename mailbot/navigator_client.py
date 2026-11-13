@@ -5,7 +5,10 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-DEFAULT_URL = "https://smena-mipt.ru/api/ask"
+ASK_PATH = "/api/ask"
+MAIL_ANALYSIS_PATH = "/api/mail/analyze"
+DEFAULT_URL = "https://smena-mipt.ru" + MAIL_ANALYSIS_PATH
+NO_ACTION_REPLY = "Письмо получено. Ситуаций, требующих помощи по регламентам, не обнаружено."
 QUESTION_LIMIT = 20_000
 RESPONSE_LIMIT = 2_000_000
 ANSWER_TYPES = {
@@ -28,18 +31,24 @@ class NavigatorError(RuntimeError):
         self.retry_after = retry_after
 
 
-def ask(url, body):
-    question = body.strip()
-    if not question or len(question) > QUESTION_LIMIT:
-        return "Напиши вопрос в тексте письма. Длина вопроса — до 20 000 символов."
+def ask(url, body, *, subject="", reply_without_issue=False):
+    text = body.strip()
+    subject = subject.strip()
+    if not (subject or text):
+        return NO_ACTION_REPLY if reply_without_issue else None
+    if len(text) > QUESTION_LIMIT:
+        return "Сократи текст письма до 20 000 символов, чтобы бот смог его разобрать."
 
+    origin = urlsplit(url)
+    prefix = origin.path.removesuffix(ASK_PATH).removesuffix(MAIL_ANALYSIS_PATH)
+    endpoint = origin._replace(path=prefix + MAIL_ANALYSIS_PATH).geturl()
     request = Request(
-        url,
-        data=json.dumps({"question": question}, ensure_ascii=False).encode(),
+        endpoint,
+        data=json.dumps({"subject": subject, "body": text}, ensure_ascii=False).encode(),
         headers={"Content-Type": "application/json", "Accept": "application/json"},
     )
     try:
-        with build_opener(NoRedirect()).open(request, timeout=275) as response:
+        with build_opener(NoRedirect()).open(request, timeout=310) as response:
             raw = response.read(RESPONSE_LIMIT + 1)
     except HTTPError as error:
         delay = error.headers.get("Retry-After", "")
@@ -55,7 +64,10 @@ def ask(url, body):
     try:
         if len(raw) > RESPONSE_LIMIT:
             raise ValueError("Слишком большой ответ")
-        return format_answer(json.loads(raw), url)
+        answer = json.loads(raw)
+        if answer == {"result_type": "no_action"}:
+            return NO_ACTION_REPLY if reply_without_issue else None
+        return format_answer(answer, endpoint)
     except (KeyError, TypeError, ValueError) as error:
         raise NavigatorError("Некорректный ответ API") from error
 
@@ -87,6 +99,7 @@ def format_answer(answer, url):
         ("Противоречия", answer["conflicts"]),
     ]
     origin = urlsplit(url)
+    prefix = origin.path.removesuffix(MAIL_ANALYSIS_PATH).removesuffix(ASK_PATH)
     citations = []
     for source_id, number in numbers.items():
         source = sources[source_id]
@@ -99,7 +112,6 @@ def format_answer(answer, url):
         location.append(f"строки извлечённого текста {source['line_start']}–{source['line_end']}")
         if source["extraction_method"] == "ocr":
             location.append("распознано со скана")
-        prefix = origin.path.removesuffix("/api/ask")
         source_path = f"{prefix}/api/sources/{quote(source_id, safe='')}"
         link = urlunsplit((origin.scheme, origin.netloc, source_path, "", ""))
         citations.append(f"[{number}] {source['document_name']} ({', '.join(location)})\n"

@@ -20,7 +20,7 @@ from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import Request, build_opener
 
-from .navigator_client import DEFAULT_URL, NavigatorError, NoRedirect, ask
+from .navigator_client import ASK_PATH, DEFAULT_URL, MAIL_ANALYSIS_PATH, NavigatorError, NoRedirect, ask
 
 MAILBOX = os.environ.get("MAILBOT_ADDRESS", "").strip().lower()
 DATABASE = Path(os.environ.get("MAILBOT_DB", "/data/mailbot.sqlite"))
@@ -30,7 +30,12 @@ PANEL = Path(__file__).with_name("panel.html")
 POLL = 15
 ADDRESS = re.compile(r"[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+")
 MESSAGE_ID = re.compile(r"<[^<>\s]+@[^<>\s]+>")
-DEFAULTS = {"enabled": True, "senders": [], "api_url": os.environ.get("MAILBOT_API_URL", DEFAULT_URL)}
+DEFAULTS = {
+    "enabled": True,
+    "senders": [],
+    "api_url": os.environ.get("MAILBOT_API_URL", DEFAULT_URL),
+    "reply_without_issue": False,
+}
 STUB_REPLY = "Письмо получено. Разбор пока работает в тестовом режиме."
 MAX_MESSAGE = 2_000_000
 
@@ -76,7 +81,7 @@ def report(state, detail=""):
 
 
 def valid_settings(raw):
-    if not isinstance(raw, dict) or set(raw) != set(DEFAULTS):
+    if not isinstance(raw, dict) or set(raw) - DEFAULTS.keys() or not {"enabled", "senders", "api_url"} <= raw.keys():
         raise ValueError("Проверь поля настроек.")
     if type(raw["enabled"]) is not bool or not isinstance(raw["senders"], list):
         raise ValueError("Проверь состояние бота и список отправителей.")
@@ -85,19 +90,23 @@ def valid_settings(raw):
         for address in raw["senders"]
     ):
         raise ValueError("Укажи до 100 полных почтовых адресов, по одному в строке.")
+    reply_without_issue = raw.get("reply_without_issue", False)
+    if type(reply_without_issue) is not bool:
+        raise ValueError("Проверь настройку ответа на письма без проблем.")
     url = raw["api_url"]
     if not isinstance(url, str) or len(url) > 2048 or any(c.isspace() for c in url):
         raise ValueError("Проверь адрес API.")
     if url:
         parsed = urlsplit(url)
         if (parsed.scheme != "https" or not parsed.hostname or parsed.username is not None
-                or parsed.fragment or parsed.query or not parsed.path.endswith("/api/ask")):
-            raise ValueError("Укажи HTTPS-адрес /api/ask без параметров и учётных данных.")
+                or parsed.fragment or parsed.query or not parsed.path.endswith((ASK_PATH, MAIL_ANALYSIS_PATH))):
+            raise ValueError("Укажи HTTPS-адрес /api/mail/analyze без параметров и учётных данных.")
         parsed.port  # Reject invalid port numbers before saving the settings.
     return {
         "enabled": raw["enabled"],
         "senders": sorted({address.casefold() for address in raw["senders"]}),
         "api_url": url,
+        "reply_without_issue": reply_without_issue,
     }
 
 
@@ -282,7 +291,14 @@ def process(inbox, generation, uid, settings, password, tls):
     stage = "API разбора"
     try:
         api_url = settings["api_url"]
-        reply = ask(api_url, extract_question(message)) if api_url else STUB_REPLY
+        reply = STUB_REPLY
+        if api_url:
+            reply = ask(api_url, extract_question(message), subject=subject,
+                        reply_without_issue=settings.get("reply_without_issue", False))
+        if reply is None:
+            with database() as conn:
+                update(conn, generation, uid, "skipped", "Помощь по регламентам не требуется", attempts)
+            return
         stage = "Resend" if RESEND_KEY.exists() else "SMTP"
         deliver(password, tls, message, sender, subject, reply, generation, uid, attempts)
     except NavigatorError as error:
@@ -361,7 +377,7 @@ def worker():
         """)
     while True:
         with database() as conn:
-            settings = get(conn, "settings", DEFAULTS)
+            settings = {**DEFAULTS, **get(conn, "settings", {})}
         if settings["enabled"]:
             try:
                 password = PASSWORD.read_text().rstrip("\r\n")
@@ -405,7 +421,7 @@ class Admin(BaseHTTPRequestHandler):
         if self.path != "/api/status":
             return self.respond(404, {"error": "Страница не найдена."})
         with database() as conn:
-            settings = get(conn, "settings", DEFAULTS)
+            settings = {**DEFAULTS, **get(conn, "settings", {})}
             status = get(conn, "worker", {"state": "starting"})
             events = conn.execute("""
                 SELECT sender, subject, status, detail, updated

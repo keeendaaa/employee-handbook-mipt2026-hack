@@ -44,10 +44,10 @@ class MailbotIntegrationTest(unittest.TestCase):
         app.init()
         self.settings = {"enabled": True, "senders": [], "api_url": URL}
 
-    def process(self, body, subtype="plain"):
+    def process(self, body, subtype="plain", subject="Тема письма"):
         message = EmailMessage()
         message["From"] = SENDER
-        message["Subject"] = "Тема письма"
+        message["Subject"] = subject
         message["Message-ID"] = "<original@example.org>"
         message.set_content(body, subtype=subtype)
         with patch.object(app, "read_message", return_value=(message, "")):
@@ -62,7 +62,8 @@ class MailbotIntegrationTest(unittest.TestCase):
         self.process(QUESTION)
 
         request = open_request.call_args.args[0]
-        self.assertEqual(json.loads(request.data), {"question": QUESTION})
+        self.assertEqual(json.loads(request.data), {"subject": "Тема письма", "body": QUESTION})
+        self.assertTrue(request.full_url.endswith("/api/mail/analyze"))
         open_request.assert_called_once()
         send = smtp.SMTP.return_value.__enter__.return_value.send_message
         send.assert_called_once()
@@ -77,6 +78,26 @@ class MailbotIntegrationTest(unittest.TestCase):
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
+    def test_no_action_respects_panel_setting(self, opener, deliver):
+        for enabled in (False, True):
+            with self.subTest(enabled=enabled):
+                with app.database() as conn:
+                    conn.execute("DELETE FROM messages")
+                self.settings["reply_without_issue"] = enabled
+                opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(
+                    b'{"result_type":"no_action"}'
+                )
+                self.process("Спасибо, пропуск уже оформлен.")
+                if enabled:
+                    deliver.assert_called_once()
+                else:
+                    deliver.assert_not_called()
+                    with app.database() as conn:
+                        row = conn.execute("SELECT status FROM messages").fetchone()
+                    self.assertEqual(row["status"], "skipped")
+
+    @patch.object(app, "deliver")
+    @patch.object(navigator_client, "build_opener")
     def test_html_only_email_passes_readable_question(self, opener, deliver):
         open_request = opener.return_value.open
         open_request.return_value.__enter__.return_value = io.BytesIO(json.dumps(ANSWER).encode())
@@ -88,7 +109,8 @@ class MailbotIntegrationTest(unittest.TestCase):
         )
         request = open_request.call_args.args[0]
         self.assertEqual(json.loads(request.data), {
-            "question": "Как оформить пропуск для прессы?\nВизит завтра в 15:00.",
+            "subject": "Тема письма",
+            "body": "Как оформить пропуск для прессы?\nВизит завтра в 15:00.",
         })
         self.assertIn("Источники", deliver.call_args.args[5])
 
@@ -106,9 +128,9 @@ class MailbotIntegrationTest(unittest.TestCase):
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
     def test_empty_question_never_calls_backend(self, opener, deliver):
-        self.process("  ")
+        self.process("  ", subject="")
         opener.assert_not_called()
-        self.assertIn("Напиши вопрос в тексте письма.", deliver.call_args.args[5])
+        deliver.assert_not_called()
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")

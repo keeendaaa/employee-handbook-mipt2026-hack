@@ -7,7 +7,7 @@ x-service: &service
   security_opt: [no-new-privileges:true]
   environment:
     MAILBOT_ADDRESS: ${MAILBOT_ADDRESS:?Set MAILBOT_ADDRESS}
-    MAILBOT_API_URL: ${MAILBOT_API_URL-https://smena-mipt.ru/api/ask}
+    MAILBOT_API_URL: ${MAILBOT_API_URL-https://smena-mipt.ru/api/mail/analyze}
   volumes:
     - ./data:/data
   logging:

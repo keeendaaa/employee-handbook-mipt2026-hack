@@ -326,12 +326,12 @@
     <div class="sm-heading"><h2 id="sm-title">Поиск на карте знаний</h2><a id="sm-answer-link" href="#answer" class="btn btn-secondary" hidden>Перейти к ответу</a></div>
     <p id="sm-status" class="sm-status" role="status" aria-live="polite">Подготавливаем обзор тем…</p>
     <ol id="sm-steps" class="sm-steps" aria-label="Этапы запроса"><li>Вопрос</li><li>Поиск фрагментов</li><li>Формирование ответа</li><li>Источники ответа</li></ol>
-    <div class="sm-frame"><canvas id="sm-canvas" role="img" aria-label="Смысловые области и источники текущего запроса. Выбор с клавиатуры доступен в списке под картой."></canvas><div id="sm-tooltip" class="sm-tooltip" hidden></div></div>
-    <div class="sm-tools"><button class="btn btn-secondary" type="button" data-sm-mode="topics" aria-pressed="false">Темы</button><button class="btn btn-secondary" type="button" data-sm-mode="fragments" aria-pressed="true">Фрагменты</button><button class="btn btn-secondary" type="button" data-sm-mode="context" aria-pressed="false">Весь контекст</button><button class="btn btn-secondary" id="sm-fit" type="button">Уместить</button><select id="sm-picker" aria-label="Выбрать тему или источник текущего запроса"><option>Подготавливаем карту…</option></select></div>
+    <div class="sm-frame"><div id="sm-canvas" class="sm-flow" role="group" aria-label="Путь от вопроса через найденные области к источникам"></div></div>
+    <div class="sm-tools"><button class="btn btn-secondary" type="button" data-sm-mode="topics" aria-pressed="false">Области поиска</button><button class="btn btn-secondary" type="button" data-sm-mode="fragments" aria-pressed="true">Путь к ответу</button><button class="btn btn-secondary" type="button" data-sm-mode="context" aria-pressed="false">Все источники</button><button class="btn btn-secondary" id="sm-fit" type="button">Сбросить вид</button><select id="sm-picker" aria-label="Выбрать тему или источник текущего запроса"><option>Подготавливаем карту…</option></select></div>
     <p id="sm-counts" class="sm-counts"></p>
     <div class="sm-counts"><span class="sm-key"><i class="sm-dot found"></i>Кандидат поиска</span><span class="sm-key"><i class="sm-dot context"></i>Контекст модели</span><span class="sm-key"><i class="sm-dot used"></i>Использован в ответе</span></div>
-    <div id="sm-detail" class="sm-detail" aria-live="polite"><p>Приблизьте тему или выберите точку. Найденные фрагменты можно открыть прямо отсюда.</p></div>
-    <p class="sm-note">Карта показывает результаты поиска по общему индексу и источники ответа; геометрия условная. Близость фрагментов сама по себе не подтверждает ответ. Этот запрос не публикуется в общей карте автоматически.</p>
+    <div id="sm-detail" class="sm-detail" aria-live="polite"><p>После поиска выберите источник или откройте строки документа.</p></div>
+    <p class="sm-note">Линии связывают вопрос с областями найденных фрагментов. Один источник показан один раз; он может относиться к нескольким областям. Группировка автоматическая и не доказывает наличие ответа. Запрос не публикуется на общей карте.</p>
   </section>
 
   <section id="answer" class="result" aria-labelledby="answer-title" hidden>
@@ -357,7 +357,7 @@
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
-<script src="/assets/vendor/d3.v7.min.js"></script>
+<script src="/assets/map-labels.js"></script>
 <script src="/assets/search-map.js"></script>
 <script>
 (function () {

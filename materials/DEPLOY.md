@@ -151,3 +151,5 @@ docker compose up -d api import-worker
 uv run python misc/scripts/smoke_http.py http://127.0.0.1:8000 --question 'Ваш вопрос'
 # --ask дополнительно вызывает платную генерацию и проверяет все возвращённые ссылки.
 ```
+
+Публичный Caddy настроен на HTTP/1.1 и HTTP/2 через глобальный параметр [`servers.protocols`](https://caddyserver.com/docs/caddyfile/options#protocols). В проверенном сетевом окружении Chrome зависал при HTTP/3/QUIC; отключение QUIC у клиента устраняло зависание. Сервер не объявляет HTTP/3, HTTPS сохраняется. Изменения Caddy проверяйте командой `caddy validate --config /etc/caddy/Caddyfile`, затем применяйте через `systemctl reload caddy`.

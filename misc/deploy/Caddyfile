@@ -1,7 +1,13 @@
+{
+	servers {
+		protocols h1 h2
+	}
+}
+
 (navigator) {
 	reverse_proxy 127.0.0.1:8000 {
 		transport http {
-			response_header_timeout 270s
+			response_header_timeout 305s
 		}
 	}
 }

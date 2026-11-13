@@ -1,9 +1,11 @@
-"""Convert a Navigator answer into a reply with numbered source references."""
+"""Call the Navigator API for incoming mail."""
 
 import json
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlsplit, urlunsplit
+from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+
+from .reply_format import format_answer
 
 ASK_PATH = "/api/ask"
 MAIL_ANALYSIS_PATH = "/api/mail/analyze"
@@ -11,18 +13,6 @@ DEFAULT_URL = "https://smena-mipt.ru" + MAIL_ANALYSIS_PATH
 NO_ACTION_REPLY = "Письмо получено. Ситуаций, требующих помощи по регламентам, не обнаружено."
 QUESTION_LIMIT = 20_000
 RESPONSE_LIMIT = 2_000_000
-ANSWER_TYPES = {
-    "answered": "",
-    "partial": "В найденных фрагментах есть ответ на часть вопроса.",
-    "needs_clarification": "Для ответа нужно уточнение.",
-    "conflict": "В источниках найдены противоречащие друг другу положения.",
-}
-
-GENERIC_MISSING_INFORMATION = {
-    "В индексе не найдены фрагменты для ответа.",
-    "В найденных фрагментах ответ на вопрос не найден.",
-    "В найденных фрагментах не удалось подтвердить ответ на вопрос.",
-}
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -74,73 +64,6 @@ def ask(url, body, *, subject="", reply_without_issue=False):
         answer = json.loads(raw)
         if answer == {"result_type": "no_action"}:
             return NO_ACTION_REPLY if reply_without_issue else None
-        return format_answer(answer, endpoint)
+        return format_answer(answer, endpoint, subject)
     except (KeyError, TypeError, ValueError) as error:
         raise NavigatorError("Некорректный ответ API") from error
-
-
-def format_answer(answer, url):
-    if answer["result_type"] == "not_found":
-        missing = [item.strip() for item in answer["missing_information"]
-                   if item.strip() and item.strip() not in GENERIC_MISSING_INFORMATION]
-        sections = ["По найденным регламентам не удалось подтвердить порядок действий в этой ситуации."]
-        if missing:
-            sections.append("Каких сведений не хватает\n" + "\n".join(missing))
-        sections.append(
-            "Если вопрос срочный, уточни порядок и сроки у сотрудника, который ведёт этот вопрос. "
-            "Если у тебя есть ссылка на применимый регламент, пришли её вместе с вопросом, "
-            "чтобы было понятно, какой документ искать в базе."
-        )
-        return "\n\n".join(sections)
-
-    status = ANSWER_TYPES[answer["result_type"]]
-    sources = {source["source_id"]: source for source in answer["citations"]}
-    numbers = {}
-
-    def format_claim(claim):
-        refs = claim["citation_ids"]
-        if not refs:
-            raise ValueError("У утверждения нет источников")
-        links = []
-        for source_id in refs:
-            sources[source_id]
-            number = numbers.setdefault(source_id, len(numbers) + 1)
-            links.append(f"[{number}]")
-        return f"{claim['text']} {' '.join(links)}"
-
-    sections = [
-        (None, [status] if status else []),
-        ("Краткий ответ", [format_claim(claim) for claim in answer["summary"]]),
-        ("Порядок действий", [
-            f"{index}. {format_claim(step)}" for index, step in enumerate(answer["steps"], 1)
-        ]),
-        ("Каких сведений не хватает", answer["missing_information"]),
-        ("Что уточнить", answer["clarifications"]),
-        ("Противоречия", answer["conflicts"]),
-    ]
-    origin = urlsplit(url)
-    prefix = origin.path.removesuffix(MAIL_ANALYSIS_PATH).removesuffix(ASK_PATH)
-    source_host = origin.netloc
-    if origin.scheme == "http" and origin.hostname == "host.docker.internal":
-        source_host = "127.0.0.1" + (f":{origin.port}" if origin.port else "")
-    citations = []
-    for source_id, number in numbers.items():
-        source = sources[source_id]
-        locator = source["locator"]
-        location = [f"п. {label}" for label in source["section_labels"]]
-        for key, label in (("page", "стр."), ("block", "блок"), ("table", "таблица"),
-                           ("sheet", "лист"), ("row", "строка"), ("range", "ячейки")):
-            if key in locator:
-                location.append(f"{label} {locator[key]}")
-        location.append(f"строки извлечённого текста {source['line_start']}–{source['line_end']}")
-        if source["extraction_method"] == "ocr":
-            location.append("распознано со скана")
-        source_path = f"{prefix}/api/sources/{quote(source_id, safe='')}"
-        link = urlunsplit((origin.scheme, source_host, source_path, "", ""))
-        citations.append(f"[{number}] {source['document_name']} ({', '.join(location)})\n"
-                         f"«{source['quote']}»\n{link}")
-    sections.append(("Источники", citations))
-    rendered = ["\n".join(([title] if title else []) + lines) for title, lines in sections if lines]
-    if not rendered:
-        raise ValueError("Пустой ответ")
-    return "\n\n".join(rendered)

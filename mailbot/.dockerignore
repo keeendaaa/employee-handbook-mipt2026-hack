@@ -2,4 +2,5 @@
 !Dockerfile
 !app.py
 !navigator_client.py
+!reply_format.py
 !panel.html

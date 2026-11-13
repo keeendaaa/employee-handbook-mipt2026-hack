@@ -70,10 +70,16 @@ class MailbotIntegrationTest(unittest.TestCase):
         reply = send.call_args.args[0]
         self.assertEqual(reply["To"], SENDER)
         self.assertEqual(reply["In-Reply-To"], "<original@example.org>")
-        text = reply.get_content()
-        self.assertIn("1. Заполните форму заявки. [1]", text)
+        self.assertEqual(reply.get_content_type(), "multipart/alternative")
+        text = reply.get_body(("plain",)).get_content()
+        html = reply.get_body(("html",)).get_content()
+        self.assertTrue(text.startswith("Навигатор разобрал письмо «Тема письма»."))
+        self.assertIn("1. Заполните форму заявки.", text)
+        self.assertNotIn("[1]", text + html)
+        self.assertLess(html.index("Что удалось подтвердить"), html.index("Порядок действий"))
+        self.assertIn('href="https://navigator.example.org/api/sources/version%3A0%3A0%3A20"', html)
         self.assertIn("Срок рассмотрения не найден.", text)
-        self.assertIn("Тестовый регламент (п. 3.1, стр. 2", text)
+        self.assertIn("Тестовый регламент, стр. 2", text)
         self.assertIn("https://navigator.example.org/api/sources/version%3A0%3A0%3A20", text)
 
     @patch.object(app, "deliver")
@@ -91,7 +97,7 @@ class MailbotIntegrationTest(unittest.TestCase):
             json.dumps(answer).encode()
         )
         self.process("Нужно оформить пропуск для прессы.")
-        reply = deliver.call_args.args[5]
+        reply = deliver.call_args.args[5].text
         self.assertNotIn("Каких сведений не хватает", reply)
         self.assertEqual(reply.count("не удалось подтвердить"), 1)
         self.assertIn("уточни порядок и сроки", reply)
@@ -132,7 +138,7 @@ class MailbotIntegrationTest(unittest.TestCase):
             "subject": "Тема письма",
             "body": "Как оформить пропуск для прессы?\nВизит завтра в 15:00.",
         })
-        self.assertIn("Источники", deliver.call_args.args[5])
+        self.assertIn("Источники", deliver.call_args.args[5].text)
 
     def test_plain_body_is_preferred_and_attachments_are_ignored(self):
         message = EmailMessage()

@@ -21,6 +21,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, build_opener
 
 from .navigator_client import ASK_PATH, DEFAULT_URL, MAIL_ANALYSIS_PATH, NavigatorError, NoRedirect, ask
+from .reply_format import MailReply
 
 MAILBOX = os.environ.get("MAILBOT_ADDRESS", "").strip().lower()
 DATABASE = Path(os.environ.get("MAILBOT_DB", "/data/mailbot.sqlite"))
@@ -159,7 +160,7 @@ def update(conn, generation, uid, status, detail="", attempts=0, retry_at=0):
     """, (status, detail, attempts, retry_at, int(time.time()), generation, uid))
 
 
-def send_with_resend(reply, body, generation, uid, attempts):
+def send_with_resend(reply, generation, uid, attempts):
     key = RESEND_KEY.read_text().strip()
     if not key:
         raise ValueError("Пустой ключ Resend")
@@ -167,13 +168,16 @@ def send_with_resend(reply, body, generation, uid, attempts):
         "from": MAILBOX,
         "to": [str(reply["To"])],
         "subject": str(reply["Subject"]),
-        "text": body,
+        "text": reply.get_body(("plain",)).get_content(),
         "headers": {
             name: str(reply[name])
             for name in ("Auto-Submitted", "In-Reply-To", "References")
             if reply[name]
         },
     }
+    html_part = reply.get_body(("html",))
+    if html_part:
+        payload["html"] = html_part.get_content()
     request = Request(
         "https://api.resend.com/emails",
         data=json.dumps(payload).encode(),
@@ -204,9 +208,13 @@ def deliver(password, tls, original, sender, subject, body, generation, uid, att
         reply["In-Reply-To"] = original_id
         references = MESSAGE_ID.findall(str(original.get("References", "")))[-15:]
         reply["References"] = " ".join([*references, original_id])
-    reply.set_content(body)
+    if isinstance(body, MailReply):
+        reply.set_content(body.text)
+        reply.add_alternative(body.html, subtype="html")
+    else:
+        reply.set_content(body)
     if RESEND_KEY.exists():
-        send_with_resend(reply, body, generation, uid, attempts)
+        send_with_resend(reply, generation, uid, attempts)
         with database() as conn:
             update(conn, generation, uid, "sent", attempts=attempts)
         return

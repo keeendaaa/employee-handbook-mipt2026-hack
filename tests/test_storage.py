@@ -69,6 +69,53 @@ def test_schema_is_available_as_package_resource():
     assert "CREATE EXTENSION IF NOT EXISTS vector" in files("navigator.ingest").joinpath("schema.sql").read_text()
 
 
+def test_incremental_snapshot_reuses_vectors_and_rejects_stale_publish(store):
+    from navigator.ingest.storage import IndexConflictError
+
+    first = document()
+    store.publish([first], [chunk(first)], model_revision='test', corpus_key='base')
+    saved = store.snapshot_chunks('base')
+    assert saved[0]['embedding'] == vector()
+    second = document('synthetic-b', 'v2', 'Другой синтетический документ.')
+    store.publish([first, second], saved + [chunk(second, 'c2', 1)],
+                  model_revision='test', corpus_key='extended', expected_active='base')
+    assert len(store.documents('extended')) == 2
+    with pytest.raises(IndexConflictError):
+        store.publish([first], saved, model_revision='test', corpus_key='stale', expected_active='base')
+    assert store.active_revision()['corpus_key'] == 'extended'
+    assert store.document(first['version_id']) == first
+
+
+def test_import_queue_leases_recovery_and_source_url_privacy(store):
+    from navigator.imports.download import ImportFailure
+    from navigator.imports.repository import ImportRepository
+
+    repo = ImportRepository(store)
+    assert not repo.online()
+    repo.heartbeat()
+    assert repo.online()
+    identifier = repo.create(source_url='https://example.org/file.pdf?token=synthetic')
+    public = repo.get(identifier)
+    assert public['status'] == 'queued' and 'source_url' not in public
+    job = repo.claim()
+    assert str(job['id']) == identifier and job['source_url'].endswith('synthetic')
+    assert repo.claim() is None
+    with store._connect() as conn:
+        conn.execute("UPDATE import_jobs SET lease_until=now()-interval '1 second' WHERE id=%s", (identifier,))
+    recovered = repo.claim()
+    assert recovered['owner'] != job['owner']
+    with pytest.raises(ImportFailure):
+        repo.update(job, 'ready', 'Stale owner')
+    repo.update(recovered, 'ready', 'Готово', filename='file.pdf')
+    assert repo.get(identifier)['status'] == 'ready'
+    with store._connect() as conn:
+        assert conn.execute('SELECT source_url FROM import_jobs WHERE id=%s', (identifier,)).fetchone()['source_url'] is None
+    for _ in range(5):
+        repo.create(filename='test.pdf')
+    with pytest.raises(ImportFailure, match='Очередь'):
+        repo.create(filename='extra.pdf')
+
+
 @pytest.fixture
 def store():
     dsn = os.environ.get("TEST_DATABASE_URL")

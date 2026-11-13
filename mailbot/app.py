@@ -13,6 +13,7 @@ from email import policy
 from email.message import EmailMessage
 from email.parser import BytesParser
 from email.utils import formatdate, make_msgid
+from html.parser import HTMLParser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError
@@ -210,6 +211,57 @@ def deliver(password, tls, original, sender, subject, body, generation, uid, att
             update(conn, generation, uid, "sent", attempts=attempts)
 
 
+class EmailHTMLText(HTMLParser):
+    ignored_tags = {"head", "script", "style", "template"}
+    block_tags = {
+        "article", "blockquote", "br", "div", "h1", "h2", "h3", "hr",
+        "li", "p", "pre", "section", "table", "tr", "ul", "ol",
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.chunks = []
+        self.ignored = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self.ignored_tags:
+            self.ignored.append(tag)
+        elif not self.ignored:
+            if tag in self.block_tags:
+                self.chunks.append("\n")
+            elif tag in {"td", "th"}:
+                self.chunks.append(" ")
+
+    def handle_endtag(self, tag):
+        if self.ignored:
+            if tag == self.ignored[-1]:
+                self.ignored.pop()
+        elif tag in self.block_tags and tag != "br":
+            self.chunks.append("\n")
+
+    def handle_data(self, data):
+        if not self.ignored:
+            self.chunks.append(re.sub(r"\s+", " ", data))
+
+    def text(self):
+        lines = (line.strip() for line in "".join(self.chunks).splitlines())
+        return "\n".join(line for line in lines if line)
+
+
+def extract_question(message):
+    plain = message.get_body(preferencelist=("plain",))
+    if plain and (text := plain.get_content().strip()):
+        return text
+
+    html = message.get_body(preferencelist=("html",))
+    if html is None:
+        return ""
+    parser = EmailHTMLText()
+    parser.feed(html.get_content())
+    parser.close()
+    return parser.text()
+
+
 def process(inbox, generation, uid, settings, password, tls):
     message, reason = read_message(inbox, uid)
     sender, subject, filter_reason = inspect(message, settings)
@@ -229,10 +281,8 @@ def process(inbox, generation, uid, settings, password, tls):
     attempts = row["attempts"] + 1
     stage = "API разбора"
     try:
-        part = message.get_body(preferencelist=("plain",))
-        body = part.get_content() if part else ""
         api_url = settings["api_url"]
-        reply = ask(api_url, body) if api_url else STUB_REPLY
+        reply = ask(api_url, extract_question(message)) if api_url else STUB_REPLY
         stage = "Resend" if RESEND_KEY.exists() else "SMTP"
         deliver(password, tls, message, sender, subject, reply, generation, uid, attempts)
     except NavigatorError as error:

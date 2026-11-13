@@ -44,12 +44,12 @@ class MailbotIntegrationTest(unittest.TestCase):
         app.init()
         self.settings = {"enabled": True, "senders": [], "api_url": URL}
 
-    def process(self, body):
+    def process(self, body, subtype="plain"):
         message = EmailMessage()
         message["From"] = SENDER
         message["Subject"] = "Тема письма"
         message["Message-ID"] = "<original@example.org>"
-        message.set_content(body)
+        message.set_content(body, subtype=subtype)
         with patch.object(app, "read_message", return_value=(message, "")):
             app.process(None, 1, 42, self.settings, "unused", None)
 
@@ -74,6 +74,34 @@ class MailbotIntegrationTest(unittest.TestCase):
         self.assertIn("Срок рассмотрения не найден.", text)
         self.assertIn("Тестовый регламент (п. 3.1, стр. 2", text)
         self.assertIn("https://navigator.example.org/api/sources/version%3A0%3A0%3A20", text)
+
+    @patch.object(app, "deliver")
+    @patch.object(navigator_client, "build_opener")
+    def test_html_only_email_passes_readable_question(self, opener, deliver):
+        open_request = opener.return_value.open
+        open_request.return_value.__enter__.return_value = io.BytesIO(json.dumps(ANSWER).encode())
+        self.process(
+            "<html><head><title>Почта</title><style>p { color: red }</style></head>"
+            "<body><div>Как оформить <b>пропуск</b>&nbsp;для прессы?"
+            "<br>Визит завтра в 15:00.</div><script>ignored()</script></body></html>",
+            subtype="html",
+        )
+        request = open_request.call_args.args[0]
+        self.assertEqual(json.loads(request.data), {
+            "question": "Как оформить пропуск для прессы?\nВизит завтра в 15:00.",
+        })
+        self.assertIn("Источники", deliver.call_args.args[5])
+
+    def test_plain_body_is_preferred_and_attachments_are_ignored(self):
+        message = EmailMessage()
+        message.set_content(QUESTION)
+        message.add_alternative("<p>HTML-версия</p>", subtype="html")
+        message.add_attachment("<p>Вложение</p>", subtype="html", filename="extra.html")
+        self.assertEqual(app.extract_question(message), QUESTION)
+
+        attachments_only = EmailMessage()
+        attachments_only.add_attachment("<p>Вложение</p>", subtype="html", filename="extra.html")
+        self.assertEqual(app.extract_question(attachments_only), "")
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")

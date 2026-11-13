@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Карта знаний — Навигатор сотрудника</title>
+<link rel="stylesheet" href="/assets/map.css">
+<script defer src="/assets/vendor/d3.v7.min.js"></script>
+<script defer src="/assets/map.js"></script>
+</head>
+<body>
+<main class="wrap">
+<header><div><p class="eyebrow">Навигатор сотрудника</p><h1>Карта знаний</h1><p class="intro">Связанные по смыслу темы, фрагменты документов и проверенные вопросы.</p></div><a class="button secondary" href="/">К вопросам и загрузке</a></header>
+<div class="toolbar"><div><button id="overview" class="button" type="button">Вся карта</button><button id="refresh" class="button secondary" type="button">Обновить</button><button id="fit" class="button secondary" type="button">Уместить граф</button></div><label>Выбрать узел <select id="node-picker"><option value="">Карта загружается…</option></select></label></div>
+<p id="map-status" class="status" role="status" aria-live="polite">Строим карту по текущему индексу…</p>
+<div class="workspace">
+<section class="graph-area" aria-label="Семантический граф"><canvas id="graph" role="img" aria-label="Карта смысловых связей. Для выбора узла с клавиатуры используйте список над картой."></canvas><div id="hover" hidden></div><div class="graph-caption"><span id="graph-caption">Темы объединяют фрагменты разных документов</span><span>Колесо — масштаб · перетаскивание — перемещение</span></div></section>
+<aside aria-label="Сведения о выбранном узле"><h2 id="detail-title">Выберите тему</h2><div id="detail"><p>Нажмите на узел: откроются документы и фрагменты. Выберите фрагмент, чтобы увидеть его ближайших соседей по всему корпусу.</p></div></aside>
+</div>
+<div class="legend" aria-label="Обозначения"><span><i class="dot topic"></i>Тема</span><span><i class="dot answered"></i>Ответ найден</span><span><i class="dot partial"></i>Частично / конфликт</span><span><i class="dot gap"></i>Ответ не найден</span><span><i class="dot stale"></i>Нужна повторная проверка / уточнение</span></div>
+<p class="note">Размер темы отражает число фрагментов. Названия тем сформированы автоматически. Линии показывают смысловую близость; пунктир связывает вопрос с тематической областью. Близость и пустое место на карте сами по себе не доказывают наличие или отсутствие ответа.</p>
+<section class="question-section"><h2>Проверить вопрос и отметить результат</h2><p>Неподтверждённый вопрос останется пустым узлом — так видны конкретные пробелы, найденные при проверке.</p><form id="check-form"><label for="check-question">Вопрос по базе документов</label><textarea id="check-question" rows="2" maxlength="500" required placeholder="Например: как оформить заявку на отпуск?"></textarea><label class="consent"><input id="share-consent" type="checkbox" required>Вопрос неконфиденциальный. Разрешаю обработку внешней моделью и публикацию вопроса и результата на общей карте для всех пользователей.</label><button id="check-button" class="button" type="submit">Проверить и добавить на карту</button><p id="check-status" class="status" role="status" aria-live="polite"></p></form></section>
+</main>
+<dialog id="source-dialog" aria-labelledby="source-title"><div class="dialog-head"><h2 id="source-title">Фрагмент документа</h2><button id="source-close" class="button secondary" type="button">Закрыть</button></div><div id="source-body"></div></dialog>
+</body></html>

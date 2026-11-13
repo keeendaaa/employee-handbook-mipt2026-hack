@@ -68,3 +68,14 @@ CREATE TABLE IF NOT EXISTS import_worker_heartbeat (
     singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton),
     touched_at timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS map_questions (
+    question_hash text NOT NULL,
+    corpus_key text NOT NULL REFERENCES corpus_revisions(corpus_key),
+    question text NOT NULL CHECK (char_length(question) BETWEEN 1 AND 500),
+    result jsonb NOT NULL,
+    query_vector jsonb NOT NULL,
+    model_revision text NOT NULL,
+    checked_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (question_hash, corpus_key)
+);

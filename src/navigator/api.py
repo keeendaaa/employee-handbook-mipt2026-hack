@@ -9,6 +9,7 @@ import time
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 import psycopg
 
@@ -31,7 +32,8 @@ class Query(BaseModel):
         return value.strip()
 
 
-def create_app(*, service=None, generator=None, import_repository=None, import_directory=None) -> FastAPI:
+def create_app(*, service=None, generator=None, import_repository=None, import_directory=None,
+               knowledge_map=None, map_questions=None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app):
         if service is not None:
@@ -53,7 +55,17 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
         app.state.import_directory = Path(import_directory or os.environ.get("IMPORT_DIR", "data/imports"))
         if app.state.import_repository is not None:
             app.state.import_directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        from .knowledge.graph import KnowledgeMap
+        from .knowledge.repository import QuestionRepository
+        app.state.knowledge_map = knowledge_map
+        if knowledge_map is None and hasattr(app.state.service, 'embedder'):
+            app.state.knowledge_map = KnowledgeMap(app.state.service.store, app.state.service.embedder)
+        app.state.map_questions = map_questions
+        if map_questions is None and app.state.knowledge_map is not None:
+            app.state.map_questions = QuestionRepository(app.state.service.store)
         yield
+        if knowledge_map is None and app.state.knowledge_map is not None:
+            app.state.knowledge_map.close()
         if service is None and app.state.generator:
             app.state.generator.close()
 
@@ -152,6 +164,9 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
 
     from .imports.routes import install_routes
     install_routes(app)
+    from .knowledge.routes import install_routes as install_map_routes
+    install_map_routes(app, answer=lambda question, request: ask(Query(question=question), request))
+    app.mount('/assets', StaticFiles(directory=Path(__file__).parent / 'static'), name='assets')
     return app
 
 

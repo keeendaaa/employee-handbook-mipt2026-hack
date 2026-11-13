@@ -185,3 +185,23 @@ def test_scoped_lexical_search_prefers_distinct_terms_over_repetition(store):
     assert rows[0]["chunk_id"] == "wanted"
     assert {r["document_id"] for r in rows} == {"scoped"}
     assert store.search("заявка", vector(), document_ids=[]) == []
+
+
+def test_shared_map_questions_keep_latest_checked_revision(store):
+    from navigator.knowledge.repository import QuestionRepository
+    doc=document()
+    store.publish([doc],[chunk(doc)],model_revision='test',corpus_key='before')
+    repo=QuestionRepository(store)
+    answer={'corpus_revision':'before','result_type':'not_found','summary':[],'steps':[],'citations':[],
+            'missing_information':['В найденных фрагментах ответ не найден.'],'clarifications':[],'conflicts':[]}
+    repo.save('Синтетический вопрос?',answer,vector(),'test')
+    repo.save('синтетический вопрос?',answer,vector(),'test')
+    rows=repo.list();assert len(rows)==1 and rows[0]['corpus_key']=='before'
+    store.publish([doc],[chunk(doc)],model_revision='test',corpus_key='after')
+    answer['corpus_revision']='after'
+    repo.save('Синтетический вопрос?',answer,vector(),'test')
+    rows=repo.list();assert len(rows)==1 and rows[0]['corpus_key']=='after'
+    assert rows[0]['query_vector']==vector()
+    answer['result_type']='technical_error'
+    with pytest.raises(ValueError):repo.save('Ошибка?',answer,vector(),'test')
+    assert len(repo.list())==1

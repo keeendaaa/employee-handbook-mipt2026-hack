@@ -120,6 +120,9 @@ def format_answer(answer, url):
     ]
     origin = urlsplit(url)
     prefix = origin.path.removesuffix(MAIL_ANALYSIS_PATH).removesuffix(ASK_PATH)
+    source_host = origin.netloc
+    if origin.scheme == "http" and origin.hostname == "host.docker.internal":
+        source_host = "127.0.0.1" + (f":{origin.port}" if origin.port else "")
     citations = []
     for source_id, number in numbers.items():
         source = sources[source_id]
@@ -133,7 +136,7 @@ def format_answer(answer, url):
         if source["extraction_method"] == "ocr":
             location.append("распознано со скана")
         source_path = f"{prefix}/api/sources/{quote(source_id, safe='')}"
-        link = urlunsplit((origin.scheme, origin.netloc, source_path, "", ""))
+        link = urlunsplit((origin.scheme, source_host, source_path, "", ""))
         citations.append(f"[{number}] {source['document_name']} ({', '.join(location)})\n"
                          f"«{source['quote']}»\n{link}")
     sections.append(("Источники", citations))

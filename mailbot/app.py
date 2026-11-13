@@ -98,9 +98,10 @@ def valid_settings(raw):
         raise ValueError("Проверь адрес API.")
     if url:
         parsed = urlsplit(url)
-        if (parsed.scheme != "https" or not parsed.hostname or parsed.username is not None
+        local_http = parsed.scheme == "http" and parsed.hostname in {"localhost", "127.0.0.1", "host.docker.internal"}
+        if ((parsed.scheme != "https" and not local_http) or not parsed.hostname or parsed.username is not None
                 or parsed.fragment or parsed.query or not parsed.path.endswith((ASK_PATH, MAIL_ANALYSIS_PATH))):
-            raise ValueError("Укажи HTTPS-адрес /api/mail/analyze без параметров и учётных данных.")
+            raise ValueError("Укажи адрес /api/mail/analyze без параметров и учётных данных. Для удалённого API нужен HTTPS.")
         parsed.port  # Reject invalid port numbers before saving the settings.
     return {
         "enabled": raw["enabled"],

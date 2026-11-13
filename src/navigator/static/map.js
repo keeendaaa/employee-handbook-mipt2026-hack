@@ -127,7 +127,7 @@ function showQuestion(q){
  if(q.stale)paragraph('База изменилась после этой проверки. Результат относится к прежней версии; проверьте вопрос снова.','text-warning');
  if(q.result.result_type==='not_found')paragraph('В найденных фрагментах не удалось подтвердить ответ. Это результат конкретной проверки, а не доказательство отсутствия сведений во всей базе.');
  for(const claim of q.result.summary)paragraph(claim.text);
- for(const key of ['missing_information','clarifications','conflicts'])for(const item of q.result[key])paragraph(item,'text-warning');
+ for(const key of (q.result.result_type==='not_found'?[]:['missing_information','clarifications','conflicts']))for(const item of q.result[key])paragraph(item,'text-warning');
  const seen=new Set();for(const c of q.result.citations){if(!seen.has(c.source_id)){detail.append(sourceButton(c.source_id,c.document_name));seen.add(c.source_id);}}
  const recheck=element('button','Проверить этот вопрос снова','button secondary');recheck.type='button';recheck.addEventListener('click',()=>{$('check-question').value=q.question;$('check-question').focus();$('check-form').scrollIntoView({block:'center',behavior:'auto'});});detail.append(element('div',undefined,'action-row'));detail.lastChild.append(recheck);
 }

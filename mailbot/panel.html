@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Почтовый бот · Timeweb</title>
+<style>
+:root{color-scheme:light;--ink:#152f38;--muted:#536975;--paper:#f4f7f8;--line:#ccd9df;--blue:#125479;--ice:#e6f1f6;--good:#19694f;--bad:#a12c32}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif}
+header{background:#12394c;color:white}
+.wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+header .wrap{min-height:112px;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 0}
+h1,h2,p{margin:0}
+h1{font-size:clamp(1.55rem,4vw,2.5rem);letter-spacing:-.035em}
+header p{color:#c0dcea;overflow-wrap:anywhere}
+main{display:grid;grid-template-columns:minmax(270px,345px) minmax(0,1fr);gap:26px;padding:28px 0 50px}
+section{background:white;border:1px solid var(--line);align-self:start}
+h2{font-size:1.15rem}
+.settings,.journal header{padding:20px}
+label{display:block;font-weight:650;margin-top:17px}
+textarea,input[type=url]{display:block;width:100%;margin-top:6px;border:1px solid #9bb2be;border-radius:4px;padding:9px 10px;color:inherit;font:inherit;background:white}
+textarea{resize:vertical;min-height:95px}
+small{display:block;color:var(--muted);margin-top:5px;line-height:1.4}
+button{cursor:pointer;border:1px solid transparent;border-radius:4px;font:inherit;font-weight:650;padding:8px 12px}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #4688bc;outline-offset:2px}
+.primary{background:var(--blue);color:white;margin-top:20px}
+.secondary{background:white;color:var(--blue);border-color:var(--line)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;background:var(--ice);color:var(--blue);border-radius:4px;white-space:nowrap;font-size:.9rem}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.online{color:var(--good);background:#e7f4ed}
+.pill.error,.error{color:var(--bad)}
+#connection{margin-bottom:16px;color:var(--muted)}
+#feedback{min-height:1.5em;margin-top:7px;color:var(--blue);font-size:.9rem}
+#feedback.error{color:var(--bad)}
+.journal header{display:flex;align-items:center;justify-content:space-between;gap:10px;background:transparent;color:inherit;border-bottom:1px solid var(--line)}
+.table-scroll{overflow:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.9rem}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #e3ebef;vertical-align:top;overflow-wrap:anywhere}
+th{color:var(--muted);font-size:.83rem;font-weight:650;background:#f5f9fb}
+th:first-child{width:18%}th:nth-child(2){width:26%}th:last-child{width:25%}
+tr:last-child td{border-bottom:0}
+.empty{color:var(--muted);padding:24px}
+.status-sent{color:var(--good)}
+.status-failed,.status-uncertain{color:var(--bad)}
+td small{font-size:.78rem}
+@media(max-width:800px){main{grid-template-columns:1fr;gap:18px}table{min-width:520px}}
+@media(max-width:420px){.wrap{width:calc(100% - 24px)}header .wrap{align-items:flex-start;flex-direction:column;gap:8px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div><h1>Почтовый бот</h1><p id="mailbox"></p></div>
+  <span id="worker" class="pill" role="status">Подключение…</span>
+</div></header>
+<main class="wrap">
+  <section class="settings" aria-labelledby="settings-title">
+    <h2 id="settings-title">Настройки обработки</h2>
+    <small id="connection"></small>
+    <form id="settings">
+      <label><input type="checkbox" id="enabled" checked> Обрабатывать письма</label>
+      <label for="senders">Разрешённые отправители</label>
+      <textarea id="senders" placeholder="name@example.org" aria-describedby="senders-hint"></textarea>
+      <small id="senders-hint">По одному адресу в строке. Пустой список разрешает письма с любых адресов.</small>
+      <label for="api-url">Адрес API разбора</label>
+      <input type="url" id="api-url" placeholder="https://smena-mipt.ru/api/ask" aria-describedby="api-hint">
+      <small id="api-hint">Укажи HTTPS-адрес /api/ask. Бот передаёт вопрос после подтверждения в письме. Пустое поле включает тестовый ответ.</small>
+      <button class="primary" id="save" disabled>Сохранить настройки</button>
+      <p id="feedback" role="status"></p>
+    </form>
+  </section>
+  <section class="journal" aria-labelledby="journal-title">
+    <header><h2 id="journal-title">Журнал обработки</h2><button type="button" class="secondary" id="refresh">Обновить</button></header>
+    <div id="empty" class="empty" role="status">Загрузка…</div>
+    <div class="table-scroll" id="table" hidden>
+      <table><thead><tr><th>Время</th><th>Отправитель</th><th>Тема</th><th>Результат</th></tr></thead><tbody id="events"></tbody></table>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const states = {starting:'Запускается', online:'Ящик подключён', paused:'На паузе', error:'Ошибка подключения'};
+const statuses = {pending:'В очереди', sending:'Отправляется', sent:'Ответ отправлен', skipped:'Пропущено', retry:'Повтор запланирован', failed:'Ошибка', uncertain:'Доставка неизвестна'};
+const date = new Intl.DateTimeFormat('ru-RU', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+let loaded = false;
+let dirty = false;
+let saving = false;
+let refreshing = false;
+async function request(url, options) {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Запрос завершился ошибкой.');
+  return data;
+}
+async function refresh() {
+  if (refreshing) return;
+  refreshing = true;
+  try {
+    const data = await request('/api/status');
+    $('mailbox').textContent = data.mailbox;
+    const {state, updated, detail} = data.worker;
+    $('worker').textContent = states[state];
+    $('worker').className = 'pill ' + state;
+    $('connection').textContent = detail || (updated ? 'Последняя проверка ' + date.format(updated * 1000) : '');
+    if (!dirty && !saving) {
+      $('enabled').checked = data.settings.enabled;
+      $('senders').value = data.settings.senders.join('\n');
+      $('api-url').value = data.settings.api_url;
+    }
+    loaded = true;
+    $('save').disabled = saving;
+    $('events').replaceChildren();
+    for (const event of data.events) {
+      const row = $('events').insertRow();
+      row.insertCell().textContent = date.format(event.updated * 1000);
+      row.insertCell().textContent = event.sender || '—';
+      row.insertCell().textContent = event.subject || 'Без темы';
+      const result = row.insertCell();
+      result.className = 'status-' + event.status;
+      result.textContent = statuses[event.status];
+      if (event.detail) {
+        const detail = document.createElement('small');
+        detail.textContent = event.detail;
+        result.append(detail);
+      }
+    }
+    $('empty').hidden = data.events.length > 0;
+    $('empty').textContent = 'Новые письма появятся здесь после обработки.';
+    $('table').hidden = data.events.length === 0;
+  } catch {
+    $('worker').textContent = 'Панель недоступна';
+    $('worker').className = 'pill error';
+    if (!loaded) $('empty').textContent = 'Не удалось загрузить журнал. Нажми «Обновить».';
+  } finally { refreshing = false; }
+}
+$('settings').addEventListener('input', () => { dirty = true; $('feedback').textContent = ''; });
+$('settings').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (!loaded || saving) return;
+  saving = true;
+  $('save').disabled = true;
+  const fields = [$('enabled'), $('senders'), $('api-url')];
+  const body = JSON.stringify({
+    enabled: $('enabled').checked,
+    senders: $('senders').value.split('\n').map(line => line.trim()).filter(Boolean),
+    api_url: $('api-url').value.trim()
+  });
+  fields.forEach(field => field.disabled = true);
+  try {
+    await request('/api/settings', {method:'POST', headers:{'Content-Type':'application/json'}, body});
+    dirty = false;
+    $('feedback').className = '';
+    $('feedback').textContent = 'Настройки сохранены.';
+  } catch (error) {
+    $('feedback').className = 'error';
+    $('feedback').textContent = error.message;
+  } finally {
+    saving = false;
+    fields.forEach(field => field.disabled = false);
+    $('save').disabled = false;
+  }
+  refresh();
+});
+$('refresh').addEventListener('click', refresh);
+refresh();
+setInterval(refresh, 10000);
+</script>
+</body>
+</html>

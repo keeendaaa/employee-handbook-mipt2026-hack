@@ -1,0 +1,5 @@
+services:
+  worker:
+    user: "${MAILBOT_UID:?Set MAILBOT_UID}:${MAILBOT_GID:?Set MAILBOT_GID}"
+  admin:
+    user: "${MAILBOT_UID:?Set MAILBOT_UID}:${MAILBOT_GID:?Set MAILBOT_GID}"

@@ -1,0 +1,32 @@
+x-service: &service
+  image: timeweb-mailbot:local
+  restart: unless-stopped
+  user: "10001:10001"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  environment:
+    MAILBOT_ADDRESS: ${MAILBOT_ADDRESS:?Set MAILBOT_ADDRESS}
+    MAILBOT_API_URL: ${MAILBOT_API_URL-https://smena-mipt.ru/api/ask}
+  volumes:
+    - ./data:/data
+  logging:
+    options:
+      max-size: "5m"
+      max-file: "2"
+
+services:
+  worker:
+    <<: *service
+    build: .
+    command: ["worker"]
+    secrets: [mail_password]
+  admin:
+    <<: *service
+    command: ["admin"]
+    ports:
+      - "127.0.0.1:8787:8787"
+
+secrets:
+  mail_password:
+    file: ./secrets/mail_password

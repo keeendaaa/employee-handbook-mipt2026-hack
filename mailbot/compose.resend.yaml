@@ -1,0 +1,8 @@
+services:
+  worker:
+    secrets:
+      - resend_api_key
+
+secrets:
+  resend_api_key:
+    file: ./secrets/resend_api_key

@@ -122,3 +122,34 @@ def test_persistent_provider_outage_stays_a_technical_error(monkeypatch):
     with pytest.raises(GenerationError, match='HTTP 503'):
         Generator('synthetic-key', transport=httpx.MockTransport(handler)).answer('Вопрос', retrieved)
     assert len(attempts) == 2
+
+
+def test_not_found_discards_uncited_model_elaboration_and_empty_search_skips_model():
+    from navigator.generation import NOT_FOUND_INFORMATION
+    _, retrieved, answer = fixture()
+    answer.update(result_type='not_found', summary=[], missing_information=['Единственное упоминание отпуска — в командировках.'])
+    generator = generate(answer)
+    result = generator.answer('Как оформить отпуск?', retrieved)
+    assert result['missing_information'] == [NOT_FOUND_INFORMATION]
+    assert result['summary'] == result['steps'] == result['citations'] == []
+    generator.close()
+    # A closed client would fail if this path attempted an external call.
+    retrieved['results'] = []
+    assert generator.answer('Вопрос', retrieved)['missing_information'] == [NOT_FOUND_INFORMATION]
+
+
+@pytest.mark.parametrize('field', ['clarifications', 'conflicts'])
+def test_not_found_cannot_smuggle_facts_in_other_fields(field):
+    _, retrieved, answer = fixture()
+    answer.update(result_type='not_found', summary=[], missing_information=['Не найдено.'])
+    answer[field] = ['Неподтверждённое дополнение']
+    with pytest.raises(GenerationError):
+        generate(answer).answer('Вопрос', retrieved)
+
+
+def test_partial_keeps_specific_missing_information():
+    _, retrieved, answer = fixture()
+    answer.update(result_type='partial', missing_information=['В найденных фрагментах не найдена форма заявки.'])
+    result = generate(answer).answer('Вопрос', retrieved)
+    assert result['missing_information'] == answer['missing_information']
+    assert result['citations'] == [retrieved['results'][0]['citation']]

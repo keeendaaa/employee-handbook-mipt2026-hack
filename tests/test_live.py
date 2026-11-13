@@ -105,3 +105,50 @@ def test_disconnect_before_model_prevents_later_generation():
 def test_stream_validation_matches_existing_query_contract(body):
     with TestClient(app_for()) as client:
         assert client.post('/api/query/stream',json=body).status_code==422
+
+
+@pytest.mark.parametrize('later', ['ready', 'stale', 'error'])
+def test_cold_map_enrichment_uses_same_retrieval_and_never_repeats_model(later):
+    from navigator.knowledge.graph import MapBuilding
+    _, retrieved, _ = fixture()
+    ref = retrieved['results'][0]['citation']
+    calls = []
+    def snapshot(expected):
+        calls.append(expected)
+        if len(calls) == 1:
+            raise MapBuilding('Building')
+        if later == 'stale':
+            raise MapChanged('Changed')
+        if later == 'error':
+            raise RuntimeError('Optional map failure')
+        return SimpleNamespace(chunks=[{'version_id': ref['version_id'], 'block_index': ref['block_index'],
+                                       'start': ref['start'], 'end': ref['end']}],
+                               chunk_topics={0: 0}, topics=[{'id': 'topic-0'}])
+    app = app_for(knowledge_map=SimpleNamespace(snapshot=snapshot))
+    with TestClient(app) as client:
+        search = app.state.service.search
+        answer = app.state.generator.answer
+        searches, generations = [], []
+        def counted_search(*a, **kw):
+            searches.append(1)
+            return search(*a, **kw)
+        def counted_answer(*a, **kw):
+            generations.append(1)
+            return answer(*a, **kw)
+        app.state.service.search = counted_search
+        app.state.generator.answer = counted_answer
+        frames = events(client.post('/api/query/stream', json={'question': 'Когда подать?'}))
+        types = [e['type'] for e in frames]
+        initial = next(e['trace'] for e in frames if e['type'] == 'retrieval')
+        assert initial['map_status'] == 'building'
+        assert searches == generations == [1]
+        assert calls == ['test', 'test']
+        assert types[-1] == 'done' and 'answer' in types
+        if later == 'ready':
+            updated = next(e['trace'] for e in frames if e['type'] == 'map_update')
+            assert types.index('retrieval') < types.index('map_update') < types.index('answer')
+            assert updated['corpus_revision'] == initial['corpus_revision']
+            assert updated['evidence_source_ids'] == initial['evidence_source_ids']
+            assert updated['sources'][0]['topic_ids'] == ['topic-0']
+        else:
+            assert 'map_update' not in types

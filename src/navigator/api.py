@@ -158,8 +158,12 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
                 global_calls.append(now)
             retrieved = retrieve(query, progress)
             if progress is not None:
-                send_retrieval(progress, retrieved)
+                initial_trace = send_retrieval(progress, retrieved)
                 result = app.state.generator.answer(query.question, retrieved, progress=progress)
+                if initial_trace['map_status'] == 'building':
+                    updated_trace = make_trace(retrieved)
+                    if updated_trace['map_status'] == 'ready':
+                        progress({'type': 'map_update', 'trace': updated_trace})
                 progress({'type': 'answer', 'answer': result})
                 return result
             return app.state.generator.answer(query.question, retrieved)
@@ -170,14 +174,19 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     def ask(query: Query, request: Request):
         return answer_query(query, request)
 
-    def send_retrieval(progress, retrieved, *, include_context=True):
+    def make_trace(retrieved, *, include_context=True):
         from .live import retrieval_trace
         try:
             trace = retrieval_trace(retrieved, app.state.knowledge_map, include_context=include_context)
         except Exception:
             # Optional visual grouping must not invalidate a valid RAG result.
             trace = retrieval_trace(retrieved, None, include_context=include_context)
+        return trace
+
+    def send_retrieval(progress, retrieved, *, include_context=True):
+        trace = make_trace(retrieved, include_context=include_context)
         progress({'type': 'retrieval', 'retrieval': retrieved, 'trace': trace})
+        return trace
 
     @app.post('/api/query/stream')
     def live_query(query: LiveQuery, request: Request):

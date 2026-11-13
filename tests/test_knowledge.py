@@ -85,7 +85,7 @@ def test_empty_invalid_and_code_only_corpora():
 
 def test_background_cache_and_revision_change():
     docs,chunks=corpus();active={'corpus_key':'one','model_revision':'test-model'}
-    store=SimpleNamespace(active_revision=lambda:dict(active),documents=lambda key:docs,snapshot_chunks=lambda key:chunks)
+    store=SimpleNamespace(active_revision=lambda:dict(active),documents=lambda key:docs,chunk_count=lambda key:len(chunks),snapshot_chunks=lambda key:chunks)
     service=KnowledgeMap(store,SimpleNamespace(revision='test-model'))
     def wait():
         deadline=time.monotonic()+5
@@ -150,3 +150,26 @@ def test_technical_model_failure_does_not_create_gap():
 
 def test_question_key_deduplicates_case_and_whitespace():
     assert question_key(' Как  оформить ОТПУСК? ')==question_key('как оформить отпуск?')
+
+
+@pytest.mark.parametrize('count', [0, 20001])
+def test_map_rejects_size_before_loading_documents_or_vectors(count):
+    from navigator.knowledge.graph import MapUnavailable
+    calls = []
+    def size(key):
+        calls.append(key)
+        return count
+    def forbidden(key):
+        pytest.fail('Oversized/empty map loaded corpus contents')
+    revision = {'corpus_key': 'large', 'model_revision': 'test-model'}
+    store = SimpleNamespace(active_revision=lambda: revision, chunk_count=size,
+                            documents=forbidden, snapshot_chunks=forbidden)
+    service = KnowledgeMap(store, SimpleNamespace(revision='test-model'))
+    try:
+        service._build(revision)
+        for _ in range(2):
+            with pytest.raises(MapUnavailable, match='20 000'):
+                service.snapshot()
+        assert calls == ['large']
+    finally:
+        service.close()

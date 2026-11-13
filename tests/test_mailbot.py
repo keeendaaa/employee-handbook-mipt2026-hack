@@ -13,7 +13,6 @@ from mailbot import app, navigator_client
 URL = "https://navigator.example.org/api/ask"
 QUESTION = "Как подать заявку?"
 SENDER = "employee@example.org"
-CONFIRMED_QUESTION = f"{navigator_client.PUBLIC_DATA_CONFIRMATION}\n{QUESTION}"
 SOURCE = {
     "source_id": "version:0:0:20",
     "document_name": "Тестовый регламент",
@@ -56,11 +55,11 @@ class MailbotIntegrationTest(unittest.TestCase):
 
     @patch.object(app, "smtplib")
     @patch.object(navigator_client, "build_opener")
-    def test_confirmed_question_is_answered_with_citations_in_same_thread(self, opener, smtp):
+    def test_plain_question_is_answered_with_citations_in_same_thread(self, opener, smtp):
         open_request = opener.return_value.open
         open_request.return_value.__enter__.return_value = io.BytesIO(json.dumps(ANSWER).encode())
-        self.process(CONFIRMED_QUESTION)
-        self.process(CONFIRMED_QUESTION)
+        self.process(QUESTION)
+        self.process(QUESTION)
 
         request = open_request.call_args.args[0]
         self.assertEqual(json.loads(request.data), {"question": QUESTION})
@@ -78,10 +77,10 @@ class MailbotIntegrationTest(unittest.TestCase):
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
-    def test_unconfirmed_message_never_calls_backend(self, opener, deliver):
-        self.process(QUESTION)
+    def test_empty_question_never_calls_backend(self, opener, deliver):
+        self.process("  ")
         opener.assert_not_called()
-        self.assertIn(navigator_client.PUBLIC_DATA_CONFIRMATION, deliver.call_args.args[5])
+        self.assertIn("Напиши вопрос в тексте письма.", deliver.call_args.args[5])
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
@@ -93,8 +92,8 @@ class MailbotIntegrationTest(unittest.TestCase):
                 open_request = opener.return_value.open
                 open_request.reset_mock()
                 open_request.side_effect = HTTPError(URL, status, "", {"Retry-After": "1200"}, None)
-                self.process(CONFIRMED_QUESTION)
-                self.process(CONFIRMED_QUESTION)
+                self.process(QUESTION)
+                self.process(QUESTION)
                 open_request.assert_called_once()
                 deliver.assert_not_called()
                 with app.database() as conn:

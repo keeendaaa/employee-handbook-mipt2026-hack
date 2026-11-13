@@ -6,7 +6,6 @@ from urllib.parse import quote, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 DEFAULT_URL = "https://smena-mipt.ru/api/ask"
-PUBLIC_DATA_CONFIRMATION = "Подтверждаю, что вопрос не содержит конфиденциальных данных."
 QUESTION_LIMIT = 20_000
 RESPONSE_LIMIT = 2_000_000
 ANSWER_TYPES = {
@@ -30,17 +29,9 @@ class NavigatorError(RuntimeError):
 
 
 def ask(url, body):
-    confirmation, _, question = body.strip().partition("\n")
-    if confirmation.rstrip("\r") != PUBLIC_DATA_CONFIRMATION:
-        return (
-            "Чтобы задать вопрос по регламентам, отправь новое письмо. "
-            "В первой строке напиши подтверждение ниже, со второй строки — сам вопрос. "
-            "Вопрос передаётся внешней модели. Удали из письма личные данные и закрытую переписку.\n\n"
-            + PUBLIC_DATA_CONFIRMATION
-        )
-    question = question.strip()
+    question = body.strip()
     if not question or len(question) > QUESTION_LIMIT:
-        return "Введи вопрос после строки подтверждения. Длина вопроса — до 20 000 символов."
+        return "Напиши вопрос в тексте письма. Длина вопроса — до 20 000 символов."
 
     request = Request(
         url,

@@ -55,6 +55,8 @@ def ask(url, body, *, subject="", reply_without_issue=False):
         retry_after = min(3600, int(delay)) if delay.isascii() and delay.isdecimal() and len(delay) <= 10 else 0
         if error.code == 429:
             retry_after = max(900, retry_after)
+        elif error.code == 404:
+            retry_after = max(300, retry_after)
         elif error.code not in {408, 500, 502, 503, 504}:
             retry_after = None
         raise NavigatorError(f"HTTP {error.code}", retry_after=retry_after) from None

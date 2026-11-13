@@ -135,17 +135,19 @@ class MailbotIntegrationTest(unittest.TestCase):
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
     def test_rate_limit_and_unavailable_backend_stay_in_queue(self, opener, deliver):
-        for status in (429, 503):
+        for status in (404, 429, 503):
             with self.subTest(status=status):
                 with app.database() as conn:
                     conn.execute("DELETE FROM messages")
                 open_request = opener.return_value.open
                 open_request.reset_mock()
-                open_request.side_effect = HTTPError(URL, status, "", {"Retry-After": "1200"}, None)
+                open_request.side_effect = HTTPError(URL, status, "", {}, io.BytesIO())
                 self.process(QUESTION)
                 self.process(QUESTION)
                 open_request.assert_called_once()
                 deliver.assert_not_called()
                 with app.database() as conn:
-                    row = conn.execute("SELECT status, detail FROM messages").fetchone()
-                self.assertEqual(tuple(row), ("retry", f"Навигатор · HTTP {status}"))
+                    row = conn.execute("SELECT status, detail, retry_at FROM messages").fetchone()
+                self.assertEqual((row["status"], row["detail"]), ("retry", f"Навигатор · HTTP {status}"))
+                minimum_delay = {404: 300, 429: 900, 503: 30}[status]
+                self.assertGreaterEqual(row["retry_at"], app.time.time() + minimum_delay - 1)

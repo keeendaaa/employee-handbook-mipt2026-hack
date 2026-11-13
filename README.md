@@ -19,7 +19,7 @@
 
 - [materials/VALIDATION.md](materials/VALIDATION.md) — фактически выполненные проверки и состояние VPS/API модели.
 
-- [materials/DEMO.md](materials/DEMO.md) — четыре сценария для проверки демонстрации экспертом.
+- [materials/DEMO.md](materials/DEMO.md) — пять сценариев для проверки демонстрации экспертом.
 
 ## Текущий статус
 

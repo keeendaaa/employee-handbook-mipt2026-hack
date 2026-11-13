@@ -27,6 +27,9 @@ function draw(){
  context.translate(transform.x,transform.y);context.scale(transform.k,transform.k);
  const adjacent=new Set(selected?[selected]:[]);
  if(selected)for(const e of edges){if(e.source.id===selected)adjacent.add(e.target.id);if(e.target.id===selected)adjacent.add(e.source.id);}
+ const ranked=nodes.filter(n=>!selected||adjacent.has(n.id)).sort((a,b)=>(b.count||0)-(a.count||0));
+ const labelIds=new Set(selected?[selected]:[]);
+ for(const n of ranked.slice(0,width<600?(selected?0:1):(selected?2:6)))labelIds.add(n.id);
  for(const e of edges){
   const active=selected&&(e.source.id===selected||e.target.id===selected);
   context.beginPath();context.moveTo(e.source.x,e.source.y);context.lineTo(e.target.x,e.target.y);
@@ -39,10 +42,12 @@ function draw(){
   context.beginPath();context.arc(n.x,n.y,n.radius,0,Math.PI*2);context.fillStyle=nodeColor(n);context.strokeStyle=nodeColor(n);context.lineWidth=2/transform.k;
   if(n.kind==='question'&&(n.stale||n.result.result_type!=='answered')){context.setLineDash([4/transform.k,3/transform.k]);context.stroke();context.setLineDash([]);}else context.fill();
   if(n.id===selected){context.beginPath();context.arc(n.x,n.y,n.radius+5/transform.k,0,Math.PI*2);context.strokeStyle='#edf9f0';context.stroke();}
-  if(highlighted||transform.k>1.7){
-   const font=Math.min(16,Math.max(12,13/transform.k));context.font=`${font}px Arial`;context.fillStyle='#d9e9de';context.textAlign='center';
+  if(labelIds.has(n.id)||(transform.k>1.9&&highlighted)){
+   const font=13/transform.k;context.font=`${font}px Arial`;context.fillStyle='#d9e9de';context.textAlign='center';
    const label=n.label.length>34?n.label.slice(0,31)+'…':n.label;
-   context.fillText(label,n.x,n.y+n.radius+font+6/transform.k);
+   const half=context.measureText(label).width/2;
+   const left=transform.invert([8,0])[0]+half,right=transform.invert([width-8,0])[0]-half;
+   context.fillText(label,Math.max(left,Math.min(right,n.x)),n.y+n.radius+font+6/transform.k);
   }
  }
  context.globalAlpha=1;context.restore();
@@ -131,6 +136,7 @@ async function openSource(id){
  const token=++sourceToken,dialog=$('source-dialog'),body=$('source-body');$('source-title').textContent='Фрагмент документа';body.replaceChildren(element('p','Загружаем источник…'));if(!dialog.open)dialog.showModal();
  try{const data=await request('/api/sources/'+encodeURIComponent(id));if(token!==sourceToken||!dialog.open)return;$('source-title').textContent=data.document_name;body.replaceChildren(element('p','Строки извлечённого блока. Нумерация не совпадает с физическими строками оригинального PDF.','source-meta'));
   if(data.extraction_method==='ocr')body.append(element('p','Распознано со скана; возможны ошибки OCR.','text-warning'));
+  for(const warning of (data.extraction_warnings||[]).slice(0,20))body.append(element('p',typeof warning==='string'?warning:JSON.stringify(warning),'text-warning'));
   data.block_text.split(/\r\n|\r|\n/).forEach((line,i)=>{const row=element('div',undefined,'source-line'+(i+1>=data.line_start&&i+1<=data.line_end?' highlight':''));row.append(element('span',String(i+1),'line-no'),element('span',line,'line-text'));body.append(row);});
   requestAnimationFrame(()=>body.querySelector('.highlight')?.scrollIntoView({block:'center'}));
  }catch(error){if(token===sourceToken)body.replaceChildren(element('p',error.message));}

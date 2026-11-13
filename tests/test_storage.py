@@ -80,6 +80,9 @@ def test_incremental_snapshot_reuses_vectors_and_rejects_stale_publish(store):
     store.publish([first, second], saved + [chunk(second, 'c2', 1)],
                   model_revision='test', corpus_key='extended', expected_active='base')
     assert len(store.documents('extended')) == 2
+    assert store.chunk_count('base') == 1
+    assert store.chunk_count('extended') == 2
+    assert store.chunk_count('missing') == 0
     with pytest.raises(IndexConflictError):
         store.publish([first], saved, model_revision='test', corpus_key='stale', expected_active='base')
     assert store.active_revision()['corpus_key'] == 'extended'

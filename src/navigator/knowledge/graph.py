@@ -12,6 +12,9 @@ from threadpoolctl import threadpool_limits
 
 from ..sources import reference
 
+MAX_MAP_CHUNKS = 20000
+MAP_SIZE_ERROR = 'Карта поддерживает от 1 до 20 000 фрагментов; поиск остаётся доступен.'
+
 STOP = set('''это этого этой этих при для или как что так все всех его ее ещё если без был быть были будет будут быть вам вас ваш ваши где да до его ему есть же за из их либо между может могут надо над нам нас наш наши нее ней них но она они оно под после потому почему про раз разный сам со так также такой там те тем то того тоже только том тот тут ты уже чем через чтобы этот эта эти января февраля марта апреля мая июня июля августа сентября октября ноября декабря года году лет дней день время случае случаях соответствии настоящий настоящего настоящим настоящей настоящие настоящих положение положения положением порядке порядок пункт пункта пунктом пункты раздел раздела приложение приложения мфти университета университет федеральное государственное образовательное учреждение высшего образования национальный исследовательский московский физико технический институт документ документа документы имени фамилия подпись дата далее должный должна должен должны основании осуществлять осуществляется осуществления является являются том числе'''.split())
 
 
@@ -39,8 +42,8 @@ def unit_matrix(values):
 
 class Snapshot:
     def __init__(self, revision, documents, chunks):
-        if not chunks or len(chunks) > 20000:
-            raise MapUnavailable('Карта поддерживает от 1 до 20 000 фрагментов; поиск остаётся доступен.')
+        if not chunks or len(chunks) > MAX_MAP_CHUNKS:
+            raise MapUnavailable(MAP_SIZE_ERROR)
         self.revision = revision
         self.documents = {d['version_id']: d for d in documents}
         self.chunks = [{k: v for k, v in c.items() if k not in ('embedding', 'embedding_text')} for c in chunks]
@@ -143,6 +146,8 @@ class KnowledgeMap:
             if revision['model_revision'] != self.embedder.revision:
                 raise MapUnavailable('Модель карты не совпадает с активным индексом.')
             key = revision['corpus_key']
+            if not 1 <= self.store.chunk_count(key) <= MAX_MAP_CHUNKS:
+                raise MapUnavailable(MAP_SIZE_ERROR)
             snapshot = Snapshot(revision, self.store.documents(key), self.store.snapshot_chunks(key))
             with self._lock:
                 self._snapshot, self._failure = snapshot, None

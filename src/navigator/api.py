@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import threading
 import time
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
@@ -42,6 +43,10 @@ class MailQuery(BaseModel):
         if not (self.subject or self.body):
             raise ValueError("Укажи тему или текст письма")
         return self
+
+
+class LiveQuery(Query):
+    mode: Literal['ask', 'search'] = 'ask'
 
 
 def create_app(*, service=None, generator=None, import_repository=None, import_directory=None,
@@ -87,10 +92,12 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     calls = defaultdict(deque)
     global_calls = deque()
 
-    def retrieve(query):
+    def retrieve(query, progress=None):
         if not search_lock.acquire(blocking=False):
             raise HTTPException(429, "Поиск занят. Повторите запрос через несколько секунд.")
         try:
+            if progress is not None:
+                return app.state.service.search(query.question, limit=query.limit, progress=progress)
             return app.state.service.search(query.question, limit=query.limit)
         finally:
             search_lock.release()
@@ -166,10 +173,23 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
         finally:
             ask_lock.release()
 
+    def answer_query(query: Query, request: Request, *, progress=None):
+        with generation_slot(request) as generator:
+            retrieved = retrieve(query, progress)
+            if progress is not None:
+                initial_trace = send_retrieval(progress, retrieved)
+                result = generator.answer(query.question, retrieved, progress=progress)
+                if initial_trace['map_status'] == 'building':
+                    updated_trace = make_trace(retrieved)
+                    if updated_trace['map_status'] == 'ready':
+                        progress({'type': 'map_update', 'trace': updated_trace})
+                progress({'type': 'answer', 'answer': result})
+                return result
+            return generator.answer(query.question, retrieved)
+
     @app.post("/api/ask")
     def ask(query: Query, request: Request):
-        with generation_slot(request) as generator:
-            return generator.answer(query.question, retrieve(query))
+        return answer_query(query, request)
 
     @app.post("/api/mail/analyze")
     def analyze_mail(mail: MailQuery, request: Request):
@@ -179,6 +199,35 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
                 return {"result_type": "no_action"}
             query = Query(question=intent.question)
             return generator.answer(query.question, retrieve(query))
+
+    def make_trace(retrieved, *, include_context=True):
+        from .live import retrieval_trace
+        try:
+            trace = retrieval_trace(retrieved, app.state.knowledge_map, include_context=include_context)
+        except Exception:
+            # Optional visual grouping must not invalidate a valid RAG result.
+            trace = retrieval_trace(retrieved, None, include_context=include_context)
+        return trace
+
+    def send_retrieval(progress, retrieved, *, include_context=True):
+        trace = make_trace(retrieved, include_context=include_context)
+        progress({'type': 'retrieval', 'retrieval': retrieved, 'trace': trace})
+        return trace
+
+    @app.post('/api/query/stream')
+    def live_query(query: LiveQuery, request: Request):
+        from .live import stream_response
+        if query.mode == 'ask' and app.state.generator is None:
+            raise HTTPException(503, 'API модели не настроено. Используйте «Только поиск».')
+        def run(progress):
+            progress({'type': 'started', 'mode': query.mode})
+            if query.mode == 'ask':
+                answer_query(query, request, progress=progress)
+            else:
+                retrieved = retrieve(query, progress)
+                send_retrieval(progress, retrieved, include_context=False)
+                progress({'type': 'search_complete', 'retrieval': retrieved})
+        return stream_response(run)
 
     @app.get("/api/sources/{source_id}")
     def source(source_id: str):

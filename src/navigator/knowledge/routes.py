@@ -51,10 +51,10 @@ def install_routes(app, answer):
         return FileResponse(Path(__file__).parents[1] / 'static' / 'map.html')
 
     @app.get('/api/map')
-    def graph(request: Request):
+    def graph(request: Request, include_questions: bool = True):
         snapshot = service(request).snapshot()
         questions = []
-        for row in request.app.state.map_questions.list():
+        for row in (request.app.state.map_questions.list() if include_questions else []):
             vector = row.pop('query_vector')
             model_revision = row.pop('model_revision')
             questions.append({**row, 'stale': row['corpus_key'] != snapshot.revision['corpus_key'],

@@ -315,6 +315,14 @@ class Store:
         return row
 
 
+    def chunk_count(self, corpus_key: str) -> int:
+        """Count an immutable corpus without loading its vectors or text."""
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT count(*) AS count FROM corpus_chunks WHERE corpus_key=%s", (corpus_key,),
+            ).fetchone()
+        return row["count"]
+
     def snapshot_chunks(self, corpus_key: str) -> list[dict]:
         """Reuse verified existing vectors; new imports do not re-embed the base."""
         with self._connect() as conn:

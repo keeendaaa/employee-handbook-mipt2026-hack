@@ -8,6 +8,9 @@ import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 
+NOT_FOUND_INFORMATION = "В найденных фрагментах не удалось подтвердить ответ на вопрос."
+
+
 class GenerationError(RuntimeError):
     pass
 
@@ -46,7 +49,7 @@ class Answer(BaseModel):
             raise ValueError("Полный ответ требует подтверждённого резюме и отсутствия пробелов")
         if self.result_type == "partial" and (not self.missing_information or not self.summary):
             raise ValueError("Частичный ответ должен описывать подтверждённую часть и пробелы")
-        if self.result_type == "not_found" and (self.summary or self.steps or not self.missing_information):
+        if self.result_type == "not_found" and (self.summary or self.steps or self.clarifications or self.conflicts or not self.missing_information):
             raise ValueError("Отсутствие ответа нельзя совмещать с фактическими утверждениями")
         if self.result_type == "needs_clarification" and not self.clarifications:
             raise ValueError("Нужен уточняющий вопрос")
@@ -133,10 +136,10 @@ class Generator:
         except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as error:
             raise GenerationError("Не удалось определить, требуется ли помощь по письму.") from error
 
-    def answer(self, question: str, retrieved: dict) -> dict:
+    def answer(self, question: str, retrieved: dict, *, progress=None) -> dict:
         refs = evidence(retrieved)
         if not refs:
-            return {**Answer(result_type="not_found", summary=[], steps=[], missing_information=["В индексе не найдены фрагменты для ответа."], clarifications=[], conflicts=[]).model_dump(),
+            return {**Answer(result_type="not_found", summary=[], steps=[], missing_information=[NOT_FOUND_INFORMATION], clarifications=[], conflicts=[]).model_dump(),
                     "citations": [], "model": self.model, "usage": {}, "limitations": ["Поиск не гарантирует полноту базы."],
                     "corpus_revision": retrieved["corpus_revision"]}
         aliases = {f"S{i}": ref for i, ref in enumerate(refs, 1)}
@@ -152,6 +155,8 @@ class Generator:
                     {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}]
         usage = {"prompt_tokens": 0, "completion_tokens": 0}
         for attempt in range(2):
+            if progress:
+                progress({'type': 'stage', 'stage': 'generation', 'attempt': attempt+1})
             try:
                 response = self.client.post("chat/completions", json={"model": self.model, "messages": messages,
                     "temperature": 0, "max_tokens": 10000, "response_format": {"type": "json_object"},
@@ -174,6 +179,8 @@ class Generator:
                 if data["choices"][0].get("finish_reason") == "length":
                     raise ValueError("Ответ усечён")
                 parsed = Answer.model_validate_json(content)
+                if parsed.result_type == "not_found":
+                    parsed.missing_information = [NOT_FOUND_INFORMATION]
                 used = set(sid for claim in parsed.summary + parsed.steps for sid in claim.citation_ids)
                 if not used.issubset(aliases):
                     raise ValueError("Модель сослалась на отсутствующий источник")

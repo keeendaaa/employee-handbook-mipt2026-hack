@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Навигатор сотрудника</title>
+<link rel="stylesheet" href="/assets/search-map.css">
 <style>
   :root {
     --green-900: #0f3d24;
@@ -321,6 +322,18 @@
 
   <div id="error" class="error-box" role="alert" hidden></div>
 
+  <section id="search-map" class="card search-map" aria-labelledby="sm-title">
+    <div class="sm-heading"><h2 id="sm-title">Поиск на карте знаний</h2><a id="sm-answer-link" href="#answer" class="btn btn-secondary" hidden>Перейти к ответу</a></div>
+    <p id="sm-status" class="sm-status" role="status" aria-live="polite">Подготавливаем обзор тем…</p>
+    <ol id="sm-steps" class="sm-steps" aria-label="Этапы запроса"><li>Вопрос</li><li>Поиск фрагментов</li><li>Формирование ответа</li><li>Источники ответа</li></ol>
+    <div class="sm-frame"><canvas id="sm-canvas" role="img" aria-label="Смысловые области и источники текущего запроса. Выбор с клавиатуры доступен в списке под картой."></canvas><div id="sm-tooltip" class="sm-tooltip" hidden></div></div>
+    <div class="sm-tools"><button class="btn btn-secondary" type="button" data-sm-mode="topics" aria-pressed="false">Темы</button><button class="btn btn-secondary" type="button" data-sm-mode="fragments" aria-pressed="true">Фрагменты</button><button class="btn btn-secondary" type="button" data-sm-mode="context" aria-pressed="false">Весь контекст</button><button class="btn btn-secondary" id="sm-fit" type="button">Уместить</button><select id="sm-picker" aria-label="Выбрать тему или источник текущего запроса"><option>Подготавливаем карту…</option></select></div>
+    <p id="sm-counts" class="sm-counts"></p>
+    <div class="sm-counts"><span class="sm-key"><i class="sm-dot found"></i>Кандидат поиска</span><span class="sm-key"><i class="sm-dot context"></i>Контекст модели</span><span class="sm-key"><i class="sm-dot used"></i>Использован в ответе</span></div>
+    <div id="sm-detail" class="sm-detail" aria-live="polite"><p>Приблизьте тему или выберите точку. Найденные фрагменты можно открыть прямо отсюда.</p></div>
+    <p class="sm-note">Карта показывает результаты поиска по общему индексу и источники ответа; геометрия условная. Близость фрагментов сама по себе не подтверждает ответ. Этот запрос не публикуется в общей карте автоматически.</p>
+  </section>
+
   <section id="answer" class="result" aria-labelledby="answer-title" hidden>
     <h2 class="section-title" id="answer-title" tabindex="-1">Результат</h2>
     <div id="answer-body"></div>
@@ -344,6 +357,8 @@
   <div class="dlg-body" id="dlg-body"></div>
 </dialog>
 
+<script src="/assets/vendor/d3.v7.min.js"></script>
+<script src="/assets/search-map.js"></script>
 <script>
 (function () {
   'use strict';
@@ -557,6 +572,52 @@
     }
   }
 
+  async function sendLive(question, mode, limit) {
+    var req = makeRequest();
+    activeReq = req;
+    window.SmenaSearchMap.start(question, mode);
+    var reader = null;
+    try {
+      var res = await fetch('/api/query/stream', {
+        method: 'POST', headers: {'Content-Type':'application/json','Accept':'text/event-stream'},
+        body: JSON.stringify({question:question,mode:mode,limit:limit || 10}), signal:req.controller.signal
+      });
+      if (!res.ok) {
+        var errorData; try {errorData=await res.json();} catch(ignore) {errorData=null;}
+        throw new AppError(errorData && typeof errorData.detail==='string' ? errorData.detail : 'Ошибка запроса (HTTP '+res.status+').','http');
+      }
+      if (!res.body || !(res.headers.get('content-type') || '').includes('text/event-stream')) throw new AppError('Сервер не передал этапы запроса. Повторите отправку.','parse');
+      reader=res.body.getReader();
+      var decoder=new TextDecoder(), buffer='', result=null, done=false;
+      function consume(frame) {
+        var value=frame.split(/\r?\n/).filter(function(line){return line.startsWith('data:');}).map(function(line){return line.slice(5).trimStart();}).join('\n');
+        if(!value)return;
+        var event; try {event=JSON.parse(value);} catch(error) {throw new AppError('Не удалось прочитать этап запроса.','parse');}
+        if(activeReq!==req)return;
+        if(event.type==='error')throw new AppError(event.detail || 'Техническая ошибка запроса.','http');
+        window.SmenaSearchMap.event(event);
+        if(event.type==='answer')result=event.answer;
+        if(event.type==='search_complete')result=event.retrieval;
+        if(event.type==='done')done=true;
+      }
+      while(true){
+        var chunk=await reader.read();
+        buffer+=decoder.decode(chunk.value || new Uint8Array(),{stream:!chunk.done});
+        var frames=buffer.split(/\r?\n\r?\n/);buffer=frames.pop();frames.forEach(consume);
+        if(chunk.done)break;
+      }
+      if(!done || !result)throw new AppError('Передача результата прервалась. Повторите запрос.','network');
+      return result;
+    } catch(err) {
+      var wrapped=err instanceof AppError?err:req.state.cancelled?new AppError('Запрос отменён.','cancel'):req.state.timedOut?new AppError('Превышено время ожидания. Вопрос сохранён — можно повторить отправку.','timeout'):new AppError('Не удалось связаться с сервером. Повторите позже.','network');
+      window.SmenaSearchMap.fail(wrapped.message,wrapped.kind==='cancel');
+      throw wrapped;
+    } finally {
+      if(reader)try{await reader.cancel();}catch(ignore){}
+      req.clear();if(activeReq===req)activeReq=null;
+    }
+  }
+
   function currentQuestion() {
     return (questionEl.value || '').trim();
   }
@@ -575,10 +636,10 @@
     setBusy(true);
     setStatus('Отправляем вопрос и готовим ответ…', 'loading');
     try {
-      var data = await sendJSON(API.ask, { question: question });
+      var data = await sendLive(question, 'ask');
       renderAnswer(data);
       setStatus('Ответ получен. Проверьте источники: полнота ответа не гарантируется.', 'done');
-      answerTitle.focus();
+      answerTitle.focus({preventScroll:true});
     } catch (err) {
       if (err.kind === 'cancel') {
         setStatus('Запрос отменён. Вопрос сохранён — можно отправить снова.', 'idle');
@@ -604,10 +665,10 @@
     setBusy(true);
     setStatus('Ищем фрагменты в документах…', 'loading');
     try {
-      var data = await sendJSON(API.search, { question: question, limit: SEARCH_LIMIT });
+      var data = await sendLive(question, 'search', SEARCH_LIMIT);
       renderSearch(data);
       setStatus('Поиск завершён. Показаны найденные фрагменты, ответ не формировался.', 'done');
-      searchTitle.focus();
+      searchTitle.focus({preventScroll:true});
     } catch (err) {
       if (err.kind === 'cancel') {
         setStatus('Запрос отменён. Вопрос сохранён — можно отправить снова.', 'idle');
@@ -828,7 +889,7 @@
       if (sum) answerBody.appendChild(sum);
     } else if (type === 'not_found') {
       var nf = h('div', 'block');
-      nf.appendChild(h('p', null, 'В документах не найдено сведений, отвечающих на вопрос. Попробуйте переформулировать вопрос или выполнить поиск по ключевым словам.'));
+      nf.appendChild(h('p', null, 'В найденных фрагментах не удалось подтвердить ответ на вопрос. Попробуйте переформулировать вопрос или выполнить поиск по ключевым словам.'));
       answerBody.appendChild(nf);
     } else {
       var empty = h('div', 'block');
@@ -1099,6 +1160,7 @@
     loadFragment(sourceId, documentName);
   }
 
+  window.SmenaSearchMap.setOpenSource(openFragment);
   dlgClose.addEventListener('click', closeDialog);
   dlg.addEventListener('close', abortDialogRequest);
   dlg.addEventListener('cancel', function () { abortDialogRequest(); });

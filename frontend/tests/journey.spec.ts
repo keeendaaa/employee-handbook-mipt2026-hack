@@ -296,7 +296,11 @@ test("regulation opens complete extracted text and immutable snapshot errors sta
   await page.getByRole("button", { name: /Синтетический регламент/ }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText("Конец тестового материала.");
-  await expect(dialog).toContainText("Версия aaaaaaaa");
+  await expect(dialog.getByText(/Версия aaaaaaaa/)).not.toBeVisible();
+  await expect(dialog.locator(".document-block, .source-text")).toHaveCount(0);
+  await dialog.locator(".document-information summary").click();
+  await expect(dialog.getByText(/Версия aaaaaaaa/)).toBeVisible();
+  await dialog.locator(".document-information summary").click();
   await page.screenshot({ path: "test-results/document-reader-1440.png" });
   await page.keyboard.press("Escape");
   const stale = await page.request.get(
@@ -468,3 +472,93 @@ for (const width of [320, 390, 1024, 1440, 1920])
       });
     }
   });
+
+for (const width of [320, 390, 1024, 1440, 1920])
+  test(`transitive document branches and continuous reader ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const titles = ["Регламент поиска и подбора персонала для подразделений.pdf", "Порядок согласования тестовых заявок.pdf", "Не связанный с выбранной веткой документ.pdf"];
+    await page.route("**/api/map?*", (route) => route.fulfill({ json: {
+      status: "ready", corpus_revision: "synthetic-e2e", chunk_count: 2,
+      documents: titles.map((name, i) => ({ id: `d${i}`, name })),
+      topics: [
+        { id: "t1", label: "Подбор персонала", count: 1, documents: [{ id: "d0", count: 1 }] },
+        { id: "t2", label: "Согласование заявки", count: 1, documents: [{ id: "d1", count: 1 }] },
+      ],
+      edges: [{ source: "t1", target: "t2", kind: "similarity", similarity: .8 }], questions: [],
+    }}));
+    await page.route("**/api/map/topics/**", (route) => route.fulfill({ json: { fragments: [
+      { id: "noise", document_name: titles[0], preview: "_________ /________/", source_id: "noise" },
+      { id: "real", document_name: titles[0], preview: "3. Заполните синтетическую тестовую заявку.", source_id: "real" },
+    ] }}));
+    await page.route("**/api/documents/**", (route) => route.fulfill({ json: {
+      id: "d0", name: titles[0], version_id: "12345678", corpus_revision: "synthetic-e2e",
+      warnings: ["Тестовое предупреждение об извлечении"],
+      blocks: ["Министерство науки", "Московский физико-технический институт", "ПРИКАЗ", "1. Полный текст синтетического материала."].map((text, i) => ({ text, locator: { block: i + 1 }, method: "native" })),
+    }}));
+    await page.goto("/#/admin/map");
+    await page.getByRole("button", { name: "Фильтры карты" }).click();
+    await page.getByRole("checkbox", { name: "Темы", exact: true }).uncheck();
+    await expect(page.locator(".obsidian-node")).toHaveCount(3);
+    await expect(page.locator(".obsidian-edge[data-projected=true]")).toHaveCount(1);
+    const root = page.getByRole("button", { name: `Документы: ${titles[0]}`, exact: true });
+    await root.press("Enter");
+    await expect(page.locator(".obsidian-node")).toHaveCount(2);
+    await expect(page.getByRole("button", { name: `Документы: ${titles[2]}` })).toHaveCount(0);
+    const inspector = page.getByRole("complementary", { name: "Выбранный узел" });
+    await expect(inspector.getByRole("heading", { name: titles[0], exact: true })).toBeVisible();
+    const label = root.locator("text");
+    expect(await label.evaluate((el) => {
+      const matrix = (el as SVGTextElement).getScreenCTM()!;
+      return parseFloat(getComputedStyle(el).fontSize) * Math.hypot(matrix.a, matrix.b);
+    })).toBeGreaterThanOrEqual(12);
+    const labelBox = await label.boundingBox(), viewportBox = await page.locator(".graph-viewport").boundingBox();
+    expect(labelBox!.x).toBeGreaterThanOrEqual(viewportBox!.x);
+    expect(labelBox!.x + labelBox!.width).toBeLessThanOrEqual(viewportBox!.x + viewportBox!.width);
+    await expect(inspector.locator(".graph-fragment summary")).toHaveText(["3. Заполните синтетическую тестовую заявку."]);
+    const canvasBox = await page.locator(".graph-canvas").boundingBox(), panelBox = await inspector.boundingBox();
+    expect(canvasBox && panelBox).toBeTruthy();
+    expect(canvasBox!.x + canvasBox!.width <= panelBox!.x + 1 || canvasBox!.y + canvasBox!.height <= panelBox!.y + 1).toBe(true);
+    await expect(page.locator("body")).toHaveJSProperty("scrollWidth", width);
+    await page.screenshot({ path: `test-results/branch-${width}.png`, fullPage: true });
+    await inspector.getByRole("button", { name: /Открыть регламент/ }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.locator(".document-page")).toHaveCount(1);
+    await expect(dialog.locator(".document-paragraph")).toHaveText(["Министерство науки", "Московский физико-технический институт", "ПРИКАЗ", "1. Полный текст синтетического материала."]);
+    await expect(dialog.getByText("Тестовое предупреждение об извлечении")).not.toBeVisible();
+    await expect(dialog.getByText(/block [1-4]/)).toHaveCount(0);
+    await page.screenshot({ path: `test-results/continuous-document-${width}.png`, fullPage: true });
+    await dialog.locator(".document-information summary").click();
+    await expect(dialog.getByText("Тестовое предупреждение об извлечении")).toBeVisible();
+    await dialog.locator(".document-information summary").click();
+    await expect(dialog.getByText("Тестовое предупреждение об извлечении")).not.toBeVisible();
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "← Вся карта" }).click();
+    await expect(page.locator(".obsidian-node")).toHaveCount(3);
+    await page.getByLabel("Связи через темы").selectOption("1");
+    await expect(page.locator(".obsidian-edge")).toHaveCount(0);
+    await page.getByLabel("Связи через темы").selectOption("Infinity");
+    await expect(page.locator(".obsidian-edge")).toHaveCount(1);
+  });
+
+test("large document branch removes neighbor cross-links and keeps mobile titles apart", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 1000 });
+  const documents = Array.from({ length: 9 }, (_, i) => ({ id: `d${i}`, name: `Синтетический регламент подразделения номер ${i}.pdf` }));
+  await page.route("**/api/map?*", (route) => route.fulfill({ json: {
+    status: "ready", corpus_revision: "synthetic-e2e", chunk_count: 9, documents,
+    topics: [{ id: "shared", label: "Тестовая общая тема", count: 9, documents: documents.map(({ id }) => ({ id, count: 1 })) }],
+    edges: [], questions: [],
+  }}));
+  await page.route("**/api/map/topics/**", (route) => route.fulfill({ json: { fragments: [] } }));
+  await page.goto("/#/admin/map");
+  await page.getByRole("button", { name: "Фильтры карты" }).click();
+  await page.getByRole("checkbox", { name: "Темы", exact: true }).uncheck();
+  await expect(page.locator(".obsidian-edge")).toHaveCount(36);
+  await page.getByRole("button", { name: `Документы: ${documents[0].name}`, exact: true }).press("Enter");
+  await expect(page.locator(".obsidian-node")).toHaveCount(9);
+  await expect(page.locator(".obsidian-edge")).toHaveCount(8);
+  const labels = page.locator(".obsidian-node text");
+  const first = await labels.nth(0).boundingBox(), second = await labels.nth(1).boundingBox();
+  expect(second!.y - (first!.y + first!.height)).toBeGreaterThan(16);
+  await expect(page.getByRole("navigation", { name: "Связанные узлы" }).getByRole("button")).toHaveCount(8);
+  await page.screenshot({ path: "test-results/branch-large-320.png", fullPage: true });
+});

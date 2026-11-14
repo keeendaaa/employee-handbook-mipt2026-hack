@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import type { DocumentText } from "../lib/types";
-import { Badge, ErrorNotice, Loading, Modal, Notice } from "./primitives";
+import { documentSections } from "../lib/document";
+import { ErrorNotice, Loading, Modal } from "./primitives";
 
 export interface DocumentSelection {
   id: string;
@@ -34,7 +35,6 @@ export function DocumentReader({
       open={!!document}
       onClose={onClose}
       title={data?.name || "Регламент"}
-      description="Извлечённый текст документа"
       wide
     >
       {error ? (
@@ -43,37 +43,23 @@ export function DocumentReader({
         <Loading />
       ) : (
         <>
-          <div className="inline">
-            <Badge>Документ целиком</Badge>
-            <span className="meta">Версия {data.version_id.slice(0, 8)}</span>
-          </div>
-          {data.warnings.map((w, i) => (
-            <Notice key={i}>{w}</Notice>
-          ))}
-          <div className="document-reader">
-            {data.blocks.map((block, i) => (
-              <section className="document-block" key={i}>
-                <h3>
-                  {Object.entries(block.locator)
-                    .map(
-                      ([key, value]) =>
-                        `${({ page: "Страница", paragraph: "Абзац", sheet: "Лист" } as Record<string, string>)[key] || key} ${value}`,
-                    )
-                    .join(" · ") || `Блок ${i + 1}`}
-                </h3>
-                {block.method === "ocr" && (
-                  <Badge tone="warning">
-                    OCR · возможны ошибки распознавания
-                  </Badge>
-                )}
-                <div className="source-text">{block.text}</div>
+          <article className="document-reader" aria-label={data.name}>
+            {documentSections(data.blocks).map((section, i) => (
+              <section className="document-page" key={`${section.key}:${i}`}>
+                {section.paragraphs.map((paragraph, index) => (
+                  <p className="document-paragraph" key={index}>{paragraph}</p>
+                ))}
               </section>
             ))}
-          </div>
-          <p className="meta">
-            Показан текст, извлечённый для базы знаний. Оформление оригинального
-            файла может отличаться.
-          </p>
+          </article>
+          <details className="document-information">
+            <summary>Информация о документе</summary>
+            <div>
+              <p className="meta">Версия {data.version_id.slice(0, 8)}. Показан извлечённый текст; оформление оригинала может отличаться.</p>
+              {data.warnings.map((warning, index) => <p key={index}>{warning}</p>)}
+              {data.blocks.some((b) => b.method === "ocr") && <p>OCR: возможны ошибки распознавания.</p>}
+            </div>
+          </details>
         </>
       )}
     </Modal>

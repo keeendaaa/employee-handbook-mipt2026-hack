@@ -34,3 +34,5 @@ __pycache__/
 /frontend/playwright-report/
 /src/navigator/web/
 /data/workspace/
+
+*.tsbuildinfo

@@ -46,8 +46,8 @@
   "graphify": {
     "version": "0.9.108",
     "mode": "local AST, no cluster, no external LLM",
-    "nodes": 1905,
-    "edges": 4480,
+    "nodes": 1904,
+    "edges": 4478,
     "excludedTokenFiles": [
       "design-tokens.css",
       "smena-design-tokens.css",

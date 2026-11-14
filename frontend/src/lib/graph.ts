@@ -21,6 +21,68 @@ export interface GraphEdge {
   source: string;
   target: string;
   kind: string;
+  /** Hidden topic IDs that justify a projected semantic edge. */
+  via?: string[];
+}
+export interface Graph {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+/** Hidden topics connect only their immediate members. */
+export function projectGraph(graph: Graph, kinds: NodeKind[]): Graph {
+  const nodes = graph.nodes.filter((node) => kinds.includes(node.kind));
+  const visible = new Set(nodes.map((node) => node.id));
+  const edges = new Map<string, GraphEdge>();
+  const key = (a: string, b: string) => JSON.stringify([a, b].sort());
+  const members = new Map<string, Set<string>>();
+  const hiddenTopics = new Set(
+    graph.nodes.filter((node) => node.kind === "topic" && !visible.has(node.id)).map((node) => node.id),
+  );
+  for (const edge of graph.edges) {
+    const { source, target, kind } = edge;
+    if (visible.has(source) && visible.has(target) && source !== target) {
+      edges.set(key(source, target), { ...edge, via: edge.via?.slice() });
+    }
+    if (kind !== "membership" && kind !== "question") continue;
+    const [topic, member] = hiddenTopics.has(source) ? [source, target] : [target, source];
+    if (hiddenTopics.has(topic) && visible.has(member)) {
+      const ids = members.get(topic) ?? new Set<string>();
+      ids.add(member);
+      members.set(topic, ids);
+    }
+  }
+  for (const [topic, ids] of members) {
+    const list = [...ids];
+    for (const [index, source] of list.entries()) {
+      for (const target of list.slice(index + 1)) {
+        const id = key(source, target);
+        const existing = edges.get(id);
+        if (!existing) edges.set(id, { source, target, kind: "projected", via: [topic] });
+        else existing.via?.push(topic);
+      }
+    }
+  }
+  return { nodes, edges: [...edges.values()] };
+}
+/** A branch contains the chosen node and its incident edges only. */
+export function graphBranch(graph: Graph, id: string | null): Graph {
+  if (!id || !graph.nodes.some((n) => n.id === id)) return graph;
+  const edges = graph.edges.filter((e) => e.source === id || e.target === id),
+    ids = new Set([id, ...edges.flatMap((e) => [e.source, e.target])]);
+  return { nodes: graph.nodes.filter((n) => ids.has(n.id)), edges };
+}
+export function graphLabelLines(label: string, length = 30): string[] {
+  const words = label.replace(/\.(pdf|docx|xlsx)$/i, "").replace(/_/g, " ").split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  for (const word of words) {
+    for (let start = 0; start < word.length; start += length) {
+      const part = word.slice(start, start + length), last = lines.length - 1;
+      if (last >= 0 && lines[last].length + part.length + 1 <= length)
+        lines[last] += " " + part;
+      else lines.push(part);
+    }
+  }
+  return lines.length ? lines : [label];
 }
 export interface Camera {
   x: number;
@@ -101,14 +163,14 @@ export function buildGraph(data: KnowledgeMap) {
         edges.map((e) => ({ ...e })),
       )
         .id((n) => n.id)
-        .distance(135)
+        .distance(220)
         .strength(0.4),
     )
-    .force("charge", forceManyBody().strength(-240))
+    .force("charge", forceManyBody().strength(-420))
     .force("center", forceCenter())
     .force(
       "collision",
-      forceCollide<GraphNode>().radius((n) => n.radius + 30),
+      forceCollide<GraphNode>().radius((n) => n.kind === "topic" ? 55 : 120),
     );
   simulation.tick(240);
   simulation.stop();
@@ -131,7 +193,7 @@ export function fitCamera(
       ),
     );
   const minY = Math.min(...nodes.map((n) => n.y - n.radius)),
-    maxY = Math.max(...nodes.map((n) => n.y + n.radius + 24));
+    maxY = Math.max(...nodes.map((n) => n.y + n.radius + graphLabelLines(n.label).length * 18 + 12));
   const scale = Math.max(
     0.15,
     Math.min(

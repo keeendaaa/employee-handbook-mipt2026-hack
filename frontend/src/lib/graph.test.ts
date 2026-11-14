@@ -1,5 +1,5 @@
 import { it, expect } from "vitest";
-import { buildGraph, fitCamera, zoomCamera } from "./graph";
+import { buildGraph, fitCamera, zoomCamera, projectGraph, graphBranch, graphLabelLines } from "./graph";
 import type { KnowledgeMap } from "./types";
 it("uses every actual node and drops dangling edges without inventing dependencies", () => {
   const data = {
@@ -71,4 +71,36 @@ it("uses actual document names instead of service-only topic labels", () => {
     edges: [], questions: [] } as unknown as KnowledgeMap;
   expect(buildGraph(data).nodes.find(n => n.kind === "topic")?.label).toBe("Смета");
   expect(data.topics[0].label).toBe("none · проверено · сохраненное");
+});
+
+const projectionFixture = () => {
+  const nodes = ["a", "b", "c", "d", "e", "isolated", "t1", "t2", "t3"].map((id) => ({
+    id, sourceId: id, label: id, kind: id.startsWith("t") ? "topic" as const : "document" as const, radius: 9, x: 0, y: 0,
+  }));
+  const edges = [["a", "t1"], ["b", "t1"], ["t1", "t2"], ["t2", "t3"], ["t3", "t1"], ["c", "t3"], ["d", "t2"], ["d", "e"]].map(([source, target]) => ({ source, target, kind: source.startsWith("t") && target.startsWith("t") ? "similarity" : "membership" }));
+  return { nodes, edges };
+};
+it("connects documents through shared topics, even when other topics are adjacent", () => {
+  const g = projectGraph(projectionFixture(), ["document"]);
+  expect(g.nodes).toHaveLength(6);
+  expect(g.edges).toHaveLength(2);
+  expect(g.edges.filter((e) => e.kind === "projected")).toEqual([
+    { source: "a", target: "b", kind: "projected", via: ["t1"] },
+  ]);
+  expect(projectGraph(projectionFixture(), ["document", "topic"]).edges).toHaveLength(8);
+});
+it("isolates the selected branch and removes even cross-links between its neighbors", () => {
+  const g = projectGraph(projectionFixture(), ["document"]), branch = graphBranch(g, "a");
+  expect(branch.nodes.map((n) => n.id).sort()).toEqual(["a", "b"]);
+  expect(branch.edges).toHaveLength(1);
+  expect(branch.edges.every((e) => e.source === "a" || e.target === "a")).toBe(true);
+  expect(graphBranch(g, "isolated").nodes).toHaveLength(1);
+  expect(graphBranch(g, null)).toBe(g);
+});
+it("wraps full document titles without replacing their content with ellipses", () => {
+  const title = "Регламент поиска и подбора персонала и согласования заявок подразделений.pdf";
+  const lines = graphLabelLines(title);
+  expect(lines.length).toBeGreaterThan(1);
+  expect(lines.join(" ")).toBe(title.replace(/\.pdf$/, ""));
+  expect(lines.every((line) => line.length <= 30)).toBe(true);
 });

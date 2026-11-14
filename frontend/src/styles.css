@@ -1122,15 +1122,44 @@ input[type="checkbox"]:disabled {
   margin-left: auto;
   color: var(--sm-secondary);
 }
-.document-reader,
-.document-block {
+.document-reader {
+  width: 100%;
+  max-width: 76ch;
+  margin-inline: auto;
+  min-width: 0;
+  color: var(--sm-text);
+}
+.document-page + .document-page {
+  margin-top: var(--sm-space-40);
+  padding-top: var(--sm-space-32);
+  border-top: 1px solid var(--sm-line);
+}
+.document-paragraph {
+  color: var(--sm-text);
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+.document-paragraph + .document-paragraph {
+  margin-top: var(--sm-space-12);
+}
+.document-information {
+  margin-top: var(--sm-space-32);
+  padding-top: var(--sm-space-20);
+  border-top: 1px solid var(--sm-line);
+  color: var(--sm-secondary);
+  overflow-wrap: anywhere;
+}
+.document-information summary {
+  cursor: pointer;
+  padding-block: var(--sm-space-8);
+}
+.document-information > div {
   display: flex;
   flex-direction: column;
-  gap: var(--sm-space-24);
-  min-width: 0;
-}
-.document-block {
-  padding-block: var(--sm-space-12);
+  gap: var(--sm-space-12);
+  padding-top: var(--sm-space-16);
 }
 .modal-fullscreen {
   inset: 0;
@@ -1155,6 +1184,7 @@ input[type="checkbox"]:disabled {
   display: flex;
 }
 .graph-explorer {
+  container-type: inline-size;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1252,17 +1282,55 @@ input[type="checkbox"]:disabled {
   color: var(--sm-secondary);
   font-size: var(--sm-type-meta-size);
 }
-.graph-canvas {
-  position: relative;
-  height: 600px;
-  min-height: 380px;
-  flex: 1;
-  overflow: hidden;
-}
-[data-fullscreen="true"] .graph-canvas {
-  height: auto;
+.graph-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   min-height: 0;
 }
+.graph-canvas {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  min-width: 0;
+  min-height: 380px;
+}
+.graph-viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+[data-fullscreen="true"] .graph-workspace {
+  flex: 1;
+  overflow: auto;
+}
+[data-fullscreen="true"] .graph-canvas {
+  height: 100%;
+}
+.graph-branch-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sm-space-12);
+  padding: var(--sm-space-12) var(--sm-space-16);
+  border-bottom: 1px solid var(--sm-line);
+}
+.graph-branch-bar p {
+  flex: 1;
+  min-width: 140px;
+  overflow-wrap: anywhere;
+  font-size: var(--sm-type-small-size);
+}
+.graph-depth {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sm-space-12);
+  font-size: var(--sm-type-small-size);
+  min-width: 0;
+}
+.graph-depth select { max-width: 100%; }
 .obsidian-graph {
   width: 100%;
   height: 100%;
@@ -1319,13 +1387,13 @@ input[type="checkbox"]:disabled {
   fill: var(--sm-text);
 }
 .graph-bottom {
-  pointer-events: none;
-  position: absolute;
-  inset: auto var(--sm-space-16) var(--sm-space-16);
   display: flex;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--sm-space-16);
+  gap: var(--sm-space-12);
+  padding: var(--sm-space-12) var(--sm-space-16);
+  border-top: 1px solid var(--sm-line);
 }
 .graph-legend {
   display: flex;
@@ -1380,20 +1448,39 @@ input[type="checkbox"]:disabled {
   color: var(--sm-secondary);
 }
 .graph-inspector {
-  position: absolute;
-  right: var(--sm-space-16);
-  top: var(--sm-space-16);
-  width: 300px;
-  max-width: calc(100% - 32px);
-  max-height: calc(100% - 96px);
+  min-width: 0;
+  max-height: 600px;
   overflow: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--sm-space-20);
+  gap: var(--sm-space-24);
   padding: var(--sm-space-24);
   background: var(--sm-surface);
+  border-top: 1px solid var(--sm-line);
+  overflow-wrap: anywhere;
+}
+.graph-related { display: flex; flex-direction: column; gap: var(--sm-space-12); }
+.graph-related button {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sm-space-12);
+  padding: var(--sm-space-12);
+  background: var(--sm-surface);
   border: 1px solid var(--sm-line);
-  border-radius: var(--sm-radius-12);
+  border-radius: var(--sm-radius-8);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.graph-related button:hover { background: var(--sm-hover); }
+.graph-related button > span:nth-child(2) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.graph-related button > svg, .graph-related .graph-dot { flex: none; margin-top: var(--sm-space-4); }
+.graph-related small { display: block; color: var(--sm-secondary); margin-top: var(--sm-space-8); }
+@container (min-width: 800px) {
+  .graph-workspace[data-inspecting="true"] { grid-template-columns: minmax(0, 1fr) 320px; }
+  .graph-inspector { border-top: 0; border-left: 1px solid var(--sm-line); }
+  [data-fullscreen="true"] .graph-inspector { max-height: none; }
 }
 .graph-inspector h2 {
   font-size: var(--sm-type-h3-size);
@@ -1473,7 +1560,6 @@ input[type="checkbox"]:disabled {
     flex-direction: column;
     align-items: stretch;
     gap: var(--sm-space-8);
-    inset: auto var(--sm-space-8) var(--sm-space-8);
   }
   .graph-zoom {
     align-self: flex-end;
@@ -1482,16 +1568,7 @@ input[type="checkbox"]:disabled {
     align-self: flex-start;
     gap: var(--sm-space-8);
   }
-  .graph-inspector {
-    top: auto;
-    bottom: 112px;
-    left: var(--sm-space-12);
-    right: var(--sm-space-12);
-    width: auto;
-    max-width: none;
-    max-height: 45%;
-    padding: var(--sm-space-16);
-  }
+  .graph-inspector { padding: var(--sm-space-16); }
   .graph-filters {
     gap: var(--sm-space-12);
   }

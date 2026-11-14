@@ -10,8 +10,17 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { fragmentTitle } from "../lib/document";
 import { api } from "../lib/api";
-import { buildGraph, fitCamera, zoomCamera, placeGraphLabels } from "../lib/graph";
+import {
+  buildGraph,
+  fitCamera,
+  zoomCamera,
+  projectGraph,
+  graphBranch,
+  graphLabelLines,
+  placeGraphLabels,
+} from "../lib/graph";
 import type { Camera, GraphNode, NodeKind } from "../lib/graph";
 import type { Fragment, KnowledgeMap } from "../lib/types";
 import type { DocumentSelection } from "./document-reader";
@@ -74,10 +83,7 @@ export function GraphExplorer({
     observer.observe(viewport.current);
     return () => observer.disconnect();
   }, [full]);
-  useEffect(
-    () => setCamera(fitCamera(nodes, size.width, size.height)),
-    [graph, size],
-  );
+
   useEffect(() => {
     const el = viewport.current;
     if (!el) return;
@@ -87,27 +93,52 @@ export function GraphExplorer({
     el.addEventListener("wheel", block, { passive: false });
     return () => el.removeEventListener("wheel", block);
   }, [full]);
-  const visible = nodes.filter((n) => kinds.includes(n.kind)),
+  const projected = useMemo(
+    () => projectGraph({ nodes, edges: graph.edges }, kinds),
+    [nodes, graph, kinds],
+  );
+  const branch = useMemo(
+    () => graphBranch(projected, selected),
+    [projected, selected],
+  );
+  const visible = branch.nodes,
+    edges = branch.edges,
     byId = new Map(nodes.map((n) => [n.id, n])),
-    visibleIds = new Set(visible.map((n) => n.id)),
-    edges = graph.edges.filter(
-      (e) => visibleIds.has(e.source) && visibleIds.has(e.target),
-    );
-  const active = byId.get(selected || ""),
+    active = byId.get(selected || ""),
     focus = hover || selected,
     neighbors = new Set(
       focus
-        ? [
-            focus,
-            ...edges
-              .filter((e) => e.source === focus || e.target === focus)
-              .flatMap((e) => [e.source, e.target]),
-          ]
+        ? [focus, ...edges
+            .filter((e) => e.source === focus || e.target === focus)
+            .flatMap((e) => [e.source, e.target])]
         : [],
     ),
-    matches = visible.filter((n) =>
+    matches = projected.nodes.filter((n) =>
       n.label.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-    );
+    ),
+    related = branch.nodes.filter((n) => n.id !== selected),
+    readableFragments = fragments?.filter((f) => fragmentTitle(f.preview));
+  // Refit on navigation/filter changes, never while the user drags a node.
+  useEffect(() => {
+    // Stack a focused branch on narrow canvases so full titles remain legible.
+    if (selected && size.width < 600) {
+      const ordered = [...visible].sort(
+        (a, b) => Number(b.id === selected) - Number(a.id === selected),
+      );
+      const arranged = ordered.map((n, i) => ({
+        ...n,
+        x: i === 0 ? 0 : (i % 2 ? 1 : -1) * Math.min(48, size.width * 0.14),
+        y: i * 160,
+      }));
+      const positions = new Map(arranged.map((n) => [n.id, n]));
+      setNodes((old) => old.map((n) => positions.get(n.id) || n));
+      const fitted = fitCamera(arranged, size.width, size.height);
+      // Large branches remain pannable rather than squeezing titles together.
+      setCamera(fitted.scale < 0.65
+        ? { x: size.width / 2, y: 48, scale: 0.75 }
+        : fitted);
+    } else setCamera(fitCamera(visible, size.width, size.height));
+  }, [graph, size, selected, kinds]);
   const measureLabel = useMemo(() => {
     const context = document.createElement("canvas").getContext("2d");
     if (context) context.font = '12px "Inter Variable", Arial, sans-serif';
@@ -117,7 +148,7 @@ export function GraphExplorer({
     [...(focus ? [focus] : []), ...(query ? matches.map((n) => n.id) : [])], measureLabel);
   const shownEdges = focus
     ? edges.filter((e) => e.source === focus || e.target === focus)
-    : edges.filter((e) => e.kind === "membership");
+    : edges.filter((e) => !kinds.includes("topic") || e.kind === "membership");
   const question =
     active?.kind === "question"
       ? data.questions.find((q) => q.id === active.sourceId)
@@ -157,15 +188,9 @@ export function GraphExplorer({
       });
     return () => controller.abort();
   }, [selected, data]);
-  function select(n: GraphNode, center = false) {
+  function select(n: GraphNode) {
     setSelected(n.id);
     setHover(null);
-    if (center)
-      setCamera((c) => ({
-        ...c,
-        x: size.width / 2 - n.x * c.scale,
-        y: size.height / 2 - n.y * c.scale,
-      }));
   }
   function zoom(factor: number) {
     setCamera((c) => zoomCamera(c, factor, size.width / 2, size.height / 2));
@@ -211,6 +236,10 @@ export function GraphExplorer({
           {full ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
         </Button>
       </div>
+      {active && <div className="graph-branch-bar">
+        <Button variant="subtle" onClick={() => setSelected(null)}>← Вся карта</Button>
+        <p>Ветка: <strong>{active.label}</strong><span className="meta"> · Связей: {related.length}</span></p>
+      </div>}
       {filters && (
         <div className="graph-filters">
           {(Object.keys(names) as NodeKind[]).map((kind) => (
@@ -242,7 +271,7 @@ export function GraphExplorer({
               <button
                 key={n.id}
                 onClick={() => {
-                  select(n, true);
+                  select(n);
                   setQuery("");
                 }}
               >
@@ -259,7 +288,9 @@ export function GraphExplorer({
           )}
         </div>
       )}
-      <div className="graph-canvas" ref={viewport}>
+      <div className="graph-workspace" data-inspecting={!!active}>
+      <div className="graph-canvas">
+      <div className="graph-viewport" ref={viewport}>
         <svg
           className="obsidian-graph"
           role="group"
@@ -375,6 +406,7 @@ export function GraphExplorer({
               return (
                 <line
                   key={i}
+                  data-projected={!!e.via}
                   x1={a.x}
                   y1={a.y}
                   x2={b.x}
@@ -384,7 +416,9 @@ export function GraphExplorer({
                     opacity: focus && !neighbors.has(e.source) ? 0.12 : 1,
                   }}
                   vectorEffect="non-scaling-stroke"
-                />
+                >
+                  <title>{e.via ? `Смысловая связь через темы: ${e.via.map((id) => byId.get(id)?.label || id).join(" → ")}` : "Связь по теме"}</title>
+                </line>
               );
             })}
             {visible.map((n) => (
@@ -421,7 +455,11 @@ export function GraphExplorer({
                   className="graph-hit"
                 />
                 <circle r={n.radius} className="graph-point" />
-                {labels.has(n.id) && (
+                {selected ? (
+                  <text y={n.radius + 18 / camera.scale} textAnchor="middle" fontSize={13 / camera.scale}>
+                  {graphLabelLines(n.label, size.width < 400 ? 26 : 30).map((line, i) => <tspan key={i} x={0} dy={i ? 17 / camera.scale : 0}>{line}</tspan>)}
+                  </text>
+                ) : labels.has(n.id) && (
                   <text
                     x={(labels.get(n.id)!.x + 7 - camera.x) / camera.scale - n.x}
                     y={(labels.get(n.id)!.y + 16 - camera.y) / camera.scale - n.y}
@@ -444,6 +482,7 @@ export function GraphExplorer({
             </Empty>
           </div>
         )}
+      </div>
         <div className="graph-bottom">
           <div className="graph-legend" title="В обзоре показана принадлежность тем документам. Выберите узел для его смысловых связей.">
             {(Object.keys(names) as NodeKind[]).map((k) => (
@@ -473,6 +512,7 @@ export function GraphExplorer({
             </Button>
           </div>
         </div>
+      </div>
         {active && (
           <aside className="graph-inspector" aria-label="Выбранный узел">
             <div className="inline spread">
@@ -499,6 +539,17 @@ export function GraphExplorer({
                 Открыть регламент <ArrowUpRight size={16} />
               </Button>
             )}
+            {!!related.length && <nav className="graph-related" aria-label="Связанные узлы">
+              <h3>Связанные документы и узлы</h3>
+              {related.map((n) => {
+                const edge = edges.find((e) => e.source === n.id || e.target === n.id);
+                return <button key={n.id} onClick={() => select(n)}>
+                  <span className={`graph-dot ${n.kind}`} />
+                  <span>{n.label}{edge?.via && <small>Через {edge.via.map((id) => byId.get(id)?.label || id).join(" → ")}</small>}</span>
+                  <ArrowUpRight size={16} />
+                </button>;
+              })}
+            </nav>}
             {question ? (
               <>
                 <Badge
@@ -532,10 +583,11 @@ export function GraphExplorer({
             ) : (
               <>
                 <h3>Фрагменты по теме</h3>
-                {fragments.length ? (
-                  fragments.map((f) => (
+                {readableFragments?.length ? (
+                  readableFragments.map((f) => (
                     <details key={f.source_id} className="graph-fragment">
-                      <summary>{f.document_name}</summary>
+                      <summary>{fragmentTitle(f.preview)}</summary>
+                      <p className="meta">{f.document_name}</p>
                       <p>{f.preview}</p>
                       <Button
                         variant="subtle"
@@ -546,7 +598,7 @@ export function GraphExplorer({
                     </details>
                   ))
                 ) : (
-                  <p className="meta">Доступных фрагментов нет.</p>
+                  <p className="meta">Нет содержательных фрагментов для предпросмотра. Полный текст доступен в регламенте.</p>
                 )}
               </>
             )}
@@ -568,7 +620,8 @@ export function GraphExplorer({
         {full && canvas}
       </Modal>
       <p className="meta">
-        Связи показывают принадлежность к теме и смысловую близость.
+        Выберите узел, чтобы оставить только его ветку. При скрытых темах связи проходят через цепочки тем.
+        Это смысловая близость, а не подтверждённые ссылки между регламентами.
         Неподтверждённый вопрос требует проверки и сам по себе не означает
         дефект регламента.
       </p>

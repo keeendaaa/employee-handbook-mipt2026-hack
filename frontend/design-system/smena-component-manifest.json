@@ -1,5 +1,5 @@
 {
-  "version": "1.3.1",
+  "version": "1.4.0",
   "date": "2026-11-14",
   "fileKey": "jORhjmSwUojzxk4ZGo9OI5",
   "pageId": "49:274",
@@ -3071,7 +3071,7 @@
   ],
   "figmaSync": {
     "status": "disabled_by_user",
-    "frontendVersion": "1.3.1",
+    "frontendVersion": "1.4.0",
     "date": "2026-11-14",
     "reason": "User explicitly requested frontend-only work. Figma reads, writes and automatic synchronization are discontinued. Existing Figma IDs are historical reference metadata, not fresh verification."
   },
@@ -3084,7 +3084,7 @@
         "onSource",
         "onDocument"
       ],
-      "behavior": "Force layout; circles; real document/topic/question nodes. Search, pan, node dragging, zoom, fit, group filters, full-viewport dialog and keyboard navigation.",
+      "behavior": "Full multi-line source titles, fixed 13px labels, transitive projection through hidden topics with path provenance and adjustable depth. Selection isolates incident branch only; neighbor cross-links disappear. Full-map reset, branch navigation, non-overlapping inspector beside/below canvas, search, pan/drag/zoom/fullscreen. Narrow focused branches stack vertically; large branches remain pannable. Pure signature previews are omitted; actual substantive source wording is used as preview heading.",
       "figmaSync": "disabled_by_user"
     },
     {
@@ -3094,7 +3094,7 @@
         "document",
         "onClose"
       ],
-      "behavior": "Version-bound full extracted text with block locators, warnings, loading and 404/409/503 errors.",
+      "behavior": "Version-bound continuous extracted text, source order preserved, paragraph/page/sheet boundaries without technical block headings or gray cards. Warnings, OCR metadata and version in initially closed Information disclosure. Loading and 404/409/503 errors remain visible.",
       "figmaSync": "disabled_by_user"
     },
     {

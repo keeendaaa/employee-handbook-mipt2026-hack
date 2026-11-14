@@ -1,0 +1,1739 @@
+{
+  "name": "Смена",
+  "version": "1.2.0",
+  "mode": "Light",
+  "date": "2026-11-14",
+  "fileKey": "jORhjmSwUojzxk4ZGo9OI5",
+  "collections": [
+    {
+      "id": "VariableCollectionId:49:275",
+      "name": "Смена / 01 Primitives",
+      "mode": "Light"
+    },
+    {
+      "id": "VariableCollectionId:49:276",
+      "name": "Смена / 02 Semantic",
+      "mode": "Light"
+    },
+    {
+      "id": "VariableCollectionId:69:981",
+      "name": "Смена / 03 Layout",
+      "mode": "Value"
+    },
+    {
+      "id": "VariableCollectionId:69:998",
+      "name": "Смена / 04 Components",
+      "mode": "Light"
+    }
+  ],
+  "tokens": [
+    {
+      "id": "VariableID:49:277",
+      "name": "color/white",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 1,
+        "g": 1,
+        "b": 1,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-white)"
+    },
+    {
+      "id": "VariableID:49:278",
+      "name": "color/gray25",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9843137264251709,
+        "g": 0.9843137264251709,
+        "b": 0.9803921580314636,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray25)"
+    },
+    {
+      "id": "VariableID:49:279",
+      "name": "color/gray50",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9686274528503418,
+        "g": 0.9686274528503418,
+        "b": 0.9607843160629272,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray50)"
+    },
+    {
+      "id": "VariableID:49:280",
+      "name": "color/gray100",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9450980424880981,
+        "g": 0.9450980424880981,
+        "b": 0.9372549057006836,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray100)"
+    },
+    {
+      "id": "VariableID:49:281",
+      "name": "color/gray200",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9137254953384399,
+        "g": 0.9137254953384399,
+        "b": 0.9058823585510254,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray200)"
+    },
+    {
+      "id": "VariableID:49:282",
+      "name": "color/gray300",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.8274509906768799,
+        "g": 0.8196078538894653,
+        "b": 0.7960784435272217,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray300)"
+    },
+    {
+      "id": "VariableID:49:283",
+      "name": "color/gray500",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.6078431606292725,
+        "g": 0.6039215922355652,
+        "b": 0.5921568870544434,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray500)"
+    },
+    {
+      "id": "VariableID:49:284",
+      "name": "color/gray600",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.47058823704719543,
+        "g": 0.46666666865348816,
+        "b": 0.45490196347236633,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray600)"
+    },
+    {
+      "id": "VariableID:49:285",
+      "name": "color/gray900",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.21568627655506134,
+        "g": 0.2078431397676468,
+        "b": 0.18431372940540314,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray900)"
+    },
+    {
+      "id": "VariableID:49:286",
+      "name": "color/blue500",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0,
+        "g": 0.4588235318660736,
+        "b": 0.8705882430076599,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-blue500)"
+    },
+    {
+      "id": "VariableID:49:287",
+      "name": "color/blue50",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9098039269447327,
+        "g": 0.9490196108818054,
+        "b": 0.9882352948188782,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-blue50)"
+    },
+    {
+      "id": "VariableID:49:288",
+      "name": "color/blue700",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.13333334028720856,
+        "g": 0.4313725531101227,
+        "b": 0.6980392336845398,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-blue700)"
+    },
+    {
+      "id": "VariableID:49:289",
+      "name": "color/green50",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.929411768913269,
+        "g": 0.9529411792755127,
+        "b": 0.9254902005195618,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-green50)"
+    },
+    {
+      "id": "VariableID:49:290",
+      "name": "color/green600",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.2666666805744171,
+        "g": 0.5137255191802979,
+        "b": 0.3803921639919281,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-green600)"
+    },
+    {
+      "id": "VariableID:49:291",
+      "name": "color/yellow50",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9843137264251709,
+        "g": 0.9529411792755127,
+        "b": 0.8588235378265381,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-yellow50)"
+    },
+    {
+      "id": "VariableID:49:292",
+      "name": "color/yellow200",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9647058844566345,
+        "g": 0.9058823585510254,
+        "b": 0.658823549747467,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-yellow200)"
+    },
+    {
+      "id": "VariableID:49:293",
+      "name": "color/yellow700",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.5372549295425415,
+        "g": 0.38823530077934265,
+        "b": 0.16470588743686676,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-yellow700)"
+    },
+    {
+      "id": "VariableID:49:294",
+      "name": "color/red50",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9921568632125854,
+        "g": 0.9215686321258545,
+        "b": 0.9254902005195618,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-red50)"
+    },
+    {
+      "id": "VariableID:49:295",
+      "name": "color/red600",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.8313725590705872,
+        "g": 0.2980392277240753,
+        "b": 0.27843138575553894,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-red600)"
+    },
+    {
+      "id": "VariableID:49:296",
+      "name": "color/purple50",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.9529411792755127,
+        "g": 0.929411768913269,
+        "b": 0.9725490212440491,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-purple50)"
+    },
+    {
+      "id": "VariableID:49:297",
+      "name": "color/purple600",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.5647059082984924,
+        "g": 0.3960784375667572,
+        "b": 0.6901960968971252,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-purple600)"
+    },
+    {
+      "id": "VariableID:69:967",
+      "name": "color/gray650",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.43921568989753723,
+        "g": 0.43529412150382996,
+        "b": 0.41960784792900085,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray650)"
+    },
+    {
+      "id": "VariableID:69:968",
+      "name": "color/gray550",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.5529412031173706,
+        "g": 0.5490196347236633,
+        "b": 0.5333333611488342,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-gray550)"
+    },
+    {
+      "id": "VariableID:69:969",
+      "name": "color/blue600",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0,
+        "g": 0.40784314274787903,
+        "b": 0.7803921699523926,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-blue600)"
+    },
+    {
+      "id": "VariableID:69:970",
+      "name": "color/blue800",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0,
+        "g": 0.3333333432674408,
+        "b": 0.6431372761726379,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-blue800)"
+    },
+    {
+      "id": "VariableID:69:971",
+      "name": "color/green700",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.2078431397676468,
+        "g": 0.43529412150382996,
+        "b": 0.3137255012989044,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-green700)"
+    },
+    {
+      "id": "VariableID:69:972",
+      "name": "color/red700",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.7098039388656616,
+        "g": 0.239215686917305,
+        "b": 0.22745098173618317,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-red700)"
+    },
+    {
+      "id": "VariableID:69:973",
+      "name": "color/purple700",
+      "collectionId": "VariableCollectionId:49:275",
+      "type": "COLOR",
+      "value": {
+        "r": 0.4745098054409027,
+        "g": 0.3294117748737335,
+        "b": 0.5764706134796143,
+        "a": 1
+      },
+      "scopes": [],
+      "web": "var(--sm-primitive-purple700)"
+    },
+    {
+      "id": "VariableID:49:298",
+      "name": "color/surface",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:277"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-surface)"
+    },
+    {
+      "id": "VariableID:49:299",
+      "name": "color/sidebar",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:279"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-sidebar)"
+    },
+    {
+      "id": "VariableID:49:300",
+      "name": "color/canvas",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:280"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-canvas)"
+    },
+    {
+      "id": "VariableID:49:301",
+      "name": "color/soft",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:278"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-soft)"
+    },
+    {
+      "id": "VariableID:49:302",
+      "name": "color/hover",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:280"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-hover)"
+    },
+    {
+      "id": "VariableID:49:303",
+      "name": "color/line",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:281"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-line)"
+    },
+    {
+      "id": "VariableID:49:304",
+      "name": "color/lineStrong",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:282"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-line-strong)"
+    },
+    {
+      "id": "VariableID:49:305",
+      "name": "color/text",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:285"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-text)"
+    },
+    {
+      "id": "VariableID:49:306",
+      "name": "color/secondary",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:967"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-secondary)"
+    },
+    {
+      "id": "VariableID:49:307",
+      "name": "color/muted",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:283"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-muted)"
+    },
+    {
+      "id": "VariableID:49:308",
+      "name": "color/accent",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:286"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-accent)"
+    },
+    {
+      "id": "VariableID:49:309",
+      "name": "color/accentSoft",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:287"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-accent-soft)"
+    },
+    {
+      "id": "VariableID:49:310",
+      "name": "color/accentText",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:288"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-accent-text)"
+    },
+    {
+      "id": "VariableID:49:311",
+      "name": "color/successBg",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:289"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-success-bg)"
+    },
+    {
+      "id": "VariableID:49:312",
+      "name": "color/success",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:971"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-success)"
+    },
+    {
+      "id": "VariableID:49:313",
+      "name": "color/warningBg",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:291"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-warning-bg)"
+    },
+    {
+      "id": "VariableID:49:314",
+      "name": "color/warning",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:293"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-warning)"
+    },
+    {
+      "id": "VariableID:49:315",
+      "name": "color/highlight",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:292"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-highlight)"
+    },
+    {
+      "id": "VariableID:49:316",
+      "name": "color/dangerBg",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:294"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-danger-bg)"
+    },
+    {
+      "id": "VariableID:49:317",
+      "name": "color/danger",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:972"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-danger)"
+    },
+    {
+      "id": "VariableID:49:318",
+      "name": "color/analysisBg",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:296"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-analysis-bg)"
+    },
+    {
+      "id": "VariableID:49:319",
+      "name": "color/analysis",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:973"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-analysis)"
+    },
+    {
+      "id": "VariableID:49:320",
+      "name": "color/onAccent",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:277"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-on-accent)"
+    },
+    {
+      "id": "VariableID:49:321",
+      "name": "space/0",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 0,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-0)"
+    },
+    {
+      "id": "VariableID:49:322",
+      "name": "space/4",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 4,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-4)"
+    },
+    {
+      "id": "VariableID:49:323",
+      "name": "space/8",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 8,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-8)"
+    },
+    {
+      "id": "VariableID:49:324",
+      "name": "space/12",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 12,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-12)"
+    },
+    {
+      "id": "VariableID:49:325",
+      "name": "space/16",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 16,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-16)"
+    },
+    {
+      "id": "VariableID:49:326",
+      "name": "space/20",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 20,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-20)"
+    },
+    {
+      "id": "VariableID:49:327",
+      "name": "space/24",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 24,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-24)"
+    },
+    {
+      "id": "VariableID:49:328",
+      "name": "space/28",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 28,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-28)"
+    },
+    {
+      "id": "VariableID:49:329",
+      "name": "space/32",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 32,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-32)"
+    },
+    {
+      "id": "VariableID:49:330",
+      "name": "space/40",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 40,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-40)"
+    },
+    {
+      "id": "VariableID:49:331",
+      "name": "space/48",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 48,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-48)"
+    },
+    {
+      "id": "VariableID:49:332",
+      "name": "space/56",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 56,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-56)"
+    },
+    {
+      "id": "VariableID:49:333",
+      "name": "space/64",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 64,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-64)"
+    },
+    {
+      "id": "VariableID:49:334",
+      "name": "space/72",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 72,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-72)"
+    },
+    {
+      "id": "VariableID:49:335",
+      "name": "space/80",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 80,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-space-80)"
+    },
+    {
+      "id": "VariableID:49:336",
+      "name": "radius/4",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 4,
+      "scopes": [
+        "CORNER_RADIUS"
+      ],
+      "web": "var(--sm-radius-4)"
+    },
+    {
+      "id": "VariableID:49:337",
+      "name": "radius/6",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 6,
+      "scopes": [
+        "CORNER_RADIUS"
+      ],
+      "web": "var(--sm-radius-6)"
+    },
+    {
+      "id": "VariableID:49:338",
+      "name": "radius/8",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 8,
+      "scopes": [
+        "CORNER_RADIUS"
+      ],
+      "web": "var(--sm-radius-8)"
+    },
+    {
+      "id": "VariableID:49:339",
+      "name": "radius/12",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 12,
+      "scopes": [
+        "CORNER_RADIUS"
+      ],
+      "web": "var(--sm-radius-12)"
+    },
+    {
+      "id": "VariableID:49:340",
+      "name": "radius/16",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 16,
+      "scopes": [
+        "CORNER_RADIUS"
+      ],
+      "web": "var(--sm-radius-16)"
+    },
+    {
+      "id": "VariableID:49:341",
+      "name": "radius/24",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "FLOAT",
+      "value": 24,
+      "scopes": [
+        "CORNER_RADIUS"
+      ],
+      "web": "var(--sm-radius-24)"
+    },
+    {
+      "id": "VariableID:69:974",
+      "name": "color/fieldBorder",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:968"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-field-border)"
+    },
+    {
+      "id": "VariableID:69:975",
+      "name": "color/focus",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:286"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-focus)"
+    },
+    {
+      "id": "VariableID:69:976",
+      "name": "color/accentHover",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:969"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-accent-hover)"
+    },
+    {
+      "id": "VariableID:69:977",
+      "name": "color/accentPressed",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:970"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-accent-pressed)"
+    },
+    {
+      "id": "VariableID:69:978",
+      "name": "color/disabledBg",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:280"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-disabled-bg)"
+    },
+    {
+      "id": "VariableID:69:979",
+      "name": "color/disabledText",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:283"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-disabled-text)"
+    },
+    {
+      "id": "VariableID:69:980",
+      "name": "color/selectedBg",
+      "collectionId": "VariableCollectionId:49:276",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:287"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-selected-bg)"
+    },
+    {
+      "id": "VariableID:69:982",
+      "name": "layout/sidebar-width",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 224,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-sidebar-width)"
+    },
+    {
+      "id": "VariableID:69:983",
+      "name": "layout/context-width",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 288,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-context-width)"
+    },
+    {
+      "id": "VariableID:69:984",
+      "name": "layout/content-max",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 1056,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-content-max)"
+    },
+    {
+      "id": "VariableID:69:985",
+      "name": "layout/page-padding-desktop",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 80,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-layout-page-padding-desktop)"
+    },
+    {
+      "id": "VariableID:69:986",
+      "name": "layout/page-padding-tablet",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 32,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-layout-page-padding-tablet)"
+    },
+    {
+      "id": "VariableID:69:987",
+      "name": "layout/page-padding-mobile",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 20,
+      "scopes": [
+        "GAP"
+      ],
+      "web": "var(--sm-layout-page-padding-mobile)"
+    },
+    {
+      "id": "VariableID:69:988",
+      "name": "layout/header-height",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 56,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-header-height)"
+    },
+    {
+      "id": "VariableID:69:989",
+      "name": "layout/control-height",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 44,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-control-height)"
+    },
+    {
+      "id": "VariableID:69:990",
+      "name": "layout/control-compact",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 36,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-control-compact)"
+    },
+    {
+      "id": "VariableID:69:991",
+      "name": "layout/breakpoint-tablet",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 768,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-breakpoint-tablet)"
+    },
+    {
+      "id": "VariableID:69:992",
+      "name": "layout/breakpoint-desktop",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 1200,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-breakpoint-desktop)"
+    },
+    {
+      "id": "VariableID:69:993",
+      "name": "layout/graph-canvas-width",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 1056,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-graph-canvas-width)"
+    },
+    {
+      "id": "VariableID:69:994",
+      "name": "layout/graph-canvas-height",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 520,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-graph-canvas-height)"
+    },
+    {
+      "id": "VariableID:69:995",
+      "name": "layout/border-width",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 1,
+      "scopes": [
+        "STROKE_FLOAT"
+      ],
+      "web": "var(--sm-layout-border-width)"
+    },
+    {
+      "id": "VariableID:69:996",
+      "name": "layout/focus-width",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 2,
+      "scopes": [
+        "STROKE_FLOAT"
+      ],
+      "web": "var(--sm-layout-focus-width)"
+    },
+    {
+      "id": "VariableID:69:997",
+      "name": "layout/icon-size",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 16,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-icon-size)"
+    },
+    {
+      "id": "VariableID:63:6051",
+      "name": "layout/field-height",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 48,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-field-height)"
+    },
+    {
+      "id": "VariableID:63:6052",
+      "name": "layout/textarea-min-height",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 112,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-textarea-min-height)"
+    },
+    {
+      "id": "VariableID:88:5476",
+      "name": "layout/progress-track-height",
+      "collectionId": "VariableCollectionId:69:981",
+      "type": "FLOAT",
+      "value": 4,
+      "scopes": [
+        "WIDTH_HEIGHT"
+      ],
+      "web": "var(--sm-layout-progress-track-height)"
+    },
+    {
+      "id": "VariableID:69:999",
+      "name": "button/primary/bg",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:308"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-primary-bg)"
+    },
+    {
+      "id": "VariableID:69:1000",
+      "name": "button/primary/hover",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:976"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-primary-hover)"
+    },
+    {
+      "id": "VariableID:69:1001",
+      "name": "button/primary/pressed",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:977"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-primary-pressed)"
+    },
+    {
+      "id": "VariableID:69:1002",
+      "name": "button/primary/text",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:320"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-primary-text)"
+    },
+    {
+      "id": "VariableID:69:1003",
+      "name": "button/neutral/bg",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:298"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-neutral-bg)"
+    },
+    {
+      "id": "VariableID:69:1004",
+      "name": "button/neutral/hover",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:302"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-neutral-hover)"
+    },
+    {
+      "id": "VariableID:69:1005",
+      "name": "button/neutral/text",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:305"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-button-neutral-text)"
+    },
+    {
+      "id": "VariableID:69:1006",
+      "name": "field/bg",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:298"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-field-bg)"
+    },
+    {
+      "id": "VariableID:69:1007",
+      "name": "field/border",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:69:974"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-field-border)"
+    },
+    {
+      "id": "VariableID:69:1008",
+      "name": "field/placeholder",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:306"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-field-placeholder)"
+    },
+    {
+      "id": "VariableID:69:1009",
+      "name": "field/error",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:317"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-field-error)"
+    },
+    {
+      "id": "VariableID:69:1010",
+      "name": "graph/document",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:306"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-graph-document)"
+    },
+    {
+      "id": "VariableID:69:1011",
+      "name": "graph/finding",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:314"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-graph-finding)"
+    },
+    {
+      "id": "VariableID:69:1012",
+      "name": "graph/resolved",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:312"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR"
+      ],
+      "web": "var(--sm-component-graph-resolved)"
+    },
+    {
+      "id": "VariableID:88:5477",
+      "name": "progress/track",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:302"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL"
+      ],
+      "web": "var(--sm-component-progress-track)"
+    },
+    {
+      "id": "VariableID:88:5478",
+      "name": "progress/fill",
+      "collectionId": "VariableCollectionId:69:998",
+      "type": "COLOR",
+      "value": {
+        "type": "VARIABLE_ALIAS",
+        "id": "VariableID:49:308"
+      },
+      "scopes": [
+        "FRAME_FILL",
+        "SHAPE_FILL"
+      ],
+      "web": "var(--sm-component-progress-fill)"
+    }
+  ],
+  "type": {
+    "display": {
+      "id": "S:b2bf1b629417bd8a7ef28ebd262220ababfb187f,",
+      "font": "Inter",
+      "weight": 700,
+      "size": 40,
+      "lineHeight": 48,
+      "letterSpacing": 0
+    },
+    "h1": {
+      "id": "S:cbf9ed079894346b0c944841c81182596d261ff2,",
+      "font": "Inter",
+      "weight": 600,
+      "size": 32,
+      "lineHeight": 40,
+      "letterSpacing": 0
+    },
+    "h2": {
+      "id": "S:f224d51003c03fa3a8daef55045fbabbff8a0538,",
+      "font": "Inter",
+      "weight": 600,
+      "size": 24,
+      "lineHeight": 32,
+      "letterSpacing": 0
+    },
+    "h3": {
+      "id": "S:e5d54a997681597883a25af778bd58bc8d11d1ef,",
+      "font": "Inter",
+      "weight": 600,
+      "size": 18,
+      "lineHeight": 26,
+      "letterSpacing": 0
+    },
+    "body": {
+      "id": "S:0825f724a8f433be2eac8ac33ab2a9f485f1169e,",
+      "font": "Inter",
+      "weight": 400,
+      "size": 15,
+      "lineHeight": 24,
+      "letterSpacing": 0
+    },
+    "bodyMedium": {
+      "id": "S:0e34c36fe26f62ae36f63849a283364fbfff95f8,",
+      "font": "Inter",
+      "weight": 500,
+      "size": 15,
+      "lineHeight": 24,
+      "letterSpacing": 0
+    },
+    "small": {
+      "id": "S:370420c0fd983ab8d4f828b0f30e6e7f5bade16c,",
+      "font": "Inter",
+      "weight": 400,
+      "size": 13,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    },
+    "smallMedium": {
+      "id": "S:25b4873212a6a7d1d27f3c850887da4424d28430,",
+      "font": "Inter",
+      "weight": 500,
+      "size": 13,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    },
+    "meta": {
+      "id": "S:4eb92feb8b8f651cb616fc14424a470593edfdb8,",
+      "font": "Inter",
+      "weight": 400,
+      "size": 12,
+      "lineHeight": 18,
+      "letterSpacing": 0
+    },
+    "metaMedium": {
+      "id": "S:28b4f0529ae4a466e0d7342431dc03f3b11329cf,",
+      "font": "Inter",
+      "weight": 500,
+      "size": 12,
+      "lineHeight": 18,
+      "letterSpacing": 0
+    },
+    "nav": {
+      "id": "S:137a1c8447447fa8a41d6d109421decd7c77389c,",
+      "font": "Inter",
+      "weight": 500,
+      "size": 14,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    },
+    "button": {
+      "id": "S:b68cc717041bf64ffaaa223d78808546445fdeb3,",
+      "font": "Inter",
+      "weight": 500,
+      "size": 14,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    }
+  }
+}

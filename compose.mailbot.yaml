@@ -1,0 +1,37 @@
+# Optional: docker compose -f compose.yaml -f compose.mailbot.yaml up -d --build
+services:
+  api:
+    environment:
+      MAILBOT_PANEL_URL: http://mailbot-admin:8787
+  mailbot-admin:
+    build: ./mailbot
+    image: smena-mailbot:local
+    restart: unless-stopped
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      MAILBOT_ADDRESS: ${MAILBOT_ADDRESS:?Set MAILBOT_ADDRESS}
+      MAILBOT_API_URL: ${MAILBOT_API_URL:-https://smena-mipt.ru/api/mail/analyze}
+    volumes:
+      - ./data/mailbot:/data
+    command: ["admin"]
+  mailbot-worker:
+    image: smena-mailbot:local
+    restart: unless-stopped
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      MAILBOT_ADDRESS: ${MAILBOT_ADDRESS:?Set MAILBOT_ADDRESS}
+      MAILBOT_API_URL: ${MAILBOT_API_URL:-https://smena-mipt.ru/api/mail/analyze}
+    volumes:
+      - ./data/mailbot:/data
+    secrets: [mail_password]
+    command: ["worker"]
+    depends_on: [mailbot-admin]
+secrets:
+  mail_password:
+    file: ./secrets/mail_password

@@ -50,7 +50,7 @@ class LiveQuery(Query):
 
 
 def create_app(*, service=None, generator=None, import_repository=None, import_directory=None,
-               knowledge_map=None, map_questions=None) -> FastAPI:
+               knowledge_map=None, map_questions=None, frontend_directory=None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app):
         if service is not None:
@@ -87,6 +87,7 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
             app.state.generator.close()
 
     app = FastAPI(title="Навигатор сотрудника", lifespan=lifespan)
+    web_directory = Path(frontend_directory) if frontend_directory else Path(__file__).parent / 'web'
     search_lock, ask_lock = threading.Lock(), threading.Lock()
     rate_lock = threading.Lock()
     calls = defaultdict(deque)
@@ -131,7 +132,14 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
 
     @app.get("/", include_in_schema=False)
     def index():
+        frontend = web_directory / 'index.html'
+        if frontend.is_file():
+            return FileResponse(frontend)
         return FileResponse(Path(__file__).parent / "static" / "index.html")
+
+    @app.get('/legacy', include_in_schema=False)
+    def legacy():
+        return FileResponse(Path(__file__).parent / 'static' / 'index.html')
 
     @app.get("/health/live")
     def live():
@@ -240,6 +248,14 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     install_routes(app)
     from .knowledge.routes import install_routes as install_map_routes
     install_map_routes(app, answer=lambda question, request: ask(Query(question=question), request))
+    from .workspace import install_routes as install_workspace_routes
+    install_workspace_routes(app)
+    frontend_assets = web_directory / 'ui-assets'
+    if frontend_assets.is_dir():
+        app.mount('/ui-assets', StaticFiles(directory=frontend_assets), name='ui-assets')
+    frontend_images = web_directory / 'illustrations'
+    if frontend_images.is_dir():
+        app.mount('/illustrations', StaticFiles(directory=frontend_images), name='illustrations')
     app.mount('/assets', StaticFiles(directory=Path(__file__).parent / 'static'), name='assets')
     return app
 

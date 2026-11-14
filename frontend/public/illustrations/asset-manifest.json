@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-14",
+  "mode": "built-in image_gen.imagegen",
+  "note": "Production prompt set retained as descriptions; original generation outputs are preserved outside the repository.",
+  "images": [
+    {
+      "path": "/illustrations/mipt-navigator.png",
+      "prompt": "Original airy editorial ink illustration for a MIPT workplace regulations navigator. Black hand-drawn lines, white forms and restrained cobalt #3c51a2 with pale blue accents, transparent background, horizontal 3:2 composition, readable at 200–280px. Scientific university identity, generous negative space. No text, numbers, lettering, logos, gradients, shadows or UI. Do not copy Notion characters. Two young university researchers trace a route across three papers, with an orbital physics model and a triangular optical prism."
+    },
+    {
+      "path": "/illustrations/mipt-materials.png",
+      "prompt": "Original airy editorial ink illustration for a MIPT workplace regulations navigator. Black hand-drawn lines, white forms and restrained cobalt #3c51a2 with pale blue accents, transparent background, horizontal 3:2 composition, readable at 200–280px. Scientific university identity, generous negative space. No text, numbers, lettering, logos, gradients, shadows or UI. Do not copy Notion characters. A research assistant reads an open folder beside a triangular prism, a stack of three documents and an abstract orbital model."
+    },
+    {
+      "path": "/illustrations/mipt-completed.png",
+      "prompt": "Original airy editorial ink illustration for a MIPT workplace regulations navigator. Black hand-drawn lines, white forms and restrained cobalt #3c51a2 with pale blue accents, transparent background, horizontal 3:2 composition, readable at 200–280px. Scientific university identity, generous negative space. No text, numbers, lettering, logos, gradients, shadows or UI. Do not copy Notion characters. A researcher closes a notebook with a checkmark while a paper plane follows an orbital arc beside an optical prism."
+    }
+  ],
+  "logo": {
+    "path": "/brand/mipt-logo.svg",
+    "source": "https://mipt.ru/upload/iblock/026/gh8ivafm65ve54a6uokw5ahvj8mjmecq/newMIPT-_1_.svg",
+    "official": true,
+    "modified": false
+  }
+}

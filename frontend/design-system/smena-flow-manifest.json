@@ -1,0 +1,1317 @@
+{
+  "version": "1.2.0",
+  "fileKey": "jORhjmSwUojzxk4ZGo9OI5",
+  "pageId": "49:274",
+  "screens": [
+    {
+      "num": 1,
+      "id": "49:426",
+      "role": "employee",
+      "name": "01 / Опишите рабочую задачу",
+      "height": 1000,
+      "width": 1440,
+      "x": 280,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 2,
+      "id": "49:505",
+      "role": "employee",
+      "name": "02 / Трудоустройство сотрудников",
+      "height": 1000,
+      "width": 1440,
+      "x": 3320,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 3,
+      "id": "49:628",
+      "role": "employee",
+      "name": "03 / Источник ответа",
+      "height": 1000,
+      "contentHeight": 568,
+      "width": 1440,
+      "x": 1800,
+      "y": 600,
+      "kind": "screen"
+    },
+    {
+      "num": 4,
+      "id": "49:717",
+      "role": "employee",
+      "name": "04 / Замечание сохранено",
+      "height": 270,
+      "contentHeight": 312,
+      "width": 560,
+      "x": 3760,
+      "y": 3048,
+      "kind": "dialog"
+    },
+    {
+      "num": 5,
+      "id": "49:792",
+      "role": "employee",
+      "name": "05 / Мои задачи",
+      "height": 1000,
+      "width": 1440,
+      "x": 1800,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 6,
+      "id": "49:888",
+      "role": "employee",
+      "name": "06 / Документы",
+      "height": 1000,
+      "contentHeight": 532,
+      "width": 1440,
+      "x": 3320,
+      "y": 600,
+      "kind": "screen"
+    },
+    {
+      "num": 7,
+      "id": "50:439",
+      "role": "admin",
+      "name": "07 / Пробелы и находки",
+      "height": 1000,
+      "contentHeight": 600,
+      "width": 1440,
+      "x": 280,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 8,
+      "id": "50:583",
+      "role": "admin",
+      "name": "08 / Проверка сценариями",
+      "height": 1000,
+      "contentHeight": 482,
+      "width": 1440,
+      "x": 1800,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 9,
+      "id": "50:663",
+      "role": "admin",
+      "name": "09 / Результаты проверки",
+      "height": 1000,
+      "contentHeight": 590,
+      "width": 1440,
+      "x": 3320,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 10,
+      "id": "50:794",
+      "role": "admin",
+      "name": "10 / Ответ по отпуску не найден",
+      "height": 1000,
+      "contentHeight": 414,
+      "width": 1440,
+      "x": 4840,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 11,
+      "id": "50:897",
+      "role": "admin",
+      "name": "11 / Карта регламентов",
+      "height": 1000,
+      "contentHeight": 920,
+      "width": 1440,
+      "x": 280,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 12,
+      "id": "50:1018",
+      "role": "admin",
+      "name": "12 / Детали узла",
+      "height": 1000,
+      "contentHeight": 528,
+      "width": 1440,
+      "x": 1800,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 13,
+      "id": "51:707",
+      "role": "admin",
+      "name": "13 / Работа с находками",
+      "height": 1000,
+      "contentHeight": 434,
+      "width": 1440,
+      "x": 3320,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 14,
+      "id": "51:823",
+      "role": "admin",
+      "name": "14 / Добавить источник",
+      "height": 1000,
+      "contentHeight": 596,
+      "width": 1440,
+      "x": 4840,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 15,
+      "id": "51:917",
+      "role": "admin",
+      "name": "15 / Источник добавлен",
+      "height": 1000,
+      "contentHeight": 566,
+      "width": 1440,
+      "x": 280,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 16,
+      "id": "51:999",
+      "role": "admin",
+      "name": "16 / Повторная проверка завершена",
+      "height": 1000,
+      "contentHeight": 644,
+      "width": 1440,
+      "x": 1800,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 17,
+      "id": "51:1103",
+      "role": "admin",
+      "name": "17 / Пробелы и находки",
+      "height": 1000,
+      "contentHeight": 600,
+      "width": 1440,
+      "x": 3320,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 18,
+      "id": "51:1242",
+      "role": "admin",
+      "name": "18 / Карта после обновления",
+      "height": 1000,
+      "contentHeight": 910,
+      "width": 1440,
+      "x": 4840,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 19,
+      "id": "84:4721",
+      "role": "employee",
+      "name": "19 / Подтверждена часть ответа",
+      "height": 1000,
+      "contentHeight": 546,
+      "width": 1440,
+      "x": 4840,
+      "y": 600,
+      "kind": "screen"
+    },
+    {
+      "num": 20,
+      "id": "84:4807",
+      "role": "employee",
+      "name": "20 / Ответ не найден",
+      "height": 1000,
+      "contentHeight": 442,
+      "width": 1440,
+      "x": 280,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 21,
+      "id": "84:4870",
+      "role": "employee",
+      "name": "21 / Источники требуют проверки",
+      "height": 1000,
+      "contentHeight": 604,
+      "width": 1440,
+      "x": 1800,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 22,
+      "id": "84:4959",
+      "role": "employee",
+      "name": "22 / Не удалось составить план",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 23,
+      "id": "84:5027",
+      "role": "employee",
+      "name": "23 / Составляем план задачи",
+      "height": 1000,
+      "width": 1440,
+      "x": 1800,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 24,
+      "id": "84:5090",
+      "role": "admin",
+      "name": "24 / Добавить по ссылке",
+      "height": 1000,
+      "contentHeight": 560,
+      "width": 1440,
+      "x": 3320,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 25,
+      "id": "84:5179",
+      "role": "admin",
+      "name": "25 / Обработка документа",
+      "height": 1000,
+      "contentHeight": 432,
+      "width": 1440,
+      "x": 4840,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 26,
+      "id": "84:5249",
+      "role": "admin",
+      "name": "26 / Источник добавлен с предупреждениями",
+      "height": 1000,
+      "contentHeight": 546,
+      "width": 1440,
+      "x": 1800,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 27,
+      "id": "84:5368",
+      "role": "admin",
+      "name": "27 / Документ уже есть в базе",
+      "height": 1000,
+      "contentHeight": 388,
+      "width": 1440,
+      "x": 3320,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 28,
+      "id": "84:5437",
+      "role": "admin",
+      "name": "28 / Не удалось добавить источник",
+      "height": 1000,
+      "contentHeight": 388,
+      "width": 1440,
+      "x": 4840,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 29,
+      "id": "84:5506",
+      "role": "admin",
+      "name": "29 / Проверка устарела",
+      "height": 1000,
+      "contentHeight": 446,
+      "width": 1440,
+      "x": 280,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 30,
+      "id": "84:5578",
+      "role": "admin",
+      "name": "30 / Почтовый бот",
+      "height": 1348,
+      "contentHeight": 1256,
+      "width": 1440,
+      "x": 280,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 31,
+      "id": "84:5749",
+      "role": "admin",
+      "name": "31 / Настройки почтового бота",
+      "height": 1000,
+      "contentHeight": 838,
+      "width": 1440,
+      "x": 1800,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 32,
+      "id": "84:5849",
+      "role": "admin",
+      "name": "32 / Почтовый бот на паузе",
+      "height": 1348,
+      "contentHeight": 1256,
+      "width": 1440,
+      "x": 3320,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 33,
+      "id": "84:6020",
+      "role": "admin",
+      "name": "33 / Проверьте настройки",
+      "height": 1000,
+      "contentHeight": 826,
+      "width": 1440,
+      "x": 4840,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 34,
+      "id": "84:6116",
+      "role": "admin",
+      "name": "34 / Настройки сохранены",
+      "height": 1002,
+      "contentHeight": 946,
+      "width": 1440,
+      "x": 280,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 35,
+      "id": "84:6219",
+      "role": "admin",
+      "name": "35 / Панель бота недоступна",
+      "height": 1000,
+      "contentHeight": 640,
+      "width": 1440,
+      "x": 1800,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 36,
+      "id": "84:6303",
+      "role": "admin",
+      "name": "36 / Почтовый бот",
+      "height": 1000,
+      "contentHeight": 678,
+      "width": 1440,
+      "x": 3320,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 37,
+      "id": "84:6393",
+      "role": "admin",
+      "name": "37 / Карта обновляется",
+      "height": 1000,
+      "contentHeight": 366,
+      "width": 1440,
+      "x": 280,
+      "y": 10632,
+      "kind": "screen"
+    },
+    {
+      "num": 38,
+      "id": "84:6465",
+      "role": "admin",
+      "name": "38 / Карта недоступна",
+      "height": 1000,
+      "contentHeight": 426,
+      "width": 1440,
+      "x": 1800,
+      "y": 10632,
+      "kind": "screen"
+    },
+    {
+      "num": 39,
+      "id": "84:6532",
+      "role": "employee",
+      "name": "39 / Источник недоступен",
+      "height": 1000,
+      "contentHeight": 328,
+      "width": 1440,
+      "x": 280,
+      "y": 3048,
+      "kind": "screen"
+    },
+    {
+      "num": 40,
+      "id": "84:6591",
+      "role": "employee",
+      "name": "40 / Недостаточно контекста",
+      "height": 1000,
+      "contentHeight": 492,
+      "width": 1440,
+      "x": 3320,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 41,
+      "id": "84:6654",
+      "role": "admin",
+      "name": "41 / Ошибка подключения к почте",
+      "height": 1000,
+      "contentHeight": 388,
+      "width": 1440,
+      "x": 4840,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 42,
+      "id": "84:6728",
+      "role": "admin",
+      "name": "42 / Тестовый режим почтового бота",
+      "height": 1000,
+      "contentHeight": 504,
+      "width": 1440,
+      "x": 280,
+      "y": 14894,
+      "kind": "screen"
+    },
+    {
+      "num": 43,
+      "id": "84:11032",
+      "role": "admin",
+      "name": "43 / Добавить источник",
+      "height": 1000,
+      "contentHeight": 552,
+      "width": 1440,
+      "x": 280,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 44,
+      "id": "84:11108",
+      "role": "admin",
+      "name": "44 / Добавить источник",
+      "height": 1000,
+      "contentHeight": 484,
+      "width": 1440,
+      "x": 1800,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 45,
+      "id": "84:11183",
+      "role": "employee",
+      "name": "45 / Сообщить о неточности",
+      "height": 398,
+      "contentHeight": 444,
+      "width": 640,
+      "x": 2200,
+      "y": 3048,
+      "kind": "dialog"
+    },
+    {
+      "num": 46,
+      "id": "91:8289",
+      "role": "employee",
+      "name": "46 / Проверьте доступ в 1С: ДО",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 47,
+      "id": "91:9118",
+      "role": "employee",
+      "name": "47 / Подготовьте личный кабинет HR",
+      "height": 1000,
+      "width": 1440,
+      "x": 280,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 48,
+      "id": "91:9996",
+      "role": "employee",
+      "name": "48 / Подготовьте должностные инструкции",
+      "height": 1000,
+      "width": 1440,
+      "x": 1800,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 49,
+      "id": "91:10972",
+      "role": "employee",
+      "name": "49 / Запустите электронное трудоустройство",
+      "height": 1000,
+      "width": 1440,
+      "x": 3320,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 50,
+      "id": "91:11601",
+      "role": "employee",
+      "name": "50 / Задача завершена",
+      "height": 1000,
+      "width": 1440,
+      "x": 280,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 51,
+      "id": "91:7023",
+      "role": "employee",
+      "name": "51 / Трудоустройство сотрудников",
+      "height": 1000,
+      "width": 1440,
+      "x": 3320,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 52,
+      "id": "91:8195",
+      "role": "employee",
+      "name": "52 / Все этапы отмечены",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 53,
+      "id": "91:11409",
+      "role": "employee",
+      "name": "53 / Основание этапа",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 54,
+      "id": "88:6492",
+      "name": "54 / Справка по бронированию",
+      "role": "employee",
+      "width": 1440,
+      "height": 1000,
+      "x": 280,
+      "y": 600,
+      "kind": "screen"
+    }
+  ],
+  "responsive": [
+    {
+      "source": 7,
+      "id": "63:4655",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 7,
+      "id": "63:4725",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 7,
+      "id": "63:4879",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "source": 11,
+      "id": "63:5046",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 11,
+      "id": "63:5118",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 11,
+      "id": "63:5232",
+      "width": 390,
+      "height": 1010
+    },
+    {
+      "source": 14,
+      "id": "63:5359",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 14,
+      "id": "63:5427",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 14,
+      "id": "63:5510",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "source": 30,
+      "id": "84:9144",
+      "width": 1440,
+      "height": 1332
+    },
+    {
+      "source": 30,
+      "id": "84:9318",
+      "width": 1024,
+      "height": 1316
+    },
+    {
+      "source": 30,
+      "id": "84:9492",
+      "width": 390,
+      "height": 1910
+    },
+    {
+      "source": 31,
+      "id": "84:9678",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 31,
+      "id": "84:9776",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 31,
+      "id": "84:9874",
+      "width": 390,
+      "height": 906
+    },
+    {
+      "source": 2,
+      "id": "63:4334",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 2,
+      "id": "63:4401",
+      "width": 1024,
+      "height": 1246
+    },
+    {
+      "source": 2,
+      "id": "63:4522",
+      "width": 390,
+      "height": 1494
+    },
+    {
+      "source": 46,
+      "id": "91:20233",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 46,
+      "id": "91:20325",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 46,
+      "id": "91:20417",
+      "width": 390,
+      "height": 1004
+    },
+    {
+      "source": 48,
+      "id": "91:20521",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 48,
+      "id": "91:20628",
+      "width": 1024,
+      "height": 1196
+    },
+    {
+      "source": 48,
+      "id": "91:20735",
+      "width": 390,
+      "height": 1324
+    },
+    {
+      "source": 5,
+      "id": "91:20854",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 5,
+      "id": "91:20927",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 5,
+      "id": "91:21000",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "source": 50,
+      "id": "91:21085",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 50,
+      "id": "91:21158",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 50,
+      "id": "91:21231",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "primaryFlow": [
+    1,
+    23,
+    2,
+    46,
+    47,
+    48,
+    49,
+    52,
+    50,
+    5,
+    51,
+    53
+  ],
+  "prototypeStateFrames": [
+    {
+      "id": "91:6827",
+      "name": "Prototype / Plan / 0001",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:6876",
+      "name": "Prototype / Tasks / 0001",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:6925",
+      "name": "Prototype / Plan / 0010",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:6974",
+      "name": "Prototype / Tasks / 0010",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7068",
+      "name": "Prototype / Tasks / 0011",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7117",
+      "name": "Prototype / Plan / 0100",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7166",
+      "name": "Prototype / Tasks / 0100",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7215",
+      "name": "Prototype / Plan / 0101",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7264",
+      "name": "Prototype / Tasks / 0101",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7313",
+      "name": "Prototype / Plan / 0110",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7362",
+      "name": "Prototype / Tasks / 0110",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7411",
+      "name": "Prototype / Plan / 0111",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7460",
+      "name": "Prototype / Tasks / 0111",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7509",
+      "name": "Prototype / Plan / 1000",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7558",
+      "name": "Prototype / Tasks / 1000",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7607",
+      "name": "Prototype / Plan / 1001",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7656",
+      "name": "Prototype / Tasks / 1001",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7705",
+      "name": "Prototype / Plan / 1010",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7754",
+      "name": "Prototype / Tasks / 1010",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7803",
+      "name": "Prototype / Plan / 1011",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7852",
+      "name": "Prototype / Tasks / 1011",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7901",
+      "name": "Prototype / Plan / 1100",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:7950",
+      "name": "Prototype / Tasks / 1100",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:7999",
+      "name": "Prototype / Plan / 1101",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:8048",
+      "name": "Prototype / Tasks / 1101",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:8097",
+      "name": "Prototype / Plan / 1110",
+      "kind": "Plan"
+    },
+    {
+      "id": "91:8146",
+      "name": "Prototype / Tasks / 1110",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:8240",
+      "name": "Prototype / Tasks / 1111",
+      "kind": "Tasks"
+    },
+    {
+      "id": "91:8334",
+      "name": "Prototype / Step 1 / 0001",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8383",
+      "name": "Prototype / Step 1 / 0010",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8432",
+      "name": "Prototype / Step 1 / 0011",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8481",
+      "name": "Prototype / Step 1 / 0100",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8530",
+      "name": "Prototype / Step 1 / 0101",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8579",
+      "name": "Prototype / Step 1 / 0110",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8628",
+      "name": "Prototype / Step 1 / 0111",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8677",
+      "name": "Prototype / Step 1 / 1000",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8726",
+      "name": "Prototype / Step 1 / 1001",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8775",
+      "name": "Prototype / Step 1 / 1010",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8824",
+      "name": "Prototype / Step 1 / 1011",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8873",
+      "name": "Prototype / Step 1 / 1100",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8922",
+      "name": "Prototype / Step 1 / 1101",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:8971",
+      "name": "Prototype / Step 1 / 1110",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:9020",
+      "name": "Prototype / Step 1 / 1111",
+      "kind": "Step 1"
+    },
+    {
+      "id": "91:9069",
+      "name": "Prototype / Step 2 / 0000",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9163",
+      "name": "Prototype / Step 2 / 0010",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9212",
+      "name": "Prototype / Step 2 / 0011",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9261",
+      "name": "Prototype / Step 2 / 0100",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9310",
+      "name": "Prototype / Step 2 / 0101",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9359",
+      "name": "Prototype / Step 2 / 0110",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9408",
+      "name": "Prototype / Step 2 / 0111",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9457",
+      "name": "Prototype / Step 2 / 1000",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9506",
+      "name": "Prototype / Step 2 / 1001",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9555",
+      "name": "Prototype / Step 2 / 1010",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9604",
+      "name": "Prototype / Step 2 / 1011",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9653",
+      "name": "Prototype / Step 2 / 1100",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9702",
+      "name": "Prototype / Step 2 / 1101",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9751",
+      "name": "Prototype / Step 2 / 1110",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9800",
+      "name": "Prototype / Step 2 / 1111",
+      "kind": "Step 2"
+    },
+    {
+      "id": "91:9849",
+      "name": "Prototype / Step 3 / 0000",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:9898",
+      "name": "Prototype / Step 3 / 0001",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:9947",
+      "name": "Prototype / Step 3 / 0010",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10041",
+      "name": "Prototype / Step 3 / 0100",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10090",
+      "name": "Prototype / Step 3 / 0101",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10139",
+      "name": "Prototype / Step 3 / 0110",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10188",
+      "name": "Prototype / Step 3 / 0111",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10237",
+      "name": "Prototype / Step 3 / 1000",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10286",
+      "name": "Prototype / Step 3 / 1001",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10335",
+      "name": "Prototype / Step 3 / 1010",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10384",
+      "name": "Prototype / Step 3 / 1011",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10433",
+      "name": "Prototype / Step 3 / 1100",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10482",
+      "name": "Prototype / Step 3 / 1101",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10531",
+      "name": "Prototype / Step 3 / 1110",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10580",
+      "name": "Prototype / Step 3 / 1111",
+      "kind": "Step 3"
+    },
+    {
+      "id": "91:10629",
+      "name": "Prototype / Step 4 / 0000",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:10678",
+      "name": "Prototype / Step 4 / 0001",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:10727",
+      "name": "Prototype / Step 4 / 0010",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:10776",
+      "name": "Prototype / Step 4 / 0011",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:10825",
+      "name": "Prototype / Step 4 / 0100",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:10874",
+      "name": "Prototype / Step 4 / 0101",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:10923",
+      "name": "Prototype / Step 4 / 0110",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11017",
+      "name": "Prototype / Step 4 / 1000",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11066",
+      "name": "Prototype / Step 4 / 1001",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11115",
+      "name": "Prototype / Step 4 / 1010",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11164",
+      "name": "Prototype / Step 4 / 1011",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11213",
+      "name": "Prototype / Step 4 / 1100",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11262",
+      "name": "Prototype / Step 4 / 1101",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11311",
+      "name": "Prototype / Step 4 / 1110",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11360",
+      "name": "Prototype / Step 4 / 1111",
+      "kind": "Step 4"
+    },
+    {
+      "id": "91:11454",
+      "name": "Prototype / Source / 2",
+      "kind": "Source"
+    },
+    {
+      "id": "91:11503",
+      "name": "Prototype / Source / 3",
+      "kind": "Source"
+    },
+    {
+      "id": "91:11552",
+      "name": "Prototype / Source / 4",
+      "kind": "Source"
+    },
+    {
+      "id": "91:11646",
+      "name": "Prototype / Completed tasks",
+      "kind": "Completed tasks"
+    }
+  ],
+  "entryPoints": [
+    {
+      "id": "49:426",
+      "label": "Сотрудник"
+    },
+    {
+      "id": "50:439",
+      "label": "Администратор — проверки"
+    },
+    {
+      "id": "84:5578",
+      "label": "Администратор — почтовый бот"
+    },
+    {
+      "id": "84:7390",
+      "label": "Доска всех состояний"
+    }
+  ]
+}

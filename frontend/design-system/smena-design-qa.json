@@ -1,0 +1,2069 @@
+{
+  "version": "1.2.0",
+  "date": "2026-11-14",
+  "scope": "Restored task journey, affected components, responsive references, prototype state construction. No frontend implementation.",
+  "screenCount": 54,
+  "prototypeStateFrames": 92,
+  "adaptiveCount": 30,
+  "componentFamilies": 30,
+  "mainComponentsAndVariants": 138,
+  "tokenCount": 114,
+  "textStyleCount": 12,
+  "navigationCount": 1066,
+  "invalidNavigation": [],
+  "unstyledVisibleText": [],
+  "unboundVisibleColors": [],
+  "nonAutoContainers": [],
+  "overflows": [],
+  "matrix": [
+    {
+      "id": "49:426",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "49:426",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "49:426",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "49:505",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "49:505",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "49:505",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "49:792",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "49:792",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "49:792",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7023",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7023",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7023",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8195",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8195",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8195",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8289",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8289",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8289",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9118",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9118",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9118",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9996",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9996",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9996",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10972",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10972",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10972",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11409",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11409",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11409",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11601",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11601",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11601",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "84:5027",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "84:5027",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "84:5027",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "84:4959",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "84:4959",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "84:4959",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:6827",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:6827",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:6827",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:6876",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:6876",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:6876",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:6925",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:6925",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:6925",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:6974",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:6974",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:6974",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7068",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7068",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7068",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7117",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7117",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7117",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7166",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7166",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7166",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7215",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7215",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7215",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7264",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7264",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7264",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7313",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7313",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7313",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7362",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7362",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7362",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7411",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7411",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7411",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7460",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7460",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7460",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7509",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7509",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7509",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7558",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7558",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7558",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7607",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7607",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7607",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7656",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7656",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7656",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7705",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7705",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7705",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7754",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7754",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7754",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7803",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7803",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7803",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7852",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7852",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7852",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7901",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7901",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7901",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7950",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7950",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7950",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:7999",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:7999",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:7999",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8048",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8048",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8048",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8097",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8097",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8097",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8146",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8146",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8146",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8240",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8240",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8240",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8334",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8334",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8334",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8383",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8383",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8383",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8432",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8432",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8432",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8481",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8481",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8481",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8530",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8530",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8530",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8579",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8579",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8579",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8628",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8628",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8628",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8677",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8677",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8677",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8726",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8726",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8726",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8775",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8775",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8775",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8824",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8824",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8824",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8873",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8873",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8873",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8922",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8922",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8922",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:8971",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:8971",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:8971",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9020",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9020",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9020",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9069",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9069",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9069",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9163",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9163",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9163",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9212",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9212",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9212",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9261",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9261",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9261",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9310",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9310",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9310",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9359",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9359",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9359",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9408",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9408",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9408",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9457",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9457",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9457",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9506",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9506",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9506",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9555",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9555",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9555",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9604",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9604",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9604",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9653",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9653",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9653",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9702",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9702",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9702",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9751",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9751",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9751",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9800",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9800",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9800",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9849",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9849",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9849",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9898",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9898",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9898",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:9947",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:9947",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:9947",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10041",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10041",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10041",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10090",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10090",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10090",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10139",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10139",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10139",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10188",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10188",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10188",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10237",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10237",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10237",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10286",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10286",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10286",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10335",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10335",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10335",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10384",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10384",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10384",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10433",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10433",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10433",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10482",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10482",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10482",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10531",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10531",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10531",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10580",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10580",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10580",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10629",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10629",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10629",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10678",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10678",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10678",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10727",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10727",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10727",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10776",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10776",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10776",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10825",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10825",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10825",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10874",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10874",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10874",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:10923",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:10923",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:10923",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11017",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11017",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11017",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11066",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11066",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11066",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11115",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11115",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11115",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11164",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11164",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11164",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11213",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11213",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11213",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11262",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11262",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11262",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11311",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11311",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11311",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11360",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11360",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11360",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11454",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11454",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11454",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11503",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11503",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11503",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11552",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11552",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11552",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "91:11646",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "91:11646",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "91:11646",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "49:717",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "49:717",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "49:717",
+      "width": 1024,
+      "issues": []
+    },
+    {
+      "id": "84:11183",
+      "width": 1440,
+      "issues": []
+    },
+    {
+      "id": "84:11183",
+      "width": 390,
+      "issues": []
+    },
+    {
+      "id": "84:11183",
+      "width": 1024,
+      "issues": []
+    }
+  ],
+  "additionalWidths": [
+    {
+      "id": "49:505",
+      "width": 320,
+      "issues": []
+    },
+    {
+      "id": "49:505",
+      "width": 1920,
+      "issues": []
+    },
+    {
+      "id": "91:9996",
+      "width": 320,
+      "issues": []
+    },
+    {
+      "id": "91:9996",
+      "width": 1920,
+      "issues": []
+    },
+    {
+      "id": "49:792",
+      "width": 320,
+      "issues": []
+    },
+    {
+      "id": "49:792",
+      "width": 1920,
+      "issues": []
+    },
+    {
+      "id": "84:11183",
+      "width": 320,
+      "issues": []
+    },
+    {
+      "id": "84:11183",
+      "width": 1920,
+      "issues": []
+    }
+  ],
+  "taskToggleChecks": [
+    {
+      "mask": 0,
+      "step": 1,
+      "count": 0,
+      "passed": true
+    },
+    {
+      "mask": 0,
+      "step": 2,
+      "count": 0,
+      "passed": true
+    },
+    {
+      "mask": 0,
+      "step": 3,
+      "count": 0,
+      "passed": true
+    },
+    {
+      "mask": 0,
+      "step": 4,
+      "count": 0,
+      "passed": true
+    },
+    {
+      "mask": 1,
+      "step": 1,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 1,
+      "step": 2,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 1,
+      "step": 3,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 1,
+      "step": 4,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 2,
+      "step": 1,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 2,
+      "step": 2,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 2,
+      "step": 3,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 2,
+      "step": 4,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 3,
+      "step": 1,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 3,
+      "step": 2,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 3,
+      "step": 3,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 3,
+      "step": 4,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 4,
+      "step": 1,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 4,
+      "step": 2,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 4,
+      "step": 3,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 4,
+      "step": 4,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 5,
+      "step": 1,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 5,
+      "step": 2,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 5,
+      "step": 3,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 5,
+      "step": 4,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 6,
+      "step": 1,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 6,
+      "step": 2,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 6,
+      "step": 3,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 6,
+      "step": 4,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 7,
+      "step": 1,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 7,
+      "step": 2,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 7,
+      "step": 3,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 7,
+      "step": 4,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 8,
+      "step": 1,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 8,
+      "step": 2,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 8,
+      "step": 3,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 8,
+      "step": 4,
+      "count": 1,
+      "passed": true
+    },
+    {
+      "mask": 9,
+      "step": 1,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 9,
+      "step": 2,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 9,
+      "step": 3,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 9,
+      "step": 4,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 10,
+      "step": 1,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 10,
+      "step": 2,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 10,
+      "step": 3,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 10,
+      "step": 4,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 11,
+      "step": 1,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 11,
+      "step": 2,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 11,
+      "step": 3,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 11,
+      "step": 4,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 12,
+      "step": 1,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 12,
+      "step": 2,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 12,
+      "step": 3,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 12,
+      "step": 4,
+      "count": 2,
+      "passed": true
+    },
+    {
+      "mask": 13,
+      "step": 1,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 13,
+      "step": 2,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 13,
+      "step": 3,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 13,
+      "step": 4,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 14,
+      "step": 1,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 14,
+      "step": 2,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 14,
+      "step": 3,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 14,
+      "step": 4,
+      "count": 3,
+      "passed": true
+    },
+    {
+      "mask": 15,
+      "step": 1,
+      "count": 4,
+      "passed": true
+    },
+    {
+      "mask": 15,
+      "step": 2,
+      "count": 4,
+      "passed": true
+    },
+    {
+      "mask": 15,
+      "step": 3,
+      "count": 4,
+      "passed": true
+    },
+    {
+      "mask": 15,
+      "step": 4,
+      "count": 4,
+      "passed": true
+    }
+  ],
+  "prototypeConstraint": "Starter disallows SET_VARIABLE and multiple actions. Single-navigation snapshots encode all16 combinations. These are prototype construction frames, not frontend variants.",
+  "passed": true,
+  "visualReview": {
+    "passed": true,
+    "files": [
+      "smena-task-plan.png",
+      "smena-task-resumed.png",
+      "smena-task-step3.png",
+      "smena-task-completed.png",
+      "smena-task-mobile-plan.png",
+      "smena-task-mobile-step3.png",
+      "smena-task-feedback.png",
+      "smena-ui-kit-task.png"
+    ],
+    "scope": "Native Figma exports inspected; frontend QA recorded separately."
+  }
+}

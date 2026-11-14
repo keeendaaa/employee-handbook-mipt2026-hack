@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-14",
+  "version": "1.2.0",
+  "build": "passed",
+  "unit": {
+    "passed": 6
+  },
+  "browser": {
+    "passed": 15,
+    "widths": [
+      320,
+      390,
+      1024,
+      1440,
+      1920
+    ],
+    "fixture": "synthetic test doubles through real FastAPI routes; no email sent"
+  },
+  "backend": {
+    "passed": 153,
+    "skipped": 5,
+    "skipReason": "PostgreSQL integration environment absent"
+  },
+  "liveBackend": {
+    "date": "2026-11-14",
+    "health": "ready",
+    "answer": "partial",
+    "steps": 5,
+    "citations": 2,
+    "quoteRangeMatches": true,
+    "corpus_revision": "bbf070c2c79be485b3cf278fe815e415d85b5d2ab0e52461e49a66874fc3d8a6"
+  },
+  "visualReview": [
+    "new-task-1440.png",
+    "plan-1440.png",
+    "step-390.png",
+    "step-1440.png",
+    "map-1440.png",
+    "mail-390.png"
+  ],
+  "notVerified": [
+    "Clean Docker image start: Docker unavailable locally",
+    "Actual IMAP/SMTP sending",
+    "Official Code Connect publishing"
+  ],
+  "graphify": {
+    "version": "0.9.108",
+    "mode": "local AST, no cluster, no external LLM",
+    "nodes": 1904,
+    "edges": 4478,
+    "excludedTokenFiles": [
+      "design-tokens.css",
+      "smena-design-tokens.css",
+      "smena-design-tokens.json"
+    ]
+  }
+}

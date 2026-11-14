@@ -27,3 +27,12 @@ __pycache__/
 /graphify-out/
 
 /data/imports/
+
+/frontend/node_modules/
+/frontend/dist/
+/frontend/test-results/
+/frontend/playwright-report/
+/src/navigator/web/
+/data/workspace/
+
+*.tsbuildinfo

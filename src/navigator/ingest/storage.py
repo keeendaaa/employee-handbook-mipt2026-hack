@@ -304,6 +304,14 @@ class Store:
                 "WHERE m.corpus_key=%s ORDER BY d.document_id", (corpus_key,),
             ).fetchall()
 
+    def document_in_corpus(self, document_id: str, corpus_key: str) -> dict | None:
+        with self._connect() as conn:
+            return conn.execute(
+                "SELECT d.document_id,d.version_id,d.sha256,d.name,d.blocks,d.warnings "
+                "FROM document_versions d JOIN corpus_documents m USING(version_id) "
+                "WHERE m.corpus_key=%s AND d.document_id=%s", (corpus_key, document_id),
+            ).fetchone()
+
     def document(self, version_id: str) -> dict:
         with self._connect() as conn:
             row = conn.execute(

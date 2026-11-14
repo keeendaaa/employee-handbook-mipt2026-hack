@@ -237,6 +237,23 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
                 progress({'type': 'search_complete', 'retrieval': retrieved})
         return stream_response(run)
 
+    @app.get("/api/documents/{document_id}")
+    def document(document_id: str, corpus_revision: str):
+        store = app.state.service.store
+        active = store.active_revision()
+        if active is None:
+            raise HTTPException(503, "База документов не подключена.")
+        if active["corpus_key"] != corpus_revision:
+            raise HTTPException(409, "База обновилась. Обновите список регламентов.")
+        doc = store.document_in_corpus(document_id, corpus_revision)
+        if doc is None:
+            raise HTTPException(404, "Документ отсутствует в этой версии базы.")
+        return {"id": doc["document_id"], "name": doc["name"],
+                "version_id": doc["version_id"], "corpus_revision": corpus_revision,
+                "warnings": doc["warnings"], "blocks": [
+                    {"text": b["text"], "locator": b["locator"], "method": b.get("method", "native")}
+                    for b in doc["blocks"]]}
+
     @app.get("/api/sources/{source_id}")
     def source(source_id: str):
         try:
@@ -256,6 +273,9 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     frontend_images = web_directory / 'illustrations'
     if frontend_images.is_dir():
         app.mount('/illustrations', StaticFiles(directory=frontend_images), name='illustrations')
+    frontend_brand = web_directory / 'brand'
+    if frontend_brand.is_dir():
+        app.mount('/brand', StaticFiles(directory=frontend_brand), name='brand')
     app.mount('/assets', StaticFiles(directory=Path(__file__).parent / 'static'), name='assets')
     return app
 

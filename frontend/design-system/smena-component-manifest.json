@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "date": "2026-11-14",
   "fileKey": "jORhjmSwUojzxk4ZGo9OI5",
   "pageId": "49:274",
@@ -501,6 +501,9 @@
         "file": "src/components/ui/input.tsx",
         "export": "Input",
         "codeConnect": "not_published"
+      },
+      "frontendContract": {
+        "behavior": "One outer focus ring. Compound search/composer suppress inner input outline and box-shadow. Keyboard focus remains visible on wrapper."
       }
     },
     {
@@ -619,7 +622,10 @@
           "height": 44
         }
       ],
-      "cssClass": ".sm-checkbox"
+      "cssClass": ".sm-checkbox",
+      "frontendContract": {
+        "behavior": "Controlled checked boolean. Second click clears check, including while pointer remains over it. No hover/active brightness change. Keyboard focus on outer label."
+      }
     },
     {
       "id": "70:1171",
@@ -1738,6 +1744,16 @@
         "file": "src/components/primitives.tsx",
         "export": "EvidenceCard",
         "codeConnect": "not_published"
+      },
+      "frontendContract": {
+        "source": "frontend/src/components/primitives.tsx",
+        "export": "EvidenceCard",
+        "props": [
+          "citation",
+          "onOpen"
+        ],
+        "behavior": "Native details/summary, initially collapsed. Quote/action shown only when expanded; source_id opens exact fragment.",
+        "figmaSync": "pending_connection"
       }
     }
   ],
@@ -3052,5 +3068,41 @@
     "Task progress is application state. Figma Starter single-navigation snapshots are prototype construction only, not frontend component variants.",
     "Public HR source must be imported into a permitted demo corpus before a real backend demonstration.",
     "React implementation in frontend/ on codex/smena-frontend. Only actual exported components have implementation paths. Official Code Connect publishing unavailable."
+  ],
+  "figmaSync": {
+    "status": "pending_connection",
+    "figmaVersion": "1.2.0",
+    "frontendVersion": "1.3.0",
+    "checkedAt": "2026-11-14",
+    "reason": "Target Smena file disconnected from Local Bridge; active desktop file is another project. No native nodes or variables changed in this update.",
+    "pending": [
+      "EvidenceCard collapsed/expanded states",
+      "Graph round nodes, search and fullscreen states",
+      "Official MIPT logo and original illustrations",
+      "Document reader and updated responsive source lists"
+    ]
+  },
+  "frontendPatterns": [
+    {
+      "name": "GraphExplorer",
+      "source": "frontend/src/components/graph-explorer.tsx",
+      "props": [
+        "data",
+        "onSource",
+        "onDocument"
+      ],
+      "behavior": "Force layout; circles; real document/topic/question nodes. Search, pan, node dragging, zoom, fit, group filters, full-viewport dialog and keyboard navigation.",
+      "figmaSync": "pending_connection"
+    },
+    {
+      "name": "DocumentReader",
+      "source": "frontend/src/components/document-reader.tsx",
+      "props": [
+        "document",
+        "onClose"
+      ],
+      "behavior": "Version-bound full extracted text with block locators, warnings, loading and 404/409/503 errors.",
+      "figmaSync": "pending_connection"
+    }
   ]
 }

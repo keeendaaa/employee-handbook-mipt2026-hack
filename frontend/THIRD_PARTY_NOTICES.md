@@ -5,6 +5,8 @@
 - shadcn/ui и Radix UI: доступные примитивы Popover, Dialog, Command и поля; MIT.
 - Inter: @fontsource-variable/inter, SIL Open Font License1.1; файл лицензии поставляется npm-пакетом. Шрифт включён в локальные build assets.
 - Lucide: ISC; Hugeicons: лицензии установленных npm-пакетов; Motion: MIT.
-- Иллюстрации `notion-pile.webp` и `notion-stack.webp` — декоративные элементы Notion с https://www.notion.com/front-static/pages/home/teams-agents-hero/pile_2.webp и pile_5.webp, добавлены по прямому запросу владельца проекта. © Notion Labs. Логотипом «Смены» не являются; они не включены в лицензию собственного кода проекта.
+- Логотип МФТИ: официальный SVG с https://mipt.ru/upload/iblock/026/gh8ivafm65ve54a6uokw5ahvj8mjmecq/newMIPT-_1_.svg, обнаружен через logo.getItemsShort официального сайта 14 ноября2026. Файл public/brand/mipt-logo.svg используется без изменений. Права на знак принадлежат МФТИ; общий open-source статус логотипу не приписывается.
+- Иллюстрации mipt-navigator.png, mipt-materials.png, mipt-completed.png созданы встроенным imagegen по заданию владельца проекта: оригинальные научные сцены с кобальтовыми акцентами, без копирования персонажей Notion. Режим и описания — public/illustrations/asset-manifest.json.
+- d3-force3.0.0 и его зависимости: ISC. Используется только для вычисления расположения узлов; непрерывная симуляция останавливается после расчёта.
 
 Ни один скриншот интерфейса Figma не используется как растровая реализация страницы.

@@ -33,8 +33,13 @@ import { Empty, Modal, Notice, SourceModal } from "./components/primitives";
 import { loadTasks, saveTasks } from "./lib/tasks";
 import type { Task } from "./lib/types";
 
+import {
+  DocumentReader,
+  type DocumentSelection,
+} from "./components/document-reader";
+
 function useRoute() {
-  const read = () => location.hash.slice(2).split("/");
+  const read = () => location.hash.slice(2).split("?")[0].split("/");
   const [route, setRoute] = useState(read);
   useEffect(() => {
     const update = () => {
@@ -64,6 +69,7 @@ export default function App() {
   const [tasks, setTasks] = useState(loadTasks),
     [preferences, setPreferences] = useState<string[]>(loadPreferences),
     [storageError, setStorageError] = useState(false),
+    [documentSelection, setDocument] = useState<DocumentSelection | null>(null),
     [sourceId, setSourceId] = useState<string | null>(null),
     [menu, setMenu] = useState(false),
     [adminToken, setAdminToken] = useState("");
@@ -73,6 +79,7 @@ export default function App() {
     page === "task" && route[2] === "step" ? Number(route[3]) : undefined;
   useEffect(() => {
     setSourceId(null);
+    setDocument(null);
     setMenu(false);
   }, [route.join("/")]);
   function persist(next: Task[]) {
@@ -182,10 +189,14 @@ export default function App() {
       </a>
       <aside className="sm-sidebar">
         <a className="brand" href={admin ? "#/admin/documents" : "#/new"}>
-          <span className="brand-mark">С</span>
-          <span>
-            Смена<small>МФТИ</small>
-          </span>
+          <img
+            className="mipt-logo"
+            src="/brand/mipt-logo.svg"
+            alt="МФТИ"
+            width="136"
+            height="35"
+          />
+          <span className="brand-product">Смена</span>
         </a>
         <Navigation />
         <div className="sidebar-bottom">
@@ -218,7 +229,7 @@ export default function App() {
           >
             <Menu size={20} />
           </button>
-          <a href="#/new">Смена</a>
+          <a className="mobile-brand" href="#/new"><img src="/brand/mipt-logo.svg" alt="МФТИ" width="110" height="28" /><span>Смена</span></a>
           <span className="meta">{admin ? "Администрирование" : ""}</span>
         </header>
         <main className="sm-page" id="main" tabIndex={-1}>
@@ -263,10 +274,12 @@ export default function App() {
                   Задачи сохраняются в том браузере, где были созданы.
                 </Empty>
               ))}
-            {page === "documents" && <Documents admin={admin} />}
+            {page === "documents" && (
+              <Documents admin={admin} onDocument={setDocument} />
+            )}
             {admin && page === "import" && <ImportDocument />}
             {admin && page === "map" && (
-              <KnowledgeGraph onSource={setSourceId} />
+              <KnowledgeGraph onSource={setSourceId} onDocument={setDocument} />
             )}
             {admin && page === "checks" && <Checks onSource={setSourceId} />}
             {admin && page === "requests" && (
@@ -304,6 +317,10 @@ export default function App() {
           {admin ? "Рабочее пространство" : "Администрирование"}
         </a>
       </Modal>
+      <DocumentReader
+        document={documentSelection}
+        onClose={() => setDocument(null)}
+      />
       <SourceModal sourceId={sourceId} onClose={() => setSourceId(null)} />
     </div>
   );

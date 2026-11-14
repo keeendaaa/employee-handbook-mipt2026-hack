@@ -198,6 +198,11 @@ export async function ask(
   return answer;
 }
 export const api = {
+  document: (id: string, revision: string, signal?: AbortSignal) =>
+    request<import("./types").DocumentText>(
+      `/api/documents/${encodeURIComponent(id)}?corpus_revision=${encodeURIComponent(revision)}`,
+      { signal },
+    ),
   source: (id: string, signal?: AbortSignal) =>
     request<Citation>(`/api/sources/${encodeURIComponent(id)}`, { signal }),
   map: (signal?: AbortSignal) =>

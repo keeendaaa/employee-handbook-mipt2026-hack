@@ -106,3 +106,12 @@ export interface MailStatus {
     updated: string;
   }[];
 }
+
+export interface DocumentText {
+  id: string;
+  name: string;
+  version_id: string;
+  corpus_revision: string;
+  warnings: string[];
+  blocks: { text: string; locator: Record<string, unknown>; method: string }[];
+}

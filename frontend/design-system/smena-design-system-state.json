@@ -1,0 +1,3205 @@
+{
+  "runId": "smena-v1.2-task-journey",
+  "version": "1.2.0",
+  "scope": "restore primary task decomposition and guided completion",
+  "status": "complete",
+  "fileKey": "jORhjmSwUojzxk4ZGo9OI5",
+  "pageId": "49:274",
+  "pageName": "Смена · UI kit и флоу",
+  "docs": {
+    "start": "63:5798",
+    "color": "63:5833",
+    "type": "63:5907",
+    "layout": "63:6010",
+    "mail": "83:3478",
+    "routes": "84:7390",
+    "task": "88:6421",
+    "primaryFlow": "91:19068",
+    "prototypeStates": "91:19118"
+  },
+  "collections": [
+    {
+      "id": "VariableCollectionId:49:275",
+      "name": "Смена / 01 Primitives",
+      "mode": "Light"
+    },
+    {
+      "id": "VariableCollectionId:49:276",
+      "name": "Смена / 02 Semantic",
+      "mode": "Light"
+    },
+    {
+      "id": "VariableCollectionId:69:981",
+      "name": "Смена / 03 Layout",
+      "mode": "Value"
+    },
+    {
+      "id": "VariableCollectionId:69:998",
+      "name": "Смена / 04 Components",
+      "mode": "Light"
+    }
+  ],
+  "components": [
+    {
+      "id": "70:1040",
+      "name": "Смена / Button",
+      "type": "COMPONENT_SET",
+      "description": "Действие. Variant=Primary|Neutral|Subtle; State=Default|Hover|Pressed|Focus|Disabled|Loading. Высота 44. Label — текст, Show icon и Icon — boolean и instance swap. В коде <button>, disabled и aria-busy; один primary на группу.",
+      "properties": {
+        "Show icon#70:3": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Icon#70:4": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "49:211",
+          "preferredValues": []
+        },
+        "Label#70:5": {
+          "type": "TEXT",
+          "defaultValue": "Продолжить"
+        },
+        "Variant": {
+          "type": "VARIANT",
+          "defaultValue": "Primary",
+          "variantOptions": [
+            "Primary",
+            "Neutral",
+            "Subtle"
+          ]
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Hover",
+            "Pressed",
+            "Focus",
+            "Disabled",
+            "Loading"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:967",
+          "name": "Variant=Primary, State=Default",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:972",
+          "name": "Variant=Primary, State=Hover",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:976",
+          "name": "Variant=Primary, State=Pressed",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:980",
+          "name": "Variant=Primary, State=Focus",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:984",
+          "name": "Variant=Primary, State=Disabled",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:988",
+          "name": "Variant=Primary, State=Loading",
+          "width": 145,
+          "height": 44
+        },
+        {
+          "id": "70:992",
+          "name": "Variant=Neutral, State=Default",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:996",
+          "name": "Variant=Neutral, State=Hover",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1000",
+          "name": "Variant=Neutral, State=Pressed",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1004",
+          "name": "Variant=Neutral, State=Focus",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1008",
+          "name": "Variant=Neutral, State=Disabled",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1012",
+          "name": "Variant=Neutral, State=Loading",
+          "width": 145,
+          "height": 44
+        },
+        {
+          "id": "70:1016",
+          "name": "Variant=Subtle, State=Default",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1020",
+          "name": "Variant=Subtle, State=Hover",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1024",
+          "name": "Variant=Subtle, State=Pressed",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1028",
+          "name": "Variant=Subtle, State=Focus",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1032",
+          "name": "Variant=Subtle, State=Disabled",
+          "width": 121,
+          "height": 44
+        },
+        {
+          "id": "70:1036",
+          "name": "Variant=Subtle, State=Loading",
+          "width": 145,
+          "height": 44
+        }
+      ],
+      "cssClass": ".sm-button",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "Button",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "70:1050",
+      "name": "Смена / IconButton",
+      "type": "COMPONENT_SET",
+      "description": "Кнопка 44×44. В коде обязательный aria-label. State: Default, Hover, Focus, Disabled. Иконка задаётся instance swap.",
+      "properties": {
+        "Show icon#70:8": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Icon#70:9": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "49:250",
+          "preferredValues": []
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Hover",
+            "Focus",
+            "Disabled"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1041",
+          "name": "State=Default",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "id": "70:1044",
+          "name": "State=Hover",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "id": "70:1046",
+          "name": "State=Focus",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "id": "70:1048",
+          "name": "State=Disabled",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "cssClass": ".sm-icon-button"
+    },
+    {
+      "id": "70:1064",
+      "name": "Смена / Badge",
+      "type": "COMPONENT_SET",
+      "description": "Неинтерактивный статус. Tone передаёт смысл вместе с текстом. Не полагаться только на цвет; badge не кнопка.",
+      "properties": {
+        "Label#70:11": {
+          "type": "TEXT",
+          "defaultValue": "Статус"
+        },
+        "Tone": {
+          "type": "VARIANT",
+          "defaultValue": "Neutral",
+          "variantOptions": [
+            "Neutral",
+            "Success",
+            "Warning",
+            "Danger",
+            "Analysis"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1054",
+          "name": "Tone=Neutral",
+          "width": 57,
+          "height": 34
+        },
+        {
+          "id": "70:1056",
+          "name": "Tone=Success",
+          "width": 57,
+          "height": 34
+        },
+        {
+          "id": "70:1058",
+          "name": "Tone=Warning",
+          "width": 57,
+          "height": 34
+        },
+        {
+          "id": "70:1060",
+          "name": "Tone=Danger",
+          "width": 57,
+          "height": 34
+        },
+        {
+          "id": "70:1062",
+          "name": "Tone=Analysis",
+          "width": 57,
+          "height": 34
+        }
+      ],
+      "cssClass": ".sm-badge",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "Badge",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "70:1081",
+      "name": "Смена / Tab",
+      "type": "COMPONENT_SET",
+      "description": "Переключатель представления. Selected, Default, Hover, Focus. В коде tablist/tab с aria-selected и клавиатурной навигацией.",
+      "properties": {
+        "Show icon#70:15": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Icon#70:16": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "48:211",
+          "preferredValues": []
+        },
+        "Label#70:17": {
+          "type": "TEXT",
+          "defaultValue": "Список"
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Selected",
+            "Hover",
+            "Focus"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1065",
+          "name": "State=Default",
+          "width": 88,
+          "height": 36
+        },
+        {
+          "id": "70:1069",
+          "name": "State=Selected",
+          "width": 88,
+          "height": 36
+        },
+        {
+          "id": "70:1073",
+          "name": "State=Hover",
+          "width": 88,
+          "height": 36
+        },
+        {
+          "id": "70:1077",
+          "name": "State=Focus",
+          "width": 88,
+          "height": 36
+        }
+      ],
+      "cssClass": ".sm-tab"
+    },
+    {
+      "id": "70:1095",
+      "name": "Смена / NavItem",
+      "type": "COMPONENT_SET",
+      "description": "Элемент боковой навигации 36px. Label, Icon и Show icon. Ссылки имеют aria-current=page. На мобильном размещается в drawer.",
+      "properties": {
+        "Show icon#70:21": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Icon#70:22": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "49:237",
+          "preferredValues": []
+        },
+        "Label#70:23": {
+          "type": "TEXT",
+          "defaultValue": "Новая задача"
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Selected",
+            "Hover",
+            "Focus"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1082",
+          "name": "State=Default",
+          "width": 200,
+          "height": 36
+        },
+        {
+          "id": "70:1086",
+          "name": "State=Selected",
+          "width": 200,
+          "height": 36
+        },
+        {
+          "id": "70:1089",
+          "name": "State=Hover",
+          "width": 200,
+          "height": 36
+        },
+        {
+          "id": "70:1092",
+          "name": "State=Focus",
+          "width": 200,
+          "height": 36
+        }
+      ],
+      "cssClass": ".sm-nav-item"
+    },
+    {
+      "id": "70:1119",
+      "name": "Смена / Input",
+      "type": "COMPONENT_SET",
+      "description": "Поле значения без внешней подписи. Type=Input|Textarea, State=Default|Filled|Focus|Error|Disabled. В коде связать с label, hint и error через id/aria-describedby. Ширина fill; высота textarea от контента.",
+      "properties": {
+        "Value#70:25": {
+          "type": "TEXT",
+          "defaultValue": "Введите значение"
+        },
+        "Type": {
+          "type": "VARIANT",
+          "defaultValue": "Input",
+          "variantOptions": [
+            "Input",
+            "Textarea"
+          ]
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Filled",
+            "Focus",
+            "Error",
+            "Disabled"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1099",
+          "name": "Type=Input, State=Default",
+          "width": 320,
+          "height": 48
+        },
+        {
+          "id": "70:1101",
+          "name": "Type=Input, State=Filled",
+          "width": 320,
+          "height": 48
+        },
+        {
+          "id": "70:1103",
+          "name": "Type=Input, State=Focus",
+          "width": 320,
+          "height": 48
+        },
+        {
+          "id": "70:1105",
+          "name": "Type=Input, State=Error",
+          "width": 320,
+          "height": 48
+        },
+        {
+          "id": "70:1107",
+          "name": "Type=Input, State=Disabled",
+          "width": 320,
+          "height": 48
+        },
+        {
+          "id": "70:1109",
+          "name": "Type=Textarea, State=Default",
+          "width": 320,
+          "height": 112
+        },
+        {
+          "id": "70:1111",
+          "name": "Type=Textarea, State=Filled",
+          "width": 320,
+          "height": 112
+        },
+        {
+          "id": "70:1113",
+          "name": "Type=Textarea, State=Focus",
+          "width": 320,
+          "height": 112
+        },
+        {
+          "id": "70:1115",
+          "name": "Type=Textarea, State=Error",
+          "width": 320,
+          "height": 112
+        },
+        {
+          "id": "70:1117",
+          "name": "Type=Textarea, State=Disabled",
+          "width": 320,
+          "height": 112
+        }
+      ],
+      "cssClass": ".sm-input",
+      "implementation": {
+        "file": "src/components/ui/input.tsx",
+        "export": "Input",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "70:1137",
+      "name": "Смена / Field",
+      "type": "COMPONENT_SET",
+      "description": "Составное поле: label + Input + hint. В коде label всегда видим. Значение не заменяет подпись. Подпись, значение и подсказка редактируются через свойства.",
+      "properties": {
+        "Label#70:29": {
+          "type": "TEXT",
+          "defaultValue": "Название документа"
+        },
+        "Hint#70:30": {
+          "type": "TEXT",
+          "defaultValue": "Укажите название из оригинала"
+        },
+        "Show hint#70:31": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Error",
+            "Disabled"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1120",
+          "name": "State=Default",
+          "width": 360,
+          "height": 104
+        },
+        {
+          "id": "70:1125",
+          "name": "State=Error",
+          "width": 360,
+          "height": 104
+        },
+        {
+          "id": "70:1131",
+          "name": "State=Disabled",
+          "width": 360,
+          "height": 104
+        }
+      ],
+      "cssClass": ".sm-field"
+    },
+    {
+      "id": "70:1162",
+      "name": "Смена / Checkbox",
+      "type": "COMPONENT_SET",
+      "description": "Выбор сценария. Value=Off|On; State=Default|Focus|Disabled. В коде input type=checkbox, Space переключает. Клик по всей строке.",
+      "properties": {
+        "Label#70:33": {
+          "type": "TEXT",
+          "defaultValue": "Базовый порядок действий"
+        },
+        "Value": {
+          "type": "VARIANT",
+          "defaultValue": "Off",
+          "variantOptions": [
+            "Off",
+            "On"
+          ]
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Focus",
+            "Disabled"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1138",
+          "name": "Value=Off, State=Default",
+          "width": 320,
+          "height": 44
+        },
+        {
+          "id": "70:1142",
+          "name": "Value=Off, State=Focus",
+          "width": 320,
+          "height": 44
+        },
+        {
+          "id": "70:1146",
+          "name": "Value=Off, State=Disabled",
+          "width": 320,
+          "height": 44
+        },
+        {
+          "id": "70:1150",
+          "name": "Value=On, State=Default",
+          "width": 320,
+          "height": 44
+        },
+        {
+          "id": "70:1154",
+          "name": "Value=On, State=Focus",
+          "width": 320,
+          "height": 44
+        },
+        {
+          "id": "70:1158",
+          "name": "Value=On, State=Disabled",
+          "width": 320,
+          "height": 44
+        }
+      ],
+      "cssClass": ".sm-checkbox"
+    },
+    {
+      "id": "70:1171",
+      "name": "Смена / Highlight",
+      "type": "COMPONENT_SET",
+      "description": "Выделение ключевой фразы или цитаты. Tone=Evidence|Uncertainty; Size=Body|Small. В коде mark с box-decoration-break:clone; многострочный текст переносится, смысл статуса задаётся текстом.",
+      "properties": {
+        "Label#70:35": {
+          "type": "TEXT",
+          "defaultValue": "Оформите должностные инструкции"
+        },
+        "Tone": {
+          "type": "VARIANT",
+          "defaultValue": "Evidence",
+          "variantOptions": [
+            "Evidence",
+            "Uncertainty"
+          ]
+        },
+        "Size": {
+          "type": "VARIANT",
+          "defaultValue": "Body",
+          "variantOptions": [
+            "Body",
+            "Small"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "70:1163",
+          "name": "Tone=Evidence, Size=Body",
+          "width": 285,
+          "height": 32
+        },
+        {
+          "id": "70:1165",
+          "name": "Tone=Evidence, Size=Small",
+          "width": 248,
+          "height": 28
+        },
+        {
+          "id": "70:1167",
+          "name": "Tone=Uncertainty, Size=Body",
+          "width": 285,
+          "height": 32
+        },
+        {
+          "id": "70:1169",
+          "name": "Tone=Uncertainty, Size=Small",
+          "width": 248,
+          "height": 28
+        }
+      ],
+      "cssClass": ".sm-highlight"
+    },
+    {
+      "id": "70:1172",
+      "name": "Смена / Divider",
+      "type": "COMPONENT",
+      "description": "Горизонтальный декоративный разделитель 1px; ширина Fill. В коде border-block-end; без дополнительной тени.",
+      "properties": {},
+      "variants": [],
+      "cssClass": ".sm-divider"
+    },
+    {
+      "id": "63:1939",
+      "name": "Смена / Callout",
+      "type": "COMPONENT_SET",
+      "description": "Контекстная заметка, подтверждение, предупреждение или ошибка. Title + Body всегда переносятся. Tone не заменяет пояснение. Width=Fill; height=Hug.",
+      "properties": {
+        "Title#63:2": {
+          "type": "TEXT",
+          "defaultValue": "Не хватает подробного источника"
+        },
+        "Body#63:3": {
+          "type": "TEXT",
+          "defaultValue": "В доступной базе нет материала, на который ссылается инструкция. Требуется проверка владельцем."
+        },
+        "Tone": {
+          "type": "VARIANT",
+          "defaultValue": "Neutral",
+          "variantOptions": [
+            "Neutral",
+            "Warning",
+            "Success",
+            "Danger"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:1927",
+          "name": "Tone=Neutral",
+          "width": 360,
+          "height": 132
+        },
+        {
+          "id": "63:1930",
+          "name": "Tone=Warning",
+          "width": 360,
+          "height": 132
+        },
+        {
+          "id": "63:1933",
+          "name": "Tone=Success",
+          "width": 360,
+          "height": 132
+        },
+        {
+          "id": "63:1936",
+          "name": "Tone=Danger",
+          "width": 360,
+          "height": 132
+        }
+      ],
+      "cssClass": ".sm-callout",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "Notice",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "63:1976",
+      "name": "Смена / SourceCard",
+      "type": "COMPONENT_SET",
+      "description": "Использованный источник. Title, Meta, Source label — text properties. Action — вложенный Button. Отсутствующий и ограниченный материал явно подписаны. Ссылка ведёт на конкретный фрагмент.",
+      "properties": {
+        "Source label#63:7": {
+          "type": "TEXT",
+          "defaultValue": "Источник 01"
+        },
+        "Title#63:8": {
+          "type": "TEXT",
+          "defaultValue": "Оформление нового подразделения и сотрудников"
+        },
+        "Meta#63:9": {
+          "type": "TEXT",
+          "defaultValue": "МФТИ · 2024\nЭтап 6 · Страница 1"
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Ready",
+          "variantOptions": [
+            "Ready",
+            "Missing",
+            "Restricted"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:1940",
+          "name": "State=Ready",
+          "width": 288,
+          "height": 238
+        },
+        {
+          "id": "63:1952",
+          "name": "State=Missing",
+          "width": 288,
+          "height": 178
+        },
+        {
+          "id": "63:1964",
+          "name": "State=Restricted",
+          "width": 288,
+          "height": 178
+        }
+      ],
+      "cssClass": ".sm-source-card"
+    },
+    {
+      "id": "63:2002",
+      "name": "Смена / StepItem",
+      "type": "COMPONENT_SET",
+      "description": "Этап процедуры. State Default/Current/Complete. Show completion включает отметку пользователя; Show number — номер. Number/Title/Body и Show action. Отметка не означает подтверждение внешней системы. Новые задачи используют Show completion=true, Show number=false.",
+      "properties": {
+        "Number#63:14": {
+          "type": "TEXT",
+          "defaultValue": "1"
+        },
+        "Title#63:15": {
+          "type": "TEXT",
+          "defaultValue": "Проверьте доступы к системам"
+        },
+        "Body#63:16": {
+          "type": "TEXT",
+          "defaultValue": "По вашему сообщению, 1С и HR-портал доступны."
+        },
+        "Show action#63:17": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Show completion#88:3": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Show number#88:7": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Current",
+            "Complete"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:1977",
+          "name": "State=Default",
+          "width": 736,
+          "height": 52
+        },
+        {
+          "id": "63:1988",
+          "name": "State=Current",
+          "width": 736,
+          "height": 52
+        },
+        {
+          "id": "63:1995",
+          "name": "State=Complete",
+          "width": 736,
+          "height": 52
+        }
+      ],
+      "cssClass": ".sm-step",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "StepItem",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "63:2061",
+      "name": "Смена / GraphNode",
+      "type": "COMPONENT_SET",
+      "description": "Узел карты. Kind задаёт роль и смысл статуса, State — выбор. Label и Category редактируемые. Связи строятся по данным, не по координатам Figma. Жёлтый узел не доказывает дефект документа.",
+      "properties": {
+        "Category#63:20": {
+          "type": "TEXT",
+          "defaultValue": "Документ"
+        },
+        "Label#63:21": {
+          "type": "TEXT",
+          "defaultValue": "Общая инструкция МФТИ"
+        },
+        "Kind": {
+          "type": "VARIANT",
+          "defaultValue": "Document",
+          "variantOptions": [
+            "Document",
+            "Requirement",
+            "Missing",
+            "Review",
+            "Resolved"
+          ]
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Selected"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2011",
+          "name": "Kind=Document, State=Default",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2016",
+          "name": "Kind=Document, State=Selected",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2021",
+          "name": "Kind=Requirement, State=Default",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2026",
+          "name": "Kind=Requirement, State=Selected",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2031",
+          "name": "Kind=Missing, State=Default",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2036",
+          "name": "Kind=Missing, State=Selected",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2041",
+          "name": "Kind=Review, State=Default",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2046",
+          "name": "Kind=Review, State=Selected",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2051",
+          "name": "Kind=Resolved, State=Default",
+          "width": 272,
+          "height": 78
+        },
+        {
+          "id": "63:2056",
+          "name": "Kind=Resolved, State=Selected",
+          "width": 272,
+          "height": 78
+        }
+      ],
+      "cssClass": ".sm-graph-node"
+    },
+    {
+      "id": "63:2094",
+      "name": "Смена / FindingCard",
+      "type": "COMPONENT_SET",
+      "description": "Карточка находки на доске. Status, Title, Meta. Действие показывается только для применимого следующего шага. Ширина Fill; текст без обрезания.",
+      "properties": {
+        "Title#63:24": {
+          "type": "TEXT",
+          "defaultValue": "Не подключена подробная инструкция"
+        },
+        "Meta#63:25": {
+          "type": "TEXT",
+          "defaultValue": "Пробел базы · находка 006"
+        },
+        "Status": {
+          "type": "VARIANT",
+          "defaultValue": "New",
+          "variantOptions": [
+            "New",
+            "Review",
+            "InProgress",
+            "Closed"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2062",
+          "name": "Status=New",
+          "width": 246,
+          "height": 98
+        },
+        {
+          "id": "63:2070",
+          "name": "Status=Review",
+          "width": 246,
+          "height": 98
+        },
+        {
+          "id": "63:2078",
+          "name": "Status=InProgress",
+          "width": 246,
+          "height": 150
+        },
+        {
+          "id": "63:2086",
+          "name": "Status=Closed",
+          "width": 246,
+          "height": 98
+        }
+      ],
+      "cssClass": ".sm-finding-card"
+    },
+    {
+      "id": "63:2107",
+      "name": "Смена / TableCell",
+      "type": "COMPONENT_SET",
+      "description": "Ячейка Header, Body или Status. Длинный текст переносится. Badge — вложенный компонент. В коде семантические th/td; ширина управляется схемой колонок.",
+      "properties": {
+        "Label#63:27": {
+          "type": "TEXT",
+          "defaultValue": "Название документа"
+        },
+        "Kind": {
+          "type": "VARIANT",
+          "defaultValue": "Header",
+          "variantOptions": [
+            "Header",
+            "Body",
+            "Status"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2095",
+          "name": "Kind=Header",
+          "width": 240,
+          "height": 34
+        },
+        {
+          "id": "63:2099",
+          "name": "Kind=Body",
+          "width": 240,
+          "height": 36
+        },
+        {
+          "id": "63:2103",
+          "name": "Kind=Status",
+          "width": 240,
+          "height": 50
+        }
+      ],
+      "cssClass": ".sm-table-cell"
+    },
+    {
+      "id": "63:2210",
+      "name": "Смена / TableRow",
+      "type": "COMPONENT_SET",
+      "description": "Строка с 3 или 4 ячейками. State Default/Hover/Selected. Содержание через свойства вложенных TableCell. Колонки согласованы на уровне всей таблицы. Ни одна ячейка не позиционируется вручную.",
+      "properties": {
+        "Columns": {
+          "type": "VARIANT",
+          "defaultValue": "3",
+          "variantOptions": [
+            "3",
+            "4"
+          ]
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Hover",
+            "Selected"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2108",
+          "name": "Columns=3, State=Default",
+          "width": 1056,
+          "height": 68
+        },
+        {
+          "id": "63:2125",
+          "name": "Columns=3, State=Hover",
+          "width": 1056,
+          "height": 68
+        },
+        {
+          "id": "63:2142",
+          "name": "Columns=3, State=Selected",
+          "width": 1056,
+          "height": 68
+        },
+        {
+          "id": "63:2159",
+          "name": "Columns=4, State=Default",
+          "width": 1056,
+          "height": 68
+        },
+        {
+          "id": "63:2176",
+          "name": "Columns=4, State=Hover",
+          "width": 1056,
+          "height": 68
+        },
+        {
+          "id": "63:2193",
+          "name": "Columns=4, State=Selected",
+          "width": 1056,
+          "height": 68
+        }
+      ],
+      "cssClass": ".sm-table-row"
+    },
+    {
+      "id": "63:2217",
+      "name": "Смена / PageHeading",
+      "type": "COMPONENT_SET",
+      "description": "Заголовок страницы. Size Desktop (32/40) и Mobile (24/32). Title/Subtitle — text properties. Width Fill и Height Hug.",
+      "properties": {
+        "Title#63:30": {
+          "type": "TEXT",
+          "defaultValue": "Порядок действий"
+        },
+        "Subtitle#63:31": {
+          "type": "TEXT",
+          "defaultValue": "Краткий ответ и основания из документов."
+        },
+        "Show subtitle#83:16": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Size": {
+          "type": "VARIANT",
+          "defaultValue": "Desktop",
+          "variantOptions": [
+            "Desktop",
+            "Mobile"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2211",
+          "name": "Size=Desktop",
+          "width": 1056,
+          "height": 76
+        },
+        {
+          "id": "63:2214",
+          "name": "Size=Mobile",
+          "width": 1056,
+          "height": 68
+        }
+      ],
+      "cssClass": ".sm-page-heading",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "PageHeading",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "63:2236",
+      "name": "Смена / Topbar",
+      "type": "COMPONENT_SET",
+      "description": "Шапка рабочего пространства. Breadcrumb и Role, Show role. Высота 56px, контент в Auto layout. На мобильном используется MobileBar.",
+      "properties": {
+        "Breadcrumb#63:35": {
+          "type": "TEXT",
+          "defaultValue": "Рабочее пространство"
+        },
+        "Role#63:36": {
+          "type": "TEXT",
+          "defaultValue": "Сотрудник"
+        },
+        "Show role#63:37": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "Role": {
+          "type": "VARIANT",
+          "defaultValue": "Employee",
+          "variantOptions": [
+            "Employee",
+            "Admin"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2218",
+          "name": "Role=Employee",
+          "width": 1216,
+          "height": 56
+        },
+        {
+          "id": "63:2229",
+          "name": "Role=Admin",
+          "width": 1216,
+          "height": 56
+        }
+      ],
+      "cssClass": ".sm-topbar"
+    },
+    {
+      "id": "63:2255",
+      "name": "Смена / MobileBar",
+      "type": "COMPONENT_SET",
+      "description": "Мобильная шапка 56px: Menu, название и Search. Menu открывает drawer; aria-label для обеих иконок. Ширина Fill.",
+      "properties": {
+        "Label#63:39": {
+          "type": "TEXT",
+          "defaultValue": "Смена"
+        },
+        "Role": {
+          "type": "VARIANT",
+          "defaultValue": "Employee",
+          "variantOptions": [
+            "Employee",
+            "Admin"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2241",
+          "name": "Role=Employee",
+          "width": 390,
+          "height": 56
+        },
+        {
+          "id": "63:2251",
+          "name": "Role=Admin",
+          "width": 390,
+          "height": 56
+        }
+      ],
+      "cssClass": ".sm-mobilebar"
+    },
+    {
+      "id": "63:2286",
+      "name": "Смена / EmptyState",
+      "type": "COMPONENT_SET",
+      "description": "Состояния Empty, Loading, Error. Заголовок, пояснение и действие. Loading не маскирует отсутствие ответа; Error предлагает повтор.",
+      "properties": {
+        "Title#63:42": {
+          "type": "TEXT",
+          "defaultValue": "Пока нет записей"
+        },
+        "Body#63:43": {
+          "type": "TEXT",
+          "defaultValue": "Измените фильтры или добавьте источник для проверки."
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Empty",
+          "variantOptions": [
+            "Empty",
+            "Loading",
+            "Error"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2262",
+          "name": "State=Empty",
+          "width": 640,
+          "height": 130
+        },
+        {
+          "id": "63:2270",
+          "name": "State=Loading",
+          "width": 640,
+          "height": 130
+        },
+        {
+          "id": "63:2278",
+          "name": "State=Error",
+          "width": 640,
+          "height": 190
+        }
+      ],
+      "cssClass": ".sm-empty-state",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "Empty",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "63:2293",
+      "name": "Смена / ContentLayout",
+      "type": "COMPONENT_SET",
+      "description": "Контейнер с двумя слотами Main и Context. Layout Columns: основной контент Fill и aside 288; Stacked: оба Fill по вертикали. Для произвольного контента используйте слоты, не detach.",
+      "properties": {
+        "Main#63:46": {
+          "type": "SLOT",
+          "description": null,
+          "preferredValues": []
+        },
+        "Context#63:47": {
+          "type": "SLOT",
+          "description": null,
+          "preferredValues": []
+        },
+        "Layout": {
+          "type": "VARIANT",
+          "defaultValue": "Columns",
+          "variantOptions": [
+            "Columns",
+            "Stacked"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2287",
+          "name": "Layout=Columns",
+          "width": 1056,
+          "height": 120
+        },
+        {
+          "id": "63:2290",
+          "name": "Layout=Stacked",
+          "width": 1056,
+          "height": 153
+        }
+      ],
+      "cssClass": ".sm-content-layout"
+    },
+    {
+      "id": "63:2298",
+      "name": "Смена / Surface",
+      "type": "COMPONENT_SET",
+      "description": "Поверхность со слотом Content. Density Default:24px; Compact:16px. Width Fill, height Hug. Слоты сохраняют связь с компонентом.",
+      "properties": {
+        "Content#63:49": {
+          "type": "SLOT",
+          "description": null,
+          "preferredValues": []
+        },
+        "Density": {
+          "type": "VARIANT",
+          "defaultValue": "Default",
+          "variantOptions": [
+            "Default",
+            "Compact"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "63:2294",
+          "name": "Density=Default",
+          "width": 360,
+          "height": 168
+        },
+        {
+          "id": "63:2296",
+          "name": "Density=Compact",
+          "width": 360,
+          "height": 152
+        }
+      ],
+      "cssClass": ".sm-surface"
+    },
+    {
+      "id": "49:368",
+      "name": "Смена / Sidebar / Employee",
+      "type": "COMPONENT",
+      "description": "Desktop/sidebar 224px. Высота Fill. Навигация построена из NavItem. До 768px скрывается за drawer; активная ссылка aria-current=page.",
+      "properties": {},
+      "variants": [],
+      "cssClass": ".sm-sidebar"
+    },
+    {
+      "id": "49:395",
+      "name": "Смена / Sidebar / Admin",
+      "type": "COMPONENT",
+      "description": "Desktop/sidebar 224px. Высота Fill. Навигация построена из NavItem. До 768px скрывается за drawer; активная ссылка aria-current=page.",
+      "properties": {},
+      "variants": [],
+      "cssClass": ".sm-sidebar"
+    },
+    {
+      "id": "83:3270",
+      "name": "Смена / ProcessStatus",
+      "type": "COMPONENT_SET",
+      "description": "Наблюдаемый этап импорта. Stage задаёт статические заголовок и подсказку. Detail/Show detail — имя файла или точное сообщение API. Queued/Downloading/Extracting/Indexing/Ready/Warning/Duplicate/Failed. Без выдуманного процента. Fill/Hug.",
+      "properties": {
+        "Detail#84:19": {
+          "type": "TEXT",
+          "defaultValue": ""
+        },
+        "Show detail#84:28": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Stage": {
+          "type": "VARIANT",
+          "defaultValue": "Queued",
+          "variantOptions": [
+            "Queued",
+            "Downloading",
+            "Extracting",
+            "Indexing",
+            "Ready",
+            "Warning",
+            "Duplicate",
+            "Failed"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "83:3227",
+          "name": "Stage=Queued",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3232",
+          "name": "Stage=Downloading",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3237",
+          "name": "Stage=Extracting",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3242",
+          "name": "Stage=Indexing",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3247",
+          "name": "Stage=Ready",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3253",
+          "name": "Stage=Warning",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3259",
+          "name": "Stage=Duplicate",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3264",
+          "name": "Stage=Failed",
+          "width": 480,
+          "height": 152
+        }
+      ],
+      "cssClass": ".sm-process-status"
+    },
+    {
+      "id": "83:3306",
+      "name": "Смена / MailWorker",
+      "type": "COMPONENT_SET",
+      "description": "Состояние почтового обработчика. State: Starting/Online/Paused/Error/Unavailable/Test. Title — адрес ящика; Detail/Show detail — точная дополнительная информация. Test вычисляется по пустому api_url; Unavailable — сбой запроса панели.",
+      "properties": {
+        "Title#83:6": {
+          "type": "TEXT",
+          "defaultValue": "Почтовый бот"
+        },
+        "Detail#84:37": {
+          "type": "TEXT",
+          "defaultValue": ""
+        },
+        "Show detail#84:44": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "State": {
+          "type": "VARIANT",
+          "defaultValue": "Starting",
+          "variantOptions": [
+            "Starting",
+            "Online",
+            "Paused",
+            "Error",
+            "Unavailable",
+            "Test"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "83:3271",
+          "name": "State=Starting",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3276",
+          "name": "State=Online",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3282",
+          "name": "State=Paused",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3288",
+          "name": "State=Error",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3294",
+          "name": "State=Unavailable",
+          "width": 480,
+          "height": 152
+        },
+        {
+          "id": "83:3300",
+          "name": "State=Test",
+          "width": 480,
+          "height": 152
+        }
+      ],
+      "cssClass": ".sm-mail-worker"
+    },
+    {
+      "id": "83:3389",
+      "name": "Смена / MailEvent",
+      "type": "COMPONENT_SET",
+      "description": "Событие журнала. Status: Pending/Sending/Sent/Skipped/Retry/Failed/Uncertain. Layout: Row на desktop/tablet, Card на mobile. Meta/Sender/Subject/Detail/Show detail — данные. Статусная подсказка зависит от варианта. Ручной повтор не предусмотрен API.",
+      "properties": {
+        "Meta#83:12": {
+          "type": "TEXT",
+          "defaultValue": "13 нояб., 14:32"
+        },
+        "Sender#83:13": {
+          "type": "TEXT",
+          "defaultValue": "employee@example.org"
+        },
+        "Subject#83:14": {
+          "type": "TEXT",
+          "defaultValue": "Бронирование концертного зала"
+        },
+        "Detail#84:51": {
+          "type": "TEXT",
+          "defaultValue": ""
+        },
+        "Show detail#84:59": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "Status": {
+          "type": "VARIANT",
+          "defaultValue": "Pending",
+          "variantOptions": [
+            "Pending",
+            "Sending",
+            "Sent",
+            "Skipped",
+            "Retry",
+            "Failed",
+            "Uncertain"
+          ]
+        },
+        "Layout": {
+          "type": "VARIANT",
+          "defaultValue": "Row",
+          "variantOptions": [
+            "Row",
+            "Card"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "83:3307",
+          "name": "Status=Pending, Layout=Row",
+          "width": 1056,
+          "height": 93
+        },
+        {
+          "id": "83:3319",
+          "name": "Status=Sending, Layout=Row",
+          "width": 1056,
+          "height": 93
+        },
+        {
+          "id": "83:3330",
+          "name": "Status=Sent, Layout=Row",
+          "width": 1056,
+          "height": 93
+        },
+        {
+          "id": "83:3342",
+          "name": "Status=Skipped, Layout=Row",
+          "width": 1056,
+          "height": 111
+        },
+        {
+          "id": "83:3353",
+          "name": "Status=Retry, Layout=Row",
+          "width": 1056,
+          "height": 93
+        },
+        {
+          "id": "83:3365",
+          "name": "Status=Failed, Layout=Row",
+          "width": 1056,
+          "height": 93
+        },
+        {
+          "id": "83:3377",
+          "name": "Status=Uncertain, Layout=Row",
+          "width": 1056,
+          "height": 111
+        },
+        {
+          "id": "84:11254",
+          "name": "Status=Pending, Layout=Card",
+          "width": 350,
+          "height": 178
+        },
+        {
+          "id": "84:11265",
+          "name": "Status=Sending, Layout=Card",
+          "width": 350,
+          "height": 178
+        },
+        {
+          "id": "84:11276",
+          "name": "Status=Sent, Layout=Card",
+          "width": 350,
+          "height": 178
+        },
+        {
+          "id": "84:11287",
+          "name": "Status=Skipped, Layout=Card",
+          "width": 350,
+          "height": 196
+        },
+        {
+          "id": "84:11298",
+          "name": "Status=Retry, Layout=Card",
+          "width": 350,
+          "height": 178
+        },
+        {
+          "id": "84:11309",
+          "name": "Status=Failed, Layout=Card",
+          "width": 350,
+          "height": 178
+        },
+        {
+          "id": "84:11320",
+          "name": "Status=Uncertain, Layout=Card",
+          "width": 350,
+          "height": 196
+        }
+      ],
+      "cssClass": ".sm-mail-event"
+    },
+    {
+      "id": "88:6342",
+      "name": "Смена / ProgressSegment",
+      "type": "COMPONENT_SET",
+      "description": "Один сегмент прогресса. Value Off/On; ширина Fill, высота layout/progress-track-height. В приложении число сегментов равно числу этапов задачи.",
+      "properties": {
+        "Value": {
+          "type": "VARIANT",
+          "defaultValue": "Off",
+          "variantOptions": [
+            "Off",
+            "On"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "88:6340",
+          "name": "Value=Off",
+          "width": 120,
+          "height": 4
+        },
+        {
+          "id": "88:6341",
+          "name": "Value=On",
+          "width": 120,
+          "height": 4
+        }
+      ],
+      "cssClass": ".sm-progress-segment",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "ProgressSegment",
+        "codeConnect": "not_published"
+      }
+    },
+    {
+      "id": "88:6343",
+      "name": "Смена / EvidenceCard",
+      "type": "COMPONENT",
+      "description": "Основание конкретного этапа: Title, Locator, Excerpt и вложенный Action. Excerpt — точная цитата API либо явно подписанный пересказ; не придумывать локатор. Fill/Hug.",
+      "properties": {
+        "Title#88:0": {
+          "type": "TEXT",
+          "defaultValue": "Оформление нового подразделения и сотрудников"
+        },
+        "Locator#88:1": {
+          "type": "TEXT",
+          "defaultValue": "Страница 1 · Этап 6"
+        },
+        "Excerpt#88:2": {
+          "type": "TEXT",
+          "defaultValue": "Основание выбранного действия"
+        }
+      },
+      "variants": [],
+      "cssClass": ".sm-evidence-card",
+      "implementation": {
+        "file": "src/components/primitives.tsx",
+        "export": "EvidenceCard",
+        "codeConnect": "not_published"
+      }
+    }
+  ],
+  "originalScreens": [
+    {
+      "num": 1,
+      "id": "49:426",
+      "role": "employee",
+      "name": "01 / Опишите рабочую задачу",
+      "height": 1000,
+      "width": 1440,
+      "x": 280,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 2,
+      "id": "49:505",
+      "role": "employee",
+      "name": "02 / Трудоустройство сотрудников",
+      "height": 1000,
+      "width": 1440,
+      "x": 3320,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 3,
+      "id": "49:628",
+      "role": "employee",
+      "name": "03 / Источник ответа",
+      "height": 1000,
+      "contentHeight": 568,
+      "width": 1440,
+      "x": 1800,
+      "y": 600,
+      "kind": "screen"
+    },
+    {
+      "num": 4,
+      "id": "49:717",
+      "role": "employee",
+      "name": "04 / Замечание сохранено",
+      "height": 270,
+      "contentHeight": 312,
+      "width": 560,
+      "x": 3760,
+      "y": 3048,
+      "kind": "dialog"
+    },
+    {
+      "num": 5,
+      "id": "49:792",
+      "role": "employee",
+      "name": "05 / Мои задачи",
+      "height": 1000,
+      "width": 1440,
+      "x": 1800,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 6,
+      "id": "49:888",
+      "role": "employee",
+      "name": "06 / Документы",
+      "height": 1000,
+      "contentHeight": 532,
+      "width": 1440,
+      "x": 3320,
+      "y": 600,
+      "kind": "screen"
+    },
+    {
+      "num": 7,
+      "id": "50:439",
+      "role": "admin",
+      "name": "07 / Пробелы и находки",
+      "height": 1000,
+      "contentHeight": 600,
+      "width": 1440,
+      "x": 280,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 8,
+      "id": "50:583",
+      "role": "admin",
+      "name": "08 / Проверка сценариями",
+      "height": 1000,
+      "contentHeight": 482,
+      "width": 1440,
+      "x": 1800,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 9,
+      "id": "50:663",
+      "role": "admin",
+      "name": "09 / Результаты проверки",
+      "height": 1000,
+      "contentHeight": 590,
+      "width": 1440,
+      "x": 3320,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 10,
+      "id": "50:794",
+      "role": "admin",
+      "name": "10 / Ответ по отпуску не найден",
+      "height": 1000,
+      "contentHeight": 414,
+      "width": 1440,
+      "x": 4840,
+      "y": 4512,
+      "kind": "screen"
+    },
+    {
+      "num": 11,
+      "id": "50:897",
+      "role": "admin",
+      "name": "11 / Карта регламентов",
+      "height": 1000,
+      "contentHeight": 920,
+      "width": 1440,
+      "x": 280,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 12,
+      "id": "50:1018",
+      "role": "admin",
+      "name": "12 / Детали узла",
+      "height": 1000,
+      "contentHeight": 528,
+      "width": 1440,
+      "x": 1800,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 13,
+      "id": "51:707",
+      "role": "admin",
+      "name": "13 / Работа с находками",
+      "height": 1000,
+      "contentHeight": 434,
+      "width": 1440,
+      "x": 3320,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 14,
+      "id": "51:823",
+      "role": "admin",
+      "name": "14 / Добавить источник",
+      "height": 1000,
+      "contentHeight": 596,
+      "width": 1440,
+      "x": 4840,
+      "y": 5736,
+      "kind": "screen"
+    },
+    {
+      "num": 15,
+      "id": "51:917",
+      "role": "admin",
+      "name": "15 / Источник добавлен",
+      "height": 1000,
+      "contentHeight": 566,
+      "width": 1440,
+      "x": 280,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 16,
+      "id": "51:999",
+      "role": "admin",
+      "name": "16 / Повторная проверка завершена",
+      "height": 1000,
+      "contentHeight": 644,
+      "width": 1440,
+      "x": 1800,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 17,
+      "id": "51:1103",
+      "role": "admin",
+      "name": "17 / Пробелы и находки",
+      "height": 1000,
+      "contentHeight": 600,
+      "width": 1440,
+      "x": 3320,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 18,
+      "id": "51:1242",
+      "role": "admin",
+      "name": "18 / Карта после обновления",
+      "height": 1000,
+      "contentHeight": 910,
+      "width": 1440,
+      "x": 4840,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 19,
+      "id": "84:4721",
+      "role": "employee",
+      "name": "19 / Подтверждена часть ответа",
+      "height": 1000,
+      "contentHeight": 546,
+      "width": 1440,
+      "x": 4840,
+      "y": 600,
+      "kind": "screen"
+    },
+    {
+      "num": 20,
+      "id": "84:4807",
+      "role": "employee",
+      "name": "20 / Ответ не найден",
+      "height": 1000,
+      "contentHeight": 442,
+      "width": 1440,
+      "x": 280,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 21,
+      "id": "84:4870",
+      "role": "employee",
+      "name": "21 / Источники требуют проверки",
+      "height": 1000,
+      "contentHeight": 604,
+      "width": 1440,
+      "x": 1800,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 22,
+      "id": "84:4959",
+      "role": "employee",
+      "name": "22 / Не удалось составить план",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 23,
+      "id": "84:5027",
+      "role": "employee",
+      "name": "23 / Составляем план задачи",
+      "height": 1000,
+      "width": 1440,
+      "x": 1800,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 24,
+      "id": "84:5090",
+      "role": "admin",
+      "name": "24 / Добавить по ссылке",
+      "height": 1000,
+      "contentHeight": 560,
+      "width": 1440,
+      "x": 3320,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 25,
+      "id": "84:5179",
+      "role": "admin",
+      "name": "25 / Обработка документа",
+      "height": 1000,
+      "contentHeight": 432,
+      "width": 1440,
+      "x": 4840,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 26,
+      "id": "84:5249",
+      "role": "admin",
+      "name": "26 / Источник добавлен с предупреждениями",
+      "height": 1000,
+      "contentHeight": 546,
+      "width": 1440,
+      "x": 1800,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 27,
+      "id": "84:5368",
+      "role": "admin",
+      "name": "27 / Документ уже есть в базе",
+      "height": 1000,
+      "contentHeight": 388,
+      "width": 1440,
+      "x": 3320,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 28,
+      "id": "84:5437",
+      "role": "admin",
+      "name": "28 / Не удалось добавить источник",
+      "height": 1000,
+      "contentHeight": 388,
+      "width": 1440,
+      "x": 4840,
+      "y": 8184,
+      "kind": "screen"
+    },
+    {
+      "num": 29,
+      "id": "84:5506",
+      "role": "admin",
+      "name": "29 / Проверка устарела",
+      "height": 1000,
+      "contentHeight": 446,
+      "width": 1440,
+      "x": 280,
+      "y": 9408,
+      "kind": "screen"
+    },
+    {
+      "num": 30,
+      "id": "84:5578",
+      "role": "admin",
+      "name": "30 / Почтовый бот",
+      "height": 1348,
+      "contentHeight": 1256,
+      "width": 1440,
+      "x": 280,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 31,
+      "id": "84:5749",
+      "role": "admin",
+      "name": "31 / Настройки почтового бота",
+      "height": 1000,
+      "contentHeight": 838,
+      "width": 1440,
+      "x": 1800,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 32,
+      "id": "84:5849",
+      "role": "admin",
+      "name": "32 / Почтовый бот на паузе",
+      "height": 1348,
+      "contentHeight": 1256,
+      "width": 1440,
+      "x": 3320,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 33,
+      "id": "84:6020",
+      "role": "admin",
+      "name": "33 / Проверьте настройки",
+      "height": 1000,
+      "contentHeight": 826,
+      "width": 1440,
+      "x": 4840,
+      "y": 12096,
+      "kind": "screen"
+    },
+    {
+      "num": 34,
+      "id": "84:6116",
+      "role": "admin",
+      "name": "34 / Настройки сохранены",
+      "height": 1002,
+      "contentHeight": 946,
+      "width": 1440,
+      "x": 280,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 35,
+      "id": "84:6219",
+      "role": "admin",
+      "name": "35 / Панель бота недоступна",
+      "height": 1000,
+      "contentHeight": 640,
+      "width": 1440,
+      "x": 1800,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 36,
+      "id": "84:6303",
+      "role": "admin",
+      "name": "36 / Почтовый бот",
+      "height": 1000,
+      "contentHeight": 678,
+      "width": 1440,
+      "x": 3320,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 37,
+      "id": "84:6393",
+      "role": "admin",
+      "name": "37 / Карта обновляется",
+      "height": 1000,
+      "contentHeight": 366,
+      "width": 1440,
+      "x": 280,
+      "y": 10632,
+      "kind": "screen"
+    },
+    {
+      "num": 38,
+      "id": "84:6465",
+      "role": "admin",
+      "name": "38 / Карта недоступна",
+      "height": 1000,
+      "contentHeight": 426,
+      "width": 1440,
+      "x": 1800,
+      "y": 10632,
+      "kind": "screen"
+    },
+    {
+      "num": 39,
+      "id": "84:6532",
+      "role": "employee",
+      "name": "39 / Источник недоступен",
+      "height": 1000,
+      "contentHeight": 328,
+      "width": 1440,
+      "x": 280,
+      "y": 3048,
+      "kind": "screen"
+    },
+    {
+      "num": 40,
+      "id": "84:6591",
+      "role": "employee",
+      "name": "40 / Недостаточно контекста",
+      "height": 1000,
+      "contentHeight": 492,
+      "width": 1440,
+      "x": 3320,
+      "y": 1824,
+      "kind": "screen"
+    },
+    {
+      "num": 41,
+      "id": "84:6654",
+      "role": "admin",
+      "name": "41 / Ошибка подключения к почте",
+      "height": 1000,
+      "contentHeight": 388,
+      "width": 1440,
+      "x": 4840,
+      "y": 13668,
+      "kind": "screen"
+    },
+    {
+      "num": 42,
+      "id": "84:6728",
+      "role": "admin",
+      "name": "42 / Тестовый режим почтового бота",
+      "height": 1000,
+      "contentHeight": 504,
+      "width": 1440,
+      "x": 280,
+      "y": 14894,
+      "kind": "screen"
+    },
+    {
+      "num": 43,
+      "id": "84:11032",
+      "role": "admin",
+      "name": "43 / Добавить источник",
+      "height": 1000,
+      "contentHeight": 552,
+      "width": 1440,
+      "x": 280,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 44,
+      "id": "84:11108",
+      "role": "admin",
+      "name": "44 / Добавить источник",
+      "height": 1000,
+      "contentHeight": 484,
+      "width": 1440,
+      "x": 1800,
+      "y": 6960,
+      "kind": "screen"
+    },
+    {
+      "num": 45,
+      "id": "84:11183",
+      "role": "employee",
+      "name": "45 / Сообщить о неточности",
+      "height": 398,
+      "contentHeight": 444,
+      "width": 640,
+      "x": 2200,
+      "y": 3048,
+      "kind": "dialog"
+    },
+    {
+      "num": 46,
+      "id": "91:8289",
+      "role": "employee",
+      "name": "46 / Проверьте доступ в 1С: ДО",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": -4600,
+      "kind": "screen"
+    },
+    {
+      "num": 47,
+      "id": "91:9118",
+      "role": "employee",
+      "name": "47 / Подготовьте личный кабинет HR",
+      "height": 1000,
+      "width": 1440,
+      "x": 280,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 48,
+      "id": "91:9996",
+      "role": "employee",
+      "name": "48 / Подготовьте должностные инструкции",
+      "height": 1000,
+      "width": 1440,
+      "x": 1800,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 49,
+      "id": "91:10972",
+      "role": "employee",
+      "name": "49 / Запустите электронное трудоустройство",
+      "height": 1000,
+      "width": 1440,
+      "x": 3320,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 50,
+      "id": "91:11601",
+      "role": "employee",
+      "name": "50 / Задача завершена",
+      "height": 1000,
+      "width": 1440,
+      "x": 280,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 51,
+      "id": "91:7023",
+      "role": "employee",
+      "name": "51 / Трудоустройство сотрудников",
+      "height": 1000,
+      "width": 1440,
+      "x": 3320,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 52,
+      "id": "91:8195",
+      "role": "employee",
+      "name": "52 / Все этапы отмечены",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": -3376,
+      "kind": "screen"
+    },
+    {
+      "num": 53,
+      "id": "91:11409",
+      "role": "employee",
+      "name": "53 / Основание этапа",
+      "height": 1000,
+      "width": 1440,
+      "x": 4840,
+      "y": -2152,
+      "kind": "screen"
+    },
+    {
+      "num": 54,
+      "id": "88:6492",
+      "name": "54 / Справка по бронированию",
+      "role": "employee",
+      "width": 1440,
+      "height": 1000,
+      "x": 280,
+      "y": 600,
+      "kind": "screen"
+    }
+  ],
+  "responsive": [
+    {
+      "source": 7,
+      "id": "63:4655",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 7,
+      "id": "63:4725",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 7,
+      "id": "63:4879",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "source": 11,
+      "id": "63:5046",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 11,
+      "id": "63:5118",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 11,
+      "id": "63:5232",
+      "width": 390,
+      "height": 1010
+    },
+    {
+      "source": 14,
+      "id": "63:5359",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 14,
+      "id": "63:5427",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 14,
+      "id": "63:5510",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "source": 30,
+      "id": "84:9144",
+      "width": 1440,
+      "height": 1332
+    },
+    {
+      "source": 30,
+      "id": "84:9318",
+      "width": 1024,
+      "height": 1316
+    },
+    {
+      "source": 30,
+      "id": "84:9492",
+      "width": 390,
+      "height": 1910
+    },
+    {
+      "source": 31,
+      "id": "84:9678",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 31,
+      "id": "84:9776",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 31,
+      "id": "84:9874",
+      "width": 390,
+      "height": 906
+    },
+    {
+      "source": 2,
+      "id": "63:4334",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 2,
+      "id": "63:4401",
+      "width": 1024,
+      "height": 1246
+    },
+    {
+      "source": 2,
+      "id": "63:4522",
+      "width": 390,
+      "height": 1494
+    },
+    {
+      "source": 46,
+      "id": "91:20233",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 46,
+      "id": "91:20325",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 46,
+      "id": "91:20417",
+      "width": 390,
+      "height": 1004
+    },
+    {
+      "source": 48,
+      "id": "91:20521",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 48,
+      "id": "91:20628",
+      "width": 1024,
+      "height": 1196
+    },
+    {
+      "source": 48,
+      "id": "91:20735",
+      "width": 390,
+      "height": 1324
+    },
+    {
+      "source": 5,
+      "id": "91:20854",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 5,
+      "id": "91:20927",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 5,
+      "id": "91:21000",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "source": 50,
+      "id": "91:21085",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "source": 50,
+      "id": "91:21158",
+      "width": 1024,
+      "height": 1000
+    },
+    {
+      "source": 50,
+      "id": "91:21231",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "reviewFrames": {
+    "controls": [
+      "70:1173",
+      "70:1315",
+      "70:1412"
+    ],
+    "patterns": [
+      "63:2299",
+      "63:2373",
+      "63:2477"
+    ],
+    "task": "88:6421"
+  },
+  "artifacts": {
+    "tokensSource": "outputs/smena-token-source.json",
+    "tokensCss": "outputs/smena-design-tokens.css",
+    "tokensJson": "outputs/smena-design-tokens.json",
+    "uiCss": "outputs/smena-ui.css",
+    "manifest": "outputs/smena-component-manifest.json",
+    "guidelines": "outputs/smena-design-system.md",
+    "changelog": "outputs/smena-design-changelog.md",
+    "qa": "outputs/smena-design-qa.json",
+    "backendContract": "outputs/smena-backend-contract.md",
+    "flowMap": "outputs/smena-flow-manifest.json",
+    "figmaCopy": "outputs/smena-ui-kit-v1.2.0.fig",
+    "package": "outputs/smena-ui-kit-v1.2.0.zip",
+    "taskFlow": "outputs/smena-task-flow.json",
+    "frontendQa": "outputs/smena-frontend-qa.json",
+    "frontendSource": "outputs/smena-frontend-v1.2.0.zip",
+    "frontendGitBundle": "outputs/smena-frontend-v1.2.0.bundle"
+  },
+  "validation": {
+    "passed": true,
+    "navigationCount": 1066,
+    "componentFamilies": 30,
+    "variants": 138,
+    "tokens": 114,
+    "textStyles": 12,
+    "layoutOverflow": 0,
+    "taskToggleChecks": 64,
+    "responsiveReferences": 30,
+    "prototypeStateFrames": 92
+  },
+  "localBridge": {
+    "installation": "/Users/aleksandr/Documents/Codex/2026-11-13/new-chat/work/figma-local-bridge",
+    "sessionNote": "Local session IDs expire on reconnect. Call list_files/create_session; never reuse an old ID blindly."
+  },
+  "lastUpdated": "2026-11-14",
+  "backendReference": {
+    "repository": "https://github.com/keeendaaa/employee-handbook-mipt2026-hack",
+    "commits": {
+      "main": "e7cb2f82df099a3c8d793a14d5a3a64e8a38b52e",
+      "mailbot": "d1c31ce938b733e4ffae0fa3ea9ec6ad9438b8d1"
+    },
+    "mailbotBranch": "codex/mailbot",
+    "notes": "Mail panel is a separate loopback service; shared authenticated admin gateway is not implemented."
+  },
+  "icons": [
+    {
+      "name": "Иконка / Mail",
+      "id": "84:25013",
+      "size": 16,
+      "usage": "mail navigation",
+      "asset": "smena-icon-mail.svg"
+    }
+  ],
+  "lastReviewed": "2026-11-14",
+  "taskJourney": {
+    "buildRecord": "work/task-snapshots-result.json",
+    "components": {
+      "progress": {
+        "id": "88:6342",
+        "variants": [
+          {
+            "id": "88:6340",
+            "name": "Value=Off"
+          },
+          {
+            "id": "88:6341",
+            "name": "Value=On"
+          }
+        ]
+      },
+      "evidence": {
+        "id": "88:6343"
+      }
+    },
+    "prototypeRecord": "work/task-snapshots-result.json",
+    "primaryFlow": [
+      1,
+      23,
+      2,
+      46,
+      47,
+      48,
+      49,
+      52,
+      50,
+      5,
+      51,
+      53
+    ],
+    "prototypeFrames": [
+      {
+        "id": "91:6827",
+        "name": "Prototype / Plan / 0001",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:6876",
+        "name": "Prototype / Tasks / 0001",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:6925",
+        "name": "Prototype / Plan / 0010",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:6974",
+        "name": "Prototype / Tasks / 0010",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7068",
+        "name": "Prototype / Tasks / 0011",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7117",
+        "name": "Prototype / Plan / 0100",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7166",
+        "name": "Prototype / Tasks / 0100",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7215",
+        "name": "Prototype / Plan / 0101",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7264",
+        "name": "Prototype / Tasks / 0101",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7313",
+        "name": "Prototype / Plan / 0110",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7362",
+        "name": "Prototype / Tasks / 0110",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7411",
+        "name": "Prototype / Plan / 0111",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7460",
+        "name": "Prototype / Tasks / 0111",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7509",
+        "name": "Prototype / Plan / 1000",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7558",
+        "name": "Prototype / Tasks / 1000",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7607",
+        "name": "Prototype / Plan / 1001",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7656",
+        "name": "Prototype / Tasks / 1001",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7705",
+        "name": "Prototype / Plan / 1010",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7754",
+        "name": "Prototype / Tasks / 1010",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7803",
+        "name": "Prototype / Plan / 1011",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7852",
+        "name": "Prototype / Tasks / 1011",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7901",
+        "name": "Prototype / Plan / 1100",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:7950",
+        "name": "Prototype / Tasks / 1100",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:7999",
+        "name": "Prototype / Plan / 1101",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:8048",
+        "name": "Prototype / Tasks / 1101",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:8097",
+        "name": "Prototype / Plan / 1110",
+        "kind": "Plan"
+      },
+      {
+        "id": "91:8146",
+        "name": "Prototype / Tasks / 1110",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:8240",
+        "name": "Prototype / Tasks / 1111",
+        "kind": "Tasks"
+      },
+      {
+        "id": "91:8334",
+        "name": "Prototype / Step 1 / 0001",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8383",
+        "name": "Prototype / Step 1 / 0010",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8432",
+        "name": "Prototype / Step 1 / 0011",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8481",
+        "name": "Prototype / Step 1 / 0100",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8530",
+        "name": "Prototype / Step 1 / 0101",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8579",
+        "name": "Prototype / Step 1 / 0110",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8628",
+        "name": "Prototype / Step 1 / 0111",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8677",
+        "name": "Prototype / Step 1 / 1000",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8726",
+        "name": "Prototype / Step 1 / 1001",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8775",
+        "name": "Prototype / Step 1 / 1010",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8824",
+        "name": "Prototype / Step 1 / 1011",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8873",
+        "name": "Prototype / Step 1 / 1100",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8922",
+        "name": "Prototype / Step 1 / 1101",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:8971",
+        "name": "Prototype / Step 1 / 1110",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:9020",
+        "name": "Prototype / Step 1 / 1111",
+        "kind": "Step 1"
+      },
+      {
+        "id": "91:9069",
+        "name": "Prototype / Step 2 / 0000",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9163",
+        "name": "Prototype / Step 2 / 0010",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9212",
+        "name": "Prototype / Step 2 / 0011",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9261",
+        "name": "Prototype / Step 2 / 0100",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9310",
+        "name": "Prototype / Step 2 / 0101",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9359",
+        "name": "Prototype / Step 2 / 0110",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9408",
+        "name": "Prototype / Step 2 / 0111",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9457",
+        "name": "Prototype / Step 2 / 1000",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9506",
+        "name": "Prototype / Step 2 / 1001",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9555",
+        "name": "Prototype / Step 2 / 1010",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9604",
+        "name": "Prototype / Step 2 / 1011",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9653",
+        "name": "Prototype / Step 2 / 1100",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9702",
+        "name": "Prototype / Step 2 / 1101",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9751",
+        "name": "Prototype / Step 2 / 1110",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9800",
+        "name": "Prototype / Step 2 / 1111",
+        "kind": "Step 2"
+      },
+      {
+        "id": "91:9849",
+        "name": "Prototype / Step 3 / 0000",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:9898",
+        "name": "Prototype / Step 3 / 0001",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:9947",
+        "name": "Prototype / Step 3 / 0010",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10041",
+        "name": "Prototype / Step 3 / 0100",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10090",
+        "name": "Prototype / Step 3 / 0101",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10139",
+        "name": "Prototype / Step 3 / 0110",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10188",
+        "name": "Prototype / Step 3 / 0111",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10237",
+        "name": "Prototype / Step 3 / 1000",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10286",
+        "name": "Prototype / Step 3 / 1001",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10335",
+        "name": "Prototype / Step 3 / 1010",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10384",
+        "name": "Prototype / Step 3 / 1011",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10433",
+        "name": "Prototype / Step 3 / 1100",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10482",
+        "name": "Prototype / Step 3 / 1101",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10531",
+        "name": "Prototype / Step 3 / 1110",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10580",
+        "name": "Prototype / Step 3 / 1111",
+        "kind": "Step 3"
+      },
+      {
+        "id": "91:10629",
+        "name": "Prototype / Step 4 / 0000",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:10678",
+        "name": "Prototype / Step 4 / 0001",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:10727",
+        "name": "Prototype / Step 4 / 0010",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:10776",
+        "name": "Prototype / Step 4 / 0011",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:10825",
+        "name": "Prototype / Step 4 / 0100",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:10874",
+        "name": "Prototype / Step 4 / 0101",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:10923",
+        "name": "Prototype / Step 4 / 0110",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11017",
+        "name": "Prototype / Step 4 / 1000",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11066",
+        "name": "Prototype / Step 4 / 1001",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11115",
+        "name": "Prototype / Step 4 / 1010",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11164",
+        "name": "Prototype / Step 4 / 1011",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11213",
+        "name": "Prototype / Step 4 / 1100",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11262",
+        "name": "Prototype / Step 4 / 1101",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11311",
+        "name": "Prototype / Step 4 / 1110",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11360",
+        "name": "Prototype / Step 4 / 1111",
+        "kind": "Step 4"
+      },
+      {
+        "id": "91:11454",
+        "name": "Prototype / Source / 2",
+        "kind": "Source"
+      },
+      {
+        "id": "91:11503",
+        "name": "Prototype / Source / 3",
+        "kind": "Source"
+      },
+      {
+        "id": "91:11552",
+        "name": "Prototype / Source / 4",
+        "kind": "Source"
+      },
+      {
+        "id": "91:11646",
+        "name": "Prototype / Completed tasks",
+        "kind": "Completed tasks"
+      }
+    ],
+    "flowMap": "outputs/smena-task-flow.json"
+  },
+  "frontend": {
+    "directory": "work/smena-frontend/frontend",
+    "branch": "codex/smena-frontend",
+    "status": "published",
+    "unitTests": 6,
+    "e2eTests": 15,
+    "backendTests": 153,
+    "backendSkipped": 5,
+    "qa": "outputs/smena-frontend-qa.json",
+    "commit": "ffe08071862cbc52c4156026c5b59e6c1a76f222",
+    "graphifyNodes": 1904,
+    "graphifyEdges": 4478,
+    "authenticatedAccount": "KuRigger",
+    "repositoryPermissions": {
+      "pull": true,
+      "push": true
+    },
+    "githubCli": "work/github-cli/gh",
+    "githubCliVersion": "2.104.0",
+    "tree": "10192aa1abdd1f34502ef18e36967f41ba838b7a",
+    "url": "https://github.com/keeendaaa/employee-handbook-mipt2026-hack/tree/codex/smena-frontend",
+    "publicationMethod": "Git push with GitHub CLI credential helper"
+  },
+  "frontendRevision": {
+    "version": "1.3.0",
+    "date": "2026-11-14",
+    "figmaSync": {
+      "status": "pending_connection",
+      "figmaVersion": "1.2.0",
+      "frontendVersion": "1.3.0",
+      "checkedAt": "2026-11-14",
+      "reason": "Target Smena file disconnected from Local Bridge; active desktop file is another project. No native nodes or variables changed in this update.",
+      "pending": [
+        "EvidenceCard collapsed/expanded states",
+        "Graph round nodes, search and fullscreen states",
+        "Official MIPT logo and original illustrations",
+        "Document reader and updated responsive source lists"
+      ]
+    },
+    "tokenChanges": false,
+    "tests": {
+      "unit": 7,
+      "e2e": 22,
+      "widths": [
+        320,
+        390,
+        1024,
+        1440,
+        1920
+      ]
+    }
+  }
+}

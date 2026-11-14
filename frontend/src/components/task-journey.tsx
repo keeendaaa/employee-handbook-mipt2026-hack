@@ -47,8 +47,8 @@ const displayOptions = [
   },
   {
     id: "sources",
-    title: "Источники рядом",
-    description: "Показывать основания плана в боковой колонке.",
+    title: "Основания плана",
+    description: "Показывать список источников под планом.",
   },
 ];
 export const taskHref = (id: string, step?: number) =>
@@ -84,22 +84,23 @@ export function NewTask({
     controller.current = active;
     try {
       const response = await ask(question.trim(), setStage, active.signal);
-      if(!active.signal.aborted && controller.current === active) onCreate(makeTask(question.trim(), response));
+      if (!active.signal.aborted && controller.current === active)
+        onCreate(makeTask(question.trim(), response));
     } catch (e) {
       if (!active.signal.aborted && controller.current === active)
         setError(e instanceof Error ? e.message : "Не удалось получить ответ.");
     } finally {
-      if(controller.current === active) setBusy(false);
+      if (controller.current === active) setBusy(false);
     }
   }
   return (
     <div className="new-task">
       <div className="welcome-art">
         <img
-          src="/illustrations/notion-pile.webp"
+          src="/illustrations/mipt-navigator.png"
           alt=""
-          width="96"
-          height="96"
+          width="264"
+          height="176"
         />
         <span className="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО</span>
       </div>
@@ -397,7 +398,7 @@ export function TaskJourney({
       if (!active.signal.aborted && controller.current === active)
         setError(e instanceof Error ? e.message : "Ошибка загрузки.");
     } finally {
-      if(controller.current === active) setBusy(false);
+      if (controller.current === active) setBusy(false);
     }
   }
   if (task.status === "completed" && step === undefined)
@@ -405,10 +406,10 @@ export function TaskJourney({
       <>
         <img
           className="completion-art"
-          src="/illustrations/notion-stack.webp"
+          src="/illustrations/mipt-completed.png"
           alt=""
-          width="80"
-          height="80"
+          width="240"
+          height="160"
         />
         <PageHeading title="Задача завершена" />
         <Badge tone="success">Завершена</Badge>

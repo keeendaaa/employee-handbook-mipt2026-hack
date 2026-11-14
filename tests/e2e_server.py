@@ -64,7 +64,9 @@ class Snapshot:
 
 
 class Questions:
-    rows = []
+    rows = [{'id':'synthetic-question','corpus_key':'synthetic-e2e','question':'Неизвестный вопрос',
+             'result':answer('Неизвестный вопрос'),'query_vector':[1],'model_revision':'synthetic',
+             'checked_at':'2026-11-14T00:00:00Z'}]
     def list(self):
         return deepcopy(self.rows)
     def can_add(self, question):
@@ -121,7 +123,7 @@ if __name__ == '__main__':
         panel = ThreadingHTTPServer(('127.0.0.1',0),MailPanel)
         os.environ['MAILBOT_PANEL_URL'] = f'http://127.0.0.1:{panel.server_port}'
         threading.Thread(target=panel.serve_forever,daemon=True).start()
-        service = SimpleNamespace(store=SimpleNamespace(active_revision=lambda:{'corpus_key':'synthetic-e2e'},document=lambda v:DOC),
+        service = SimpleNamespace(store=SimpleNamespace(active_revision=lambda:{'corpus_key':'synthetic-e2e'},document=lambda v:DOC,document_in_corpus=lambda d,c:DOC if d==DOC['document_id'] else None),
           search=lambda q,**kw:{'corpus_revision':'synthetic-e2e','results':[{'citation':r,'context_sources':[]} for r in REFS]})
         graph = SimpleNamespace(snapshot=lambda *args:Snapshot(),encode_question=lambda q:([1],'synthetic'),close=lambda:None)
         app = create_app(service=service,generator=Generator(),knowledge_map=graph,map_questions=Questions(),

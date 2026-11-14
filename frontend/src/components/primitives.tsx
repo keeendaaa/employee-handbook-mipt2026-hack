@@ -197,6 +197,7 @@ export function Modal({
   description,
   children,
   wide = false,
+  fullScreen = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -204,6 +205,7 @@ export function Modal({
   description?: string;
   children: ReactNode;
   wide?: boolean;
+  fullScreen?: boolean;
 }) {
   return (
     <Dialog
@@ -213,7 +215,7 @@ export function Modal({
       }}
     >
       <DialogContent
-        className={`modal ${wide ? "modal-wide" : ""}`}
+        className={`modal ${wide ? "modal-wide" : ""} ${fullScreen ? "modal-fullscreen" : ""}`}
         initialFocus="content"
       >
         <div className="modal-heading">
@@ -240,19 +242,28 @@ export function EvidenceCard({
   onOpen: (id: string) => void;
 }) {
   return (
-    <article className="sm-evidence-card">
-      <strong>{citation.document_name}</strong>
-      <p className="meta">{locator(citation)}</p>
-      <blockquote>
-        <mark>{citation.quote}</mark>
-      </blockquote>
-      <Button variant="subtle" onClick={() => onOpen(citation.source_id)}>
-        Открыть фрагмент <ArrowUpRight size={16} />
-      </Button>
-      {citation.extraction_method === "ocr" && (
-        <Badge tone="warning">Текст распознан OCR</Badge>
-      )}
-    </article>
+    <details className="sm-evidence-card">
+      <summary>
+        <span>
+          <strong>{citation.document_name}</strong>
+          <span className="meta">{locator(citation)}</span>
+        </span>
+        <span className="evidence-chevron" aria-hidden="true">
+          ⌄
+        </span>
+      </summary>
+      <div className="evidence-body">
+        <blockquote>
+          <mark>{citation.quote}</mark>
+        </blockquote>
+        <Button variant="subtle" onClick={() => onOpen(citation.source_id)}>
+          Открыть фрагмент <ArrowUpRight size={16} />
+        </Button>
+        {citation.extraction_method === "ocr" && (
+          <Badge tone="warning">Текст распознан OCR</Badge>
+        )}
+      </div>
+    </details>
   );
 }
 export function SourceModal({

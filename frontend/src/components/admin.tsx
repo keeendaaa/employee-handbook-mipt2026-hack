@@ -10,14 +10,12 @@ import {
   Plus,
   RefreshCw,
   Upload,
-  ZoomIn,
-  ZoomOut,
 } from "lucide-react";
 import { api, ApiError } from "../lib/api";
-import { graphLayout } from "../lib/graph";
+import { GraphExplorer } from "./graph-explorer";
+import type { DocumentSelection } from "./document-reader";
 import type {
   Answer,
-  Fragment,
   ImportJob,
   KnowledgeMap,
   MailSettings,
@@ -88,7 +86,13 @@ export function AdminAccess({
     </form>
   );
 }
-export function Documents({ admin = false }: { admin?: boolean }) {
+export function Documents({
+  admin = false,
+  onDocument,
+}: {
+  admin?: boolean;
+  onDocument: (document: DocumentSelection) => void;
+}) {
   const { data, error, loading, reload } = useMap(),
     [search, setSearch] = useState("");
   const docs =
@@ -109,6 +113,13 @@ export function Documents({ admin = false }: { admin?: boolean }) {
           )
         }
       />
+      <img
+        className="materials-art"
+        src="/illustrations/mipt-materials.png"
+        alt=""
+        width="216"
+        height="144"
+      />
       <HaloSearchInput
         className="halo-search"
         aria-label="Найти регламент"
@@ -123,7 +134,14 @@ export function Documents({ admin = false }: { admin?: boolean }) {
       ) : docs.length ? (
         <div className="document-list">
           {docs.map((doc) => (
-            <article key={doc.id} className="document-row">
+            <button
+              type="button"
+              key={doc.id}
+              className="document-row"
+              onClick={() =>
+                onDocument({ id: doc.id, revision: data!.corpus_revision })
+              }
+            >
               <div className="document-icon">
                 <FileText size={20} />
               </div>
@@ -131,8 +149,8 @@ export function Documents({ admin = false }: { admin?: boolean }) {
                 <h2>{doc.name}</h2>
                 <p className="meta">В подключённой базе</p>
               </div>
-              <Badge>Документ</Badge>
-            </article>
+              <ArrowRight size={18} aria-hidden="true" />
+            </button>
           ))}
         </div>
       ) : (
@@ -370,67 +388,21 @@ export function ImportDocument() {
 }
 export function KnowledgeGraph({
   onSource,
+  onDocument,
 }: {
   onSource: (id: string) => void;
+  onDocument: (document: DocumentSelection) => void;
 }) {
-  const { data, error, loading, reload } = useMap(),
-    [selected, setSelected] = useState<string | null>(null),
-    [fragments, setFragments] = useState<Fragment[] | null>(null),
-    [fragmentError, setFragmentError] = useState(""),
-    [zoom, setZoom] = useState(1),
-    [filter, setFilter] = useState("all");
-  const viewport = useRef<HTMLDivElement | null>(null),
-    [canvasWidth, setCanvasWidth] = useState(744);
-  useEffect(() => {
-    if (!viewport.current) return;
-    const observer = new ResizeObserver(([entry]) =>
-      setCanvasWidth(Math.max(640, entry.contentRect.width)),
-    );
-    observer.observe(viewport.current);
-    return () => observer.disconnect();
-  }, [data]);
-  useEffect(() => {
-    if (!selected || !data) return;
-    const controller = new AbortController();
-    setFragments(null);
-    setFragmentError("");
-    api
-      .topic(selected, data.corpus_revision, controller.signal)
-      .then((r) => setFragments(r.fragments))
-      .catch((e) => {
-        if (!controller.signal.aborted) setFragmentError(e.message);
-      });
-    return () => controller.abort();
-  }, [selected, data?.corpus_revision]);
-  if (loading)
-    return (
-      <>
-        <PageHeading title="Карта знаний" />
-        <Loading />
-      </>
-    );
-  if (error || !data)
-    return (
-      <>
-        <PageHeading title="Карта знаний" />
-        <ErrorNotice error={error} retry={reload} />
-      </>
-    );
-  const topic = data.topics.find((t) => t.id === selected),
-    questions = data.questions.filter(
-      (q) =>
-        filter === "all" ||
-        (filter === "missing" &&
-          ["partial", "not_found"].includes(q.result.result_type)) ||
-        (filter === "stale" && q.stale),
-    );
-  const layout = graphLayout(data.topics.map(t=>t.id),Math.min(questions.length,10),canvasWidth);
-  const centres = layout.centres;
+  const { data, error, loading, reload } = useMap();
   return (
     <>
       <PageHeading
         title="Карта знаний"
-        subtitle={`Документы: ${data.documents.length} · Темы: ${data.topics.length} · Фрагменты: ${data.chunk_count}`}
+        subtitle={
+          data
+            ? `${data.documents.length} документов · ${data.topics.length} тем`
+            : undefined
+        }
         action={
           <Button onClick={reload}>
             <RefreshCw size={16} />
@@ -438,185 +410,26 @@ export function KnowledgeGraph({
           </Button>
         }
       />
-      <div className="graph-toolbar">
-        <div className="tabs" aria-label="Фильтр проверенных вопросов">
-          {[
-            ["all", "Все связи"],
-            ["missing", "Неподтверждённые вопросы"],
-            ["stale", "Нужна перепроверка"],
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              aria-pressed={filter === value}
-              onClick={() => setFilter(value)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <div className="inline">
-          <Button
-            aria-label="Уменьшить карту"
-            onClick={() => setZoom((z) => Math.max(0.7, z - 0.15))}
-          >
-            <ZoomOut size={16} />
-          </Button>
-          <Button
-            aria-label="Увеличить карту"
-            onClick={() => setZoom((z) => Math.min(2, z + 0.15))}
-          >
-            <ZoomIn size={16} />
-          </Button>
-        </div>
-      </div>
-      <div className="graph-layout">
-        <div className="graph-viewport" ref={viewport}>
-          <svg
-            width={layout.width * zoom}
-            height={layout.height * zoom}
-            viewBox={`0 0 ${layout.width} ${layout.height}`}
-            className="graph-svg"
-            aria-label="Смысловые связи тем и проверенных вопросов"
-          >
-            {data.edges.map((e, i) => {
-              const a = centres.get(e.source),
-                b = centres.get(e.target);
-              return a && b ? (
-                <line
-                  key={i}
-                  x1={a.x}
-                  y1={a.y}
-                  x2={b.x}
-                  y2={b.y}
-                  className="graph-edge"
-                />
-              ) : null;
-            })}
-            {questions.slice(0, 10).map((q, i) => {
-              const x = layout.width - 148,
-                y = 40 + i * 48;
-              return (
-                <g key={q.id}>
-                  {q.related_topics.map((t) => {
-                    const p = centres.get(t.id);
-                    return p ? (
-                      <line
-                        key={t.id}
-                        x1={p.x}
-                        y1={p.y}
-                        x2={x}
-                        y2={y + 18}
-                        className="graph-edge graph-edge-question"
-                      />
-                    ) : null;
-                  })}
-                  <foreignObject x={x - 120} y={y} width={252} height={44}>
-                    <a
-                      href="#/admin/checks"
-                      className={`graph-question ${q.stale ? "stale" : ""}`}
-                      title={q.question}
-                    >
-                      {q.stale ? "↻ " : "? "}
-                      {q.question}
-                    </a>
-                  </foreignObject>
-                </g>
-              );
-            })}
-            {data.topics.map((t) => {
-              const p = centres.get(t.id)!;
-              return (
-                <foreignObject
-                  key={t.id}
-                  x={p.x - 106}
-                  y={p.y - 32}
-                  width={212}
-                  height={78}
-                >
-                  <button
-                    className="graph-node"
-                    aria-pressed={selected === t.id}
-                    onClick={() => setSelected(t.id)}
-                  >
-                    <span>{t.label}</span>
-                    <small>
-                      Фрагменты: {t.count} · Документы: {t.documents.length}
-                    </small>
-                  </button>
-                </foreignObject>
-              );
-            })}
-          </svg>
-        </div>
-        <aside className="graph-details surface">
-          {topic ? (
-            <>
-              <Badge>Тема</Badge>
-              <h2>{topic.label}</h2>
-              {fragmentError ? (
-                <ErrorNotice
-                  error={fragmentError}
-                  retry={() => {
-                    reload();
-                  }}
-                />
-              ) : !fragments ? (
-                <Loading />
-              ) : (
-                fragments.map((f) => (
-                  <article key={f.id} className="fragment">
-                    <strong>{f.document_name}</strong>
-                    <p>{f.preview}</p>
-                    <Button
-                      variant="subtle"
-                      onClick={() => onSource(f.source_id)}
-                    >
-                      Открыть источник
-                      <ArrowRight size={16} />
-                    </Button>
-                  </article>
-                ))
-              )}
-            </>
-          ) : (
-            <>
-              <h2>Связи в базе знаний</h2>
-              <p>
-                Выберите тему, чтобы увидеть документы и конкретные фрагменты.
-              </p>
-              <Notice tone="neutral">
-                Линии показывают смысловую близость. Они не доказывают
-                нормативную зависимость документов. Неподтверждённый вопрос
-                требует проверки владельцем регламента.
-              </Notice>
-            </>
-          )}
-        </aside>
-      </div>
-      <details className="surface accessible-map">
-        <summary>Список тем и связанных документов</summary>
-        {data.topics.map((t) => (
-          <div key={t.id}>
-            <Button variant="subtle" onClick={() => setSelected(t.id)}>
-              {t.label}
-            </Button>
-            <p className="meta">
-              {t.documents
-                .map(
-                  (d) =>
-                    data.documents.find((doc) => doc.id === d.id)?.name || d.id,
-                )
-                .join(" · ")}
-            </p>
-          </div>
-        ))}
-      </details>
+      {loading ? (
+        <Loading />
+      ) : error || !data ? (
+        <ErrorNotice error={error} retry={reload} />
+      ) : (
+        <GraphExplorer
+          data={data}
+          onSource={onSource}
+          onDocument={onDocument}
+        />
+      )}
     </>
   );
 }
 export function Checks({ onSource }: { onSource: (id: string) => void }) {
   const { data, error, loading, reload } = useMap(),
-    [question, setQuestion] = useState(""),
+    [question, setQuestion] = useState(
+      () =>
+        new URLSearchParams(location.hash.split("?")[1]).get("question") || "",
+    ),
     [consent, setConsent] = useState(false),
     [busy, setBusy] = useState(false),
     [checkError, setCheckError] = useState(""),

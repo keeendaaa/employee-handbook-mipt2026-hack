@@ -84,23 +84,27 @@ class MailbotIntegrationTest(unittest.TestCase):
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
-    def test_not_found_replies_once_with_a_next_step(self, opener, deliver):
-        answer = {
-            **ANSWER,
-            "result_type": "not_found",
-            "summary": [],
-            "steps": [],
-            "citations": [],
-            "missing_information": ["В найденных фрагментах не удалось подтвердить ответ на вопрос."],
-        }
-        opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(
-            json.dumps(answer).encode()
-        )
-        self.process("Нужно оформить пропуск для прессы.")
-        reply = deliver.call_args.args[5].text
-        self.assertNotIn("Каких сведений не хватает", reply)
-        self.assertEqual(reply.count("не удалось подтвердить"), 1)
-        self.assertIn("уточни порядок и сроки", reply)
+    def test_no_supported_information_is_skipped(self, opener, deliver):
+        for result in ("not_found", "needs_clarification"):
+            with self.subTest(result=result):
+                with app.database() as conn:
+                    conn.execute("DELETE FROM messages")
+                answer = {
+                    **ANSWER,
+                    "result_type": result,
+                    "summary": [],
+                    "steps": [],
+                    "citations": [],
+                    "clarifications": ["Уточни обстоятельства."] if result == "needs_clarification" else [],
+                }
+                opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(
+                    json.dumps(answer).encode()
+                )
+                self.process("Нужно оформить пропуск для прессы.")
+                deliver.assert_not_called()
+                with app.database() as conn:
+                    row = conn.execute("SELECT status, detail FROM messages").fetchone()
+                self.assertEqual(tuple(row), ("skipped", "Нет подтверждённых сведений для ответа"))
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
@@ -121,6 +125,41 @@ class MailbotIntegrationTest(unittest.TestCase):
                     with app.database() as conn:
                         row = conn.execute("SELECT status FROM messages").fetchone()
                     self.assertEqual(row["status"], "skipped")
+
+    @patch.object(navigator_client, "build_opener")
+    def test_courtesy_filter_skips_api_and_respects_acknowledgements(self, opener):
+        for subject, body in (
+            ("", "Добрый день!"),
+            ("Re: Спасибо!", "Получила, спасибо."),
+            ("Спасибо за помощь", ""),
+        ):
+            with self.subTest(subject=subject, body=body):
+                self.assertIsNone(navigator_client.ask(URL, body, subject=subject))
+                self.assertEqual(
+                    navigator_client.ask(URL, body, subject=subject, reply_without_issue=True),
+                    navigator_client.NO_ACTION_REPLY,
+                )
+        opener.assert_not_called()
+
+    @patch.object(navigator_client, "build_opener")
+    def test_courtesy_filter_preserves_subjects_and_requests(self, opener):
+        open_request = opener.return_value.open
+        for subject, body in (
+            ("Re: Пропуск для СМИ", "Спасибо!"),
+            ("", "Спасибо, но пропуск ещё не оформлен."),
+            ("Не работает сантехника", ""),
+            ("", "Получено?"),
+            ("Fwd: Спасибо", "Спасибо"),
+        ):
+            with self.subTest(subject=subject, body=body):
+                open_request.reset_mock()
+                open_request.return_value.__enter__.return_value = io.BytesIO(
+                    b'{"result_type":"no_action"}'
+                )
+                navigator_client.ask(URL, body, subject=subject)
+                open_request.assert_called_once()
+                self.assertEqual(json.loads(open_request.call_args.args[0].data),
+                                 {"subject": subject, "body": body})
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")

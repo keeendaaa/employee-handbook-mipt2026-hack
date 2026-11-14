@@ -41,7 +41,6 @@ HEADLINES = {
     "partial": "Что удалось подтвердить",
     "needs_clarification": "Нужно уточнение",
     "conflict": "В документах есть расхождения",
-    "not_found": "Порядок действий не подтверждён",
 }
 
 
@@ -92,11 +91,7 @@ def format_answer(answer, url, subject=""):
     clarifications = [Entry(text) for text in answer.get("clarifications", [])]
     conflicts = [Entry(text) for text in answer.get("conflicts", [])]
     intro = f"Навигатор разобрал письмо «{subject}»." if subject else "Навигатор разобрал твоё письмо."
-    if result == "not_found":
-        intro += " По найденным регламентам не удалось подтвердить порядок действий в этой ситуации."
-        brief = [Entry("Если вопрос срочный, уточни порядок и сроки у сотрудника, который его ведёт. "
-                       "Если у тебя есть ссылка на применимый регламент, пришли её вместе с вопросом.")]
-    elif result == "needs_clarification":
+    if result == "needs_clarification":
         intro += " Для выбора порядка действий нужна дополнительная информация."
         brief, clarifications = clarifications[:1], clarifications[1:]
     elif result == "conflict":

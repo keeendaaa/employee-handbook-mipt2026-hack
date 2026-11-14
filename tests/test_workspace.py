@@ -57,20 +57,21 @@ def test_session_validates_password_origin_and_logout(client, admin_credentials)
     assert client.get('/api/admin/session', headers={'Cookie': f'smena_admin={cookie}'}).status_code == 401
 
 
-def test_demo_credentials_are_local_only(client, tmp_path, monkeypatch, admin_credentials):
+def test_demo_credentials_work_on_https_and_localhost(client, tmp_path, monkeypatch, admin_credentials):
     path = tmp_path / 'demo.hash'
     path.write_text(password_hash('synthetic-local-password'))
     monkeypatch.setenv('ADMIN_TEST_USERNAME', 'synthetic-demo')
     monkeypatch.setenv('ADMIN_TEST_PASSWORD_HASH_FILE', str(path))
     credentials = {'username': 'synthetic-demo', 'password': 'synthetic-local-password'}
-    assert client.post('/api/admin/session', json=credentials).status_code == 401
+    sign_in(client, credentials)
+    assert client.get('/api/admin/session').json() == {'username': 'synthetic-demo'}
     with TestClient(client.app, base_url='http://127.0.0.1:8000', client=('127.0.0.1', 1000)) as local:
         assert local.post('/api/admin/session', json=credentials,
                           headers={'X-Forwarded-For': '127.0.0.1'}).status_code == 403
         assert local.post('/api/admin/session', json=credentials).status_code == 200
         assert local.get('/api/admin/session').status_code == 200
         cookie = local.cookies.get('smena_admin')
-    assert client.get('/api/admin/session', headers={'Cookie': f'smena_admin={cookie}'}).status_code == 401
+    assert client.get('/api/admin/session', headers={'Cookie': f'smena_admin={cookie}'}).status_code == 200
 
 
 def test_mail_gateway_preserves_host_origin_and_propagates_success(client, monkeypatch, admin_credentials):

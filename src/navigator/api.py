@@ -268,9 +268,8 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     auth = AdminAuth(os.environ.get('MATERIAL_REQUEST_DB', 'data/workspace/requests.sqlite'))
     auth.install(app)
     install_workspace_routes(app, auth.require)
-    install_routes(app, auth.require)
-    install_map_routes(app, answer=lambda question, request: ask(Query(question=question), request),
-                       admin=auth.require)
+    install_routes(app)
+    install_map_routes(app, answer=lambda question, request: ask(Query(question=question), request))
     frontend_assets = web_directory / 'ui-assets'
     if frontend_assets.is_dir():
         app.mount('/ui-assets', StaticFiles(directory=frontend_assets), name='ui-assets')

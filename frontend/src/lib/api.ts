@@ -38,8 +38,7 @@ async function checked(response: Response, allowAccepted = false) {
 async function adminAwareFetch(path: string, options: RequestInit) {
   const response = await fetch(path, options);
   if (response.status === 401 && path !== "/api/admin/session" && (
-    path.startsWith("/api/admin/") || path.startsWith("/api/imports/") ||
-    path.startsWith("/api/material-requests") || path === "/api/map/questions"
+    path.startsWith("/api/admin/") || path.startsWith("/api/material-requests")
   )) window.dispatchEvent(new Event("admin-session-expired"));
   return response;
 }
@@ -67,7 +66,7 @@ async function queueImport(
   options: RequestInit,
 ): Promise<ImportJob> {
   try {
-    return await (await checked(await adminAwareFetch(path, options), true)).json();
+    return await (await checked(await fetch(path, options), true)).json();
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(

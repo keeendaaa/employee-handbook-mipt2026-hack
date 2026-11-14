@@ -105,8 +105,8 @@ class AdminAuth:
                 raise HTTPException(403, "Для входа откройте сайт через HTTPS.")
             self.limit(request)
             username = os.environ.get("ADMIN_USERNAME", "")
-            local_only = local and body.username == os.environ.get("ADMIN_TEST_USERNAME", "")
-            hash_file = os.environ.get("ADMIN_TEST_PASSWORD_HASH_FILE" if local_only else "ADMIN_PASSWORD_HASH_FILE")
+            demo = body.username == os.environ.get("ADMIN_TEST_USERNAME", "")
+            hash_file = os.environ.get("ADMIN_TEST_PASSWORD_HASH_FILE" if demo else "ADMIN_PASSWORD_HASH_FILE")
             stored = Path(hash_file).read_text().strip() if hash_file and Path(hash_file).is_file() else ""
             try:
                 salt, expected = map(bytes.fromhex, stored.split(":")) if stored else (bytes(16), bytes(32))
@@ -115,7 +115,7 @@ class AdminAuth:
             except ValueError as error:
                 raise HTTPException(503, "Вход администратора не настроен.") from error
             password_ok = hmac.compare_digest(derive(body.password, salt), expected)
-            if not stored or not password_ok or (not local_only and body.username != username):
+            if not stored or not password_ok or (not demo and body.username != username):
                 raise HTTPException(401, "Неверный логин или пароль.")
             token = secrets.token_urlsafe(32)
             now = int(time.time())
@@ -125,7 +125,7 @@ class AdminAuth:
                 if previous:
                     db.execute("DELETE FROM admin_sessions WHERE token_hash=?", (session_id(previous),))
                 db.execute("INSERT INTO admin_sessions VALUES (?, ?, ?, ?)",
-                           (session_id(token), body.username, now + SESSION_SECONDS, local_only))
+                           (session_id(token), body.username, now + SESSION_SECONDS, False))
             response.set_cookie(COOKIE, token, max_age=SESSION_SECONDS, httponly=True,
                                 secure=request.url.scheme == "https", samesite="strict", path="/api")
             return {"username": body.username}

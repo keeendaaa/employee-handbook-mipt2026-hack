@@ -71,7 +71,8 @@ export default function App() {
     reducedMotion = useReducedMotion();
   const route = useRoute(),
     admin = route[0] === "admin",
-    page = admin ? route[1] || "documents" : route[0] || "new";
+    page = admin ? route[1] || "documents" : route[0] || "new",
+    protectedPage = admin && (page === "mail" || page === "requests");
   const [tasks, setTasks] = useState(loadTasks),
     [preferences, setPreferences] = useState<string[]>(loadPreferences),
     [storageError, setStorageError] = useState(false),
@@ -81,7 +82,8 @@ export default function App() {
     [adminUser, setAdminUser] = useState<string | null>(null),
     [checkingAdmin, setCheckingAdmin] = useState(true);
   useEffect(() => {
-    if (!admin) return;
+    if (!protectedPage) return;
+    setAdminUser(null);
     const controller = new AbortController();
     const expire = () => setAdminUser(null);
     window.addEventListener("admin-session-expired", expire);
@@ -94,7 +96,7 @@ export default function App() {
       controller.abort();
       window.removeEventListener("admin-session-expired", expire);
     };
-  }, [admin]);
+  }, [protectedPage]);
   const task =
     page === "task" ? tasks.find((t) => t.id === route[1]) : undefined;
   const step =
@@ -263,7 +265,7 @@ export default function App() {
                 браузере или разрешите локальное хранилище.
               </Notice>
             )}
-            {admin && (checkingAdmin
+            {protectedPage && (checkingAdmin
               ? <p role="status">Проверяем вход…</p>
               : <AdminAccess username={adminUser} onSession={setAdminUser} />)}
 
@@ -298,14 +300,14 @@ export default function App() {
                   Задачи сохраняются в том браузере, где были созданы.
                 </Empty>
               ))}
-            {page === "documents" && (!admin || !!adminUser) && (
+            {page === "documents" && (
               <Documents admin={admin} onDocument={setDocument} />
             )}
-            {admin && !!adminUser && page === "import" && <ImportDocument />}
-            {admin && !!adminUser && page === "map" && (
+            {admin && page === "import" && <ImportDocument />}
+            {admin && page === "map" && (
               <KnowledgeGraph onSource={setSourceId} onDocument={setDocument} />
             )}
-            {admin && !!adminUser && page === "checks" && <Checks onSource={setSourceId} />}
+            {admin && page === "checks" && <Checks onSource={setSourceId} />}
             {admin && !!adminUser && page === "requests" && (
               <Requests onSource={setSourceId} />
             )}

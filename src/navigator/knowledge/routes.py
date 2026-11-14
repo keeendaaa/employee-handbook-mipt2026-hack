@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Literal
 
-from fastapi import Depends, HTTPException, Request
+from fastapi import HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -23,7 +23,7 @@ class SharedQuestion(BaseModel):
         return value.strip()
 
 
-def install_routes(app, answer, admin):
+def install_routes(app, answer):
     def service(request):
         value = request.app.state.knowledge_map
         if value is None:
@@ -75,7 +75,7 @@ def install_routes(app, answer, admin):
         except KeyError:
             raise HTTPException(404, 'Фрагмент не найден.') from None
 
-    @app.post('/api/map/questions', status_code=201, dependencies=[Depends(admin)])
+    @app.post('/api/map/questions', status_code=201)
     def check(body: SharedQuestion, request: Request):
         graph_service = service(request)
         repo = request.app.state.map_questions

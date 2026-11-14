@@ -114,14 +114,13 @@ class Questions:
     def list(self):return deepcopy(self.rows)
 
 
-def test_public_routes_consent_checked_answers_and_stale_questions(tmp_path, admin_credentials):
+def test_public_routes_consent_checked_answers_and_stale_questions(tmp_path):
     doc,retrieved,answer=fixture();map_data=snapshot();repo=Questions()
     service=SimpleNamespace(store=SimpleNamespace(active_revision=lambda:{'corpus_key':'test'},document=lambda v:doc),
                             search=lambda *a,**kw:retrieved)
     map_service=SimpleNamespace(snapshot=lambda expected=None:map_data,
                                 encode_question=lambda q:(map_data.vectors[0].tolist(),'test-model'))
-    with TestClient(create_app(service=service,generator=generate(answer),knowledge_map=map_service,map_questions=repo), base_url="https://testserver") as client:
-        assert client.post("/api/admin/session", json=admin_credentials).status_code == 200
+    with TestClient(create_app(service=service,generator=generate(answer),knowledge_map=map_service,map_questions=repo)) as client:
         assert client.get('/map').status_code==200
         assert client.get('/assets/map.js').status_code==200
         assert client.get('/api/map').json()['chunk_count']==12
@@ -140,12 +139,11 @@ def test_public_routes_consent_checked_answers_and_stale_questions(tmp_path, adm
         assert client.get('/api/map').json()['questions'][0]['stale'] is True
 
 
-def test_technical_model_failure_does_not_create_gap(admin_credentials):
+def test_technical_model_failure_does_not_create_gap():
     doc,retrieved,answer=fixture();repo=Questions()
     service=SimpleNamespace(store=SimpleNamespace(active_revision=lambda:{'corpus_key':'test'}),search=lambda *a,**kw:retrieved)
     maps=SimpleNamespace(encode_question=lambda q:([1.]*384,'test-model'))
-    with TestClient(create_app(service=service,generator=generate(answer,status=401),knowledge_map=maps,map_questions=repo), base_url="https://testserver") as client:
-        assert client.post("/api/admin/session", json=admin_credentials).status_code == 200
+    with TestClient(create_app(service=service,generator=generate(answer,status=401),knowledge_map=maps,map_questions=repo)) as client:
         assert client.post('/api/map/questions',json={'question':'Когда подать?','public_data':True}).status_code==502
         assert repo.rows==[]
 

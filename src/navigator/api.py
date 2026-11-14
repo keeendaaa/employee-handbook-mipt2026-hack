@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 import psycopg
 
+from .admin_auth import AdminAuth
 from .generation import Generator, GenerationError
 from .ingest.storage import Store, IndexUnavailableError
 from .retrieval import RetrievalService
@@ -261,12 +262,15 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
         except (ValueError, KeyError):
             raise HTTPException(404, "Фрагмент не найден или ссылка некорректна.") from None
 
-    from .imports.routes import install_routes
-    install_routes(app)
-    from .knowledge.routes import install_routes as install_map_routes
-    install_map_routes(app, answer=lambda question, request: ask(Query(question=question), request))
     from .workspace import install_routes as install_workspace_routes
-    install_workspace_routes(app)
+    from .imports.routes import install_routes
+    from .knowledge.routes import install_routes as install_map_routes
+    auth = AdminAuth(os.environ.get('MATERIAL_REQUEST_DB', 'data/workspace/requests.sqlite'))
+    auth.install(app)
+    install_workspace_routes(app, auth.require)
+    install_routes(app, auth.require)
+    install_map_routes(app, answer=lambda question, request: ask(Query(question=question), request),
+                       admin=auth.require)
     frontend_assets = web_directory / 'ui-assets'
     if frontend_assets.is_dir():
         app.mount('/ui-assets', StaticFiles(directory=frontend_assets), name='ui-assets')

@@ -1,4 +1,17 @@
 import { test, expect, type Page } from "@playwright/test";
+let adminCookies: Awaited<ReturnType<ReturnType<Page["context"]>["cookies"]>> | undefined;
+async function startAdmin(page: Page, section: string) {
+  if (!adminCookies) {
+    const response = await page.request.post("/api/admin/session", {
+      data: { username: "synthetic-admin", password: "synthetic-e2e-password" },
+    });
+    expect(response.status()).toBe(200);
+    adminCookies = await page.context().cookies();
+  } else {
+    await page.context().addCookies(adminCookies);
+  }
+  await page.goto(`/#/admin/${section}`);
+}
 async function create(
   page: Page,
   question = "Синтетическая задача для проверки интерфейса",
@@ -115,6 +128,12 @@ test("admin: source map, public import, checks, material queue and mail settings
   page,
 }) => {
   await page.goto("/#/admin/map");
+  await expect(page.getByLabel("Логин")).toBeVisible();
+  await expect(page.locator(".obsidian-graph")).toHaveCount(0);
+  await page.getByLabel("Логин").fill("synthetic-admin");
+  await page.getByLabel("Пароль").fill("synthetic-e2e-password");
+  await page.getByRole("button", { name: "Войти" }).click();
+  await expect(page.getByText("Вы вошли как synthetic-admin")).toBeVisible();
   await page
     .getByRole("button", { name: /Тестовая процедура/ })
     .first()
@@ -149,8 +168,6 @@ test("admin: source map, public import, checks, material queue and mail settings
     page.getByText("В тестовой базе ответ не найден.").first(),
   ).toBeVisible();
   await page.goto("/#/admin/requests");
-  await page.getByLabel("Доступ администратора").fill("synthetic-e2e-admin");
-  await page.getByRole("button", { name: "Подключить" }).click();
   await expect(page.getByRole("alert")).toHaveCount(0);
   await page.goto("/#/admin/mail");
   await expect(page.getByText("synthetic@example.org")).toBeVisible();
@@ -189,15 +206,9 @@ for (const width of [320, 390, 1024, 1440, 1920])
 for (const width of [320, 390, 1024, 1440, 1920])
   test(`admin responsive ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
+    await startAdmin(page, "documents");
     for (const section of ["documents", "import", "map", "checks", "mail"]) {
       await page.goto(`/#/admin/${section}`);
-      if (section === "mail") {
-        await page
-          .getByLabel("Доступ администратора")
-          .fill("synthetic-e2e-admin");
-        await page.getByRole("button", { name: "Подключить" }).click();
-        await expect(page.getByText("synthetic@example.org")).toBeVisible();
-      }
       await expect(page.locator("body")).toHaveJSProperty("scrollWidth", width);
       if (width === 390 || width === 1440)
         await page.screenshot({
@@ -235,9 +246,7 @@ test("new task, plan, search controls, feedback queue and dirty mail settings", 
       public_data: true,
     },
   });
-  await page.goto("/#/admin/requests");
-  await page.getByLabel("Доступ администратора").fill("synthetic-e2e-admin");
-  await page.getByRole("button", { name: "Подключить" }).click();
+  await startAdmin(page, "requests");
   await expect(
     page.getByRole("heading", { name: "Проверяем маршрут до администратора" }),
   ).toBeVisible();
@@ -326,7 +335,7 @@ test("regulation opens complete extracted text and immutable snapshot errors sta
 for (const width of [320, 390, 1024, 1440, 1920])
   test(`graph navigation and fullscreen ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    await page.goto("/#/admin/map");
+    await startAdmin(page, "map");
     const svg = page.locator(".obsidian-graph");
     await expect(page.locator(".graph-point")).toHaveCount(3);
     const old = await page.locator("[data-camera]").getAttribute("transform");
@@ -386,7 +395,7 @@ test("dense graph keeps readable labels separate through resizing and zoom", asy
     documents: [{ id: documents[i % documents.length].id, count: 20 }] }));
   await page.route(/\/api\/map(?:\?.*)?$/, route => route.fulfill({ json: { ...original, documents, topics, questions: [],
     edges: topics.slice(1).map((t, i) => ({ source: topics[i].id, target: t.id, kind: "similarity", similarity: 0.8 })) } }));
-  await page.goto("/#/admin/map");
+  await startAdmin(page, "map");
   await expect(page.locator(".graph-point")).toHaveCount(52);
   await page.evaluate(() => document.fonts.ready);
   for (const width of [1440, 390, 1440]) {
@@ -479,7 +488,7 @@ for (const width of [320, 390, 1024, 1440, 1920])
       ];
       await route.fulfill({ response, json: data });
     });
-    await page.goto("/#/admin/checks");
+    await startAdmin(page, "checks");
     const card = page.locator(".checked-situation").first();
     await expect(card).toBeVisible();
     const text = await card.locator(".situation-description").boundingBox(),
@@ -502,15 +511,15 @@ for (const width of [320, 390, 1024, 1440, 1920])
   });
 
 for (const width of [320, 390, 1024, 1440, 1920])
-  test(`transitive document branches and continuous reader ${width}`, async ({ page }) => {
+  test(`shared-topic document branches and continuous reader ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     const titles = ["Регламент поиска и подбора персонала для подразделений.pdf", "Порядок согласования тестовых заявок.pdf", "Не связанный с выбранной веткой документ.pdf"];
     await page.route("**/api/map?*", (route) => route.fulfill({ json: {
       status: "ready", corpus_revision: "synthetic-e2e", chunk_count: 2,
       documents: titles.map((name, i) => ({ id: `d${i}`, name })),
       topics: [
-        { id: "t1", label: "Подбор персонала", count: 1, documents: [{ id: "d0", count: 1 }] },
-        { id: "t2", label: "Согласование заявки", count: 1, documents: [{ id: "d1", count: 1 }] },
+        { id: "t1", label: "Подбор персонала", count: 2, documents: [{ id: "d0", count: 1 }, { id: "d1", count: 1 }] },
+        { id: "t2", label: "Согласование заявки", count: 1, documents: [{ id: "d2", count: 1 }] },
       ],
       edges: [{ source: "t1", target: "t2", kind: "similarity", similarity: .8 }], questions: [],
     }}));
@@ -523,7 +532,7 @@ for (const width of [320, 390, 1024, 1440, 1920])
       warnings: ["Тестовое предупреждение об извлечении"],
       blocks: ["Министерство науки", "Московский физико-технический институт", "ПРИКАЗ", "1. Полный текст синтетического материала."].map((text, i) => ({ text, locator: { block: i + 1 }, method: "native" })),
     }}));
-    await page.goto("/#/admin/map");
+    await startAdmin(page, "map");
     await page.getByRole("button", { name: "Фильтры карты" }).click();
     await page.getByRole("checkbox", { name: "Темы", exact: true }).uncheck();
     await expect(page.locator(".obsidian-node")).toHaveCount(3);
@@ -562,9 +571,6 @@ for (const width of [320, 390, 1024, 1440, 1920])
     await page.keyboard.press("Escape");
     await page.getByRole("button", { name: "← Вся карта" }).click();
     await expect(page.locator(".obsidian-node")).toHaveCount(3);
-    await page.getByLabel("Связи через темы").selectOption("1");
-    await expect(page.locator(".obsidian-edge")).toHaveCount(0);
-    await page.getByLabel("Связи через темы").selectOption("Infinity");
     await expect(page.locator(".obsidian-edge")).toHaveCount(1);
   });
 
@@ -577,7 +583,7 @@ test("large document branch removes neighbor cross-links and keeps mobile titles
     edges: [], questions: [],
   }}));
   await page.route("**/api/map/topics/**", (route) => route.fulfill({ json: { fragments: [] } }));
-  await page.goto("/#/admin/map");
+  await startAdmin(page, "map");
   await page.getByRole("button", { name: "Фильтры карты" }).click();
   await page.getByRole("checkbox", { name: "Темы", exact: true }).uncheck();
   await expect(page.locator(".obsidian-edge")).toHaveCount(36);

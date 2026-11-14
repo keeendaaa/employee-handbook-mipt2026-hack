@@ -10,7 +10,7 @@ import time
 from typing import Literal
 from uuid import UUID, uuid4
 
-from fastapi import File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, File, Form, HTTPException, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.responses import JSONResponse
 
@@ -61,7 +61,7 @@ class LinkImport(BaseModel):
     replace_existing: bool = False
 
 
-def install_routes(app):
+def install_routes(app, admin):
     calls, lock = defaultdict(deque), threading.Lock()
 
     def repository(request):
@@ -85,7 +85,7 @@ def install_routes(app):
     def import_error(request, exc):
         return JSONResponse({'detail': str(exc)}, status_code=400)
 
-    @app.post('/api/imports/file', status_code=202)
+    @app.post('/api/imports/file', status_code=202, dependencies=[Depends(admin)])
     def upload(request: Request, file: UploadFile = File(...), public_data: bool = Form(False),
                replace_existing: bool = Form(False)):
         if not public_data:
@@ -116,14 +116,14 @@ def install_routes(app):
             if not created:
                 shutil.rmtree(folder, ignore_errors=False)
 
-    @app.post('/api/imports/url', status_code=202)
+    @app.post('/api/imports/url', status_code=202, dependencies=[Depends(admin)])
     def link(body: LinkImport, request: Request):
         url = direct_link(body.url)
         repo = repository(request)
         job_id = repo.create(source_url=url, replace_existing=body.replace_existing)
         return repo.get(job_id)
 
-    @app.get('/api/imports/{job_id}')
+    @app.get('/api/imports/{job_id}', dependencies=[Depends(admin)])
     def status(job_id: UUID, request: Request):
         repo = request.app.state.import_repository
         if repo is None:

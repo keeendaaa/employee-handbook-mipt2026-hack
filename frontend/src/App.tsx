@@ -33,6 +33,7 @@ import {
   taskHref,
 } from "./components/task-journey";
 import { Empty, Modal, Notice, SourceModal } from "./components/primitives";
+import { api } from "./lib/api";
 import { loadTasks, saveTasks } from "./lib/tasks";
 import type { Task } from "./lib/types";
 
@@ -77,7 +78,23 @@ export default function App() {
     [documentSelection, setDocument] = useState<DocumentSelection | null>(null),
     [sourceId, setSourceId] = useState<string | null>(null),
     [menu, setMenu] = useState(false),
-    [adminToken, setAdminToken] = useState("");
+    [adminUser, setAdminUser] = useState<string | null>(null),
+    [checkingAdmin, setCheckingAdmin] = useState(true);
+  useEffect(() => {
+    if (!admin) return;
+    const controller = new AbortController();
+    const expire = () => setAdminUser(null);
+    window.addEventListener("admin-session-expired", expire);
+    setCheckingAdmin(true);
+    api.adminSession(controller.signal)
+      .then(({ username }) => setAdminUser(username))
+      .catch(() => { if (!controller.signal.aborted) expire(); })
+      .finally(() => { if (!controller.signal.aborted) setCheckingAdmin(false); });
+    return () => {
+      controller.abort();
+      window.removeEventListener("admin-session-expired", expire);
+    };
+  }, [admin]);
   const task =
     page === "task" ? tasks.find((t) => t.id === route[1]) : undefined;
   const step =
@@ -246,9 +263,10 @@ export default function App() {
                 браузере или разрешите локальное хранилище.
               </Notice>
             )}
-            {admin && ["mail", "requests"].includes(page) && (
-              <AdminAccess token={adminToken} onToken={setAdminToken} />
-            )}
+            {admin && (checkingAdmin
+              ? <p role="status">Проверяем вход…</p>
+              : <AdminAccess username={adminUser} onSession={setAdminUser} />)}
+
             {!admin && page === "new" && (
               <NewTask
                 onCreate={createTask}
@@ -280,18 +298,18 @@ export default function App() {
                   Задачи сохраняются в том браузере, где были созданы.
                 </Empty>
               ))}
-            {page === "documents" && (
+            {page === "documents" && (!admin || !!adminUser) && (
               <Documents admin={admin} onDocument={setDocument} />
             )}
-            {admin && page === "import" && <ImportDocument />}
-            {admin && page === "map" && (
+            {admin && !!adminUser && page === "import" && <ImportDocument />}
+            {admin && !!adminUser && page === "map" && (
               <KnowledgeGraph onSource={setSourceId} onDocument={setDocument} />
             )}
-            {admin && page === "checks" && <Checks onSource={setSourceId} />}
-            {admin && page === "requests" && (
-              <Requests token={adminToken} onSource={setSourceId} />
+            {admin && !!adminUser && page === "checks" && <Checks onSource={setSourceId} />}
+            {admin && !!adminUser && page === "requests" && (
+              <Requests onSource={setSourceId} />
             )}
-            {admin && page === "mail" && <MailPanel token={adminToken} />}
+            {admin && !!adminUser && page === "mail" && <MailPanel />}
             {![
               "new",
               "tasks",

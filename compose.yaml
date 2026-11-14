@@ -45,7 +45,11 @@ services:
       EMBEDDING_THREADS: "2"
       IMPORT_DIR: /app/data/imports
       FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
-      ADMIN_API_TOKEN: ${ADMIN_API_TOKEN:-}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-}
+      ADMIN_PASSWORD_HASH_FILE: /run/admin-auth/password.hash
+      ADMIN_TEST_USERNAME: ${ADMIN_TEST_USERNAME:-}
+      ADMIN_TEST_PASSWORD_HASH_FILE: /run/admin-auth/test-password.hash
+      ADMIN_LOCAL_PEERS: ${ADMIN_LOCAL_PEERS:-}
       MAILBOT_PANEL_URL: ${MAILBOT_PANEL_URL:-}
       MATERIAL_REQUEST_DB: /app/data/workspace/requests.sqlite
     volumes:
@@ -53,6 +57,7 @@ services:
       - ./secrets/llm_api_key:/run/secrets/llm_api_key:ro
       - ./data/imports:/app/data/imports
       - ./data/workspace:/app/data/workspace
+      - ./secrets/admin-auth:/run/admin-auth:ro
     depends_on:
       postgres:
         condition: service_healthy

@@ -98,25 +98,27 @@ class Repository:
         return self.jobs[str(identifier)]
 
 
-def test_upload_requires_consent_and_preserves_file_until_worker_runs(tmp_path):
+def test_upload_requires_consent_and_preserves_file_until_worker_runs(tmp_path, admin_credentials):
     repo = Repository()
-    with TestClient(create_app(service=SimpleNamespace(), import_repository=repo, import_directory=tmp_path)) as client:
+    with TestClient(create_app(service=SimpleNamespace(), import_repository=repo, import_directory=tmp_path / 'imports'), base_url="https://testserver") as client:
+        assert client.post("/api/admin/session", json=admin_credentials).status_code == 200
         assert client.post('/api/imports/file', files={'file': ('test.pdf', b'%PDF-1.4')}).status_code == 400
         result = client.post('/api/imports/file', data={'public_data': 'true'}, files={'file': ('test.pdf', b'%PDF-1.4')})
         assert result.status_code == 202
         job = result.json()
-        assert (tmp_path / job['id'] / 'original' / 'test.pdf').read_bytes() == b'%PDF-1.4'
+        assert (tmp_path / 'imports' / job['id'] / 'original' / 'test.pdf').read_bytes() == b'%PDF-1.4'
         assert client.get('/api/imports/' + job['id']).json()['status'] == 'queued'
         assert client.get('/api/imports/' + str(uuid4())).status_code == 404
         assert client.post('/api/imports/file', data={'public_data': 'true'}, files={'file': ('empty.pdf', b'')}).status_code == 400
-        assert len(list(tmp_path.iterdir())) == 1
+        assert len(list((tmp_path / 'imports').iterdir())) == 1
         repo.available = False
         assert client.post('/api/imports/url', json={'url': 'https://example.org/file.pdf', 'public_data': True}).status_code == 503
 
 
-def test_link_import_rejects_private_address_and_missing_consent(tmp_path):
+def test_link_import_rejects_private_address_and_missing_consent(tmp_path, admin_credentials):
     repo = Repository()
-    with TestClient(create_app(service=SimpleNamespace(), import_repository=repo, import_directory=tmp_path)) as client:
+    with TestClient(create_app(service=SimpleNamespace(), import_repository=repo, import_directory=tmp_path / 'imports'), base_url="https://testserver") as client:
+        assert client.post("/api/admin/session", json=admin_credentials).status_code == 200
         assert client.post('/api/imports/url', json={'url': 'https://example.org/file.pdf'}).status_code == 422
         assert client.post('/api/imports/url', json={'url': 'http://127.0.0.1/file.pdf', 'public_data': True}).status_code == 400
         assert not repo.jobs

@@ -5,7 +5,6 @@ text only. Progress remains on the employee's device; no HR completion is inferr
 """
 from datetime import datetime, timezone
 from contextlib import contextmanager
-import hmac
 import os
 from pathlib import Path
 import sqlite3
@@ -92,16 +91,8 @@ class MaterialRepository:
         return {'id': request_id, 'status': status}
 
 
-def install_routes(app):
+def install_routes(app, admin):
     repository = MaterialRepository(os.environ.get('MATERIAL_REQUEST_DB', 'data/workspace/requests.sqlite'))
-
-    def admin(request):
-        expected = os.environ.get('ADMIN_API_TOKEN', '')
-        if not expected:
-            raise HTTPException(503, 'Доступ администратора не настроен на сервере.')
-        provided = request.headers.get('Authorization', '').removeprefix('Bearer ')
-        if not hmac.compare_digest(provided.encode(), expected.encode()):
-            raise HTTPException(401, 'Введите ключ доступа администратора.')
 
     @app.post('/api/material-requests', status_code=201)
     def create(body: MaterialRequest):

@@ -58,34 +58,55 @@ function useMap() {
   }, [retry]);
   return { data, error, loading, reload: () => setRetry((r) => r + 1) };
 }
-export function AdminAccess({
-  token,
-  onToken,
-}: {
-  token: string;
-  onToken: (value: string) => void;
+export function AdminAccess({ username, onSession }: {
+  username: string | null;
+  onSession: (username: string | null) => void;
 }) {
-  const [draft, setDraft] = useState(token);
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    setBusy(true);
+    setError("");
+    try {
+      if (username) {
+        await api.adminLogout();
+        setLogin("");
+        onSession(null);
+      } else {
+        const session = await api.adminLogin(login.trim(), password);
+        onSession(session.username);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Не удалось завершить вход или выход.");
+    } finally {
+      setPassword("");
+      setBusy(false);
+    }
+  }
+
   return (
-    <form
-      className="access-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onToken(draft.trim());
-      }}
-    >
-      <KeyRound size={18} />
-      <label htmlFor="admin-key">Доступ администратора</label>
-      <input
-        id="admin-key"
-        type="password"
-        autoComplete="off"
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        placeholder="Ключ доступа"
-      />
-      <Button type="submit">Подключить</Button>
-    </form>
+    <>
+      <form className="access-form" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
+        <KeyRound size={18} aria-hidden="true" />
+        {username ? (
+          <><span>Вы вошли как {username}</span><Button type="submit" disabled={busy}>Выйти</Button></>
+        ) : (
+          <>
+            <label htmlFor="admin-login">Логин</label>
+            <input id="admin-login" autoComplete="username" value={login}
+              onChange={(event) => setLogin(event.target.value)} maxLength={80} required />
+            <label htmlFor="admin-password">Пароль</label>
+            <input id="admin-password" type="password" autoComplete="current-password" value={password}
+              onChange={(event) => setPassword(event.target.value)} maxLength={256} required />
+            <Button type="submit" disabled={busy}>Войти</Button>
+          </>
+        )}
+      </form>
+      {error && <p role="alert">{error}</p>}
+    </>
   );
 }
 export function Documents({
@@ -583,10 +604,8 @@ export function Checks({ onSource }: { onSource: (id: string) => void }) {
   );
 }
 export function Requests({
-  token,
   onSource,
 }: {
-  token: string;
   onSource: (id: string) => void;
 }) {
   const [requests, setRequests] = useState<MaterialRequest[]>([]),
@@ -597,16 +616,16 @@ export function Requests({
     setLoading(true);
     setError("");
     api
-      .materials(token)
+      .materials()
       .then((r) => setRequests(r.requests))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [token]);
+  }, []);
   useEffect(reload, [reload]);
   async function update(r: MaterialRequest, status: string) {
     setBusy(r.id);
     try {
-      await api.updateMaterial(r.id, status, token);
+      await api.updateMaterial(r.id, status);
       reload();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось сохранить статус.");
@@ -707,7 +726,7 @@ const workerNames: Record<string, string> = {
   paused: "На паузе",
   error: "Ошибка",
 };
-export function MailPanel({ token }: { token: string }) {
+export function MailPanel() {
   const [data, setData] = useState<MailStatus | null>(null),
     [draft, setDraft] = useState<MailSettings | null>(null),
     [senders, setSenders] = useState(""),
@@ -720,7 +739,7 @@ export function MailPanel({ token }: { token: string }) {
     mounted = useRef(true);
   const load = useCallback(async () => {
     try {
-      const r = await api.mail(token);
+      const r = await api.mail();
       if (!mounted.current) return;
       setData(r);
       setError("");
@@ -732,7 +751,7 @@ export function MailPanel({ token }: { token: string }) {
       if (mounted.current)
         setError(e instanceof Error ? e.message : "Почта недоступна.");
     }
-  }, [token]);
+  }, []);
   useEffect(() => {
     mounted.current = true;
     dirtyRef.current = false;
@@ -775,7 +794,7 @@ export function MailPanel({ token }: { token: string }) {
       return;
     }
     try {
-      const saved = await api.saveMail(values, token);
+      const saved = await api.saveMail(values);
       setDraft(saved);
       setSenders(saved.senders.join("\n"));
       dirtyRef.current = false;

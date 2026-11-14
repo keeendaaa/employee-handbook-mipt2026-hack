@@ -1322,15 +1322,6 @@ input[type="checkbox"]:disabled {
   overflow-wrap: anywhere;
   font-size: var(--sm-type-small-size);
 }
-.graph-depth {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sm-space-12);
-  font-size: var(--sm-type-small-size);
-  min-width: 0;
-}
-.graph-depth select { max-width: 100%; }
 .obsidian-graph {
   width: 100%;
   height: 100%;

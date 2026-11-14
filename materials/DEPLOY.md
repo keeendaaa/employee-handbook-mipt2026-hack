@@ -53,6 +53,27 @@ sudo systemctl reload caddy
 
 Снаружи должны быть доступны TCP 80 и 443. Caddy [автоматически получает и обновляет сертификаты](https://caddyserver.com/docs/automatic-https) после публикации DNS. Добавление записей в панели регистратора само по себе ещё не подтверждает доступность домена: проверяйте публичное разрешение имён и HTTPS без отключения проверки сертификата.
 
+### Вход администратора
+
+Задайте `ADMIN_USERNAME` в `.env` и сохраните хеш сильного пароля в
+`secrets/admin-auth/password.hash`. Следующая команда запрашивает пароль
+без отображения, используя Python в собранном образе API:
+
+```sh
+install -d -m 700 secrets/admin-auth
+umask 077
+docker compose run --rm --no-deps --entrypoint python api -c 'from getpass import getpass; from navigator.admin_auth import password_hash; p=getpass("Пароль администратора: "); assert len(p)>=16; print(password_hash(p))'
+```
+
+Сохраните выведенный хеш в указанный файл с правами `0600`, пересоздайте
+контейнер API и откройте раздел администрирования по HTTPS. Вход отзовёт
+предыдущую сессию в том же браузере, выход удалит её на сервере.
+
+Для тестирования можно задать `ADMIN_TEST_USERNAME` и отдельный хеш в
+`secrets/admin-auth/test-password.hash`. Такая учётная запись доступна только
+через localhost. На Docker VPS укажите IP шлюза API в `ADMIN_LOCAL_PEERS` и
+подключайтесь через SSH-туннель на порт API, опубликованный на loopback.
+
 Если извлечение уже выполнено этой версией кода, его можно проверить и индексировать без повторного OCR:
 
 ```sh

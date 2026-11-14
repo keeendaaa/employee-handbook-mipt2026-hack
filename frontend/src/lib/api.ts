@@ -35,12 +35,21 @@ async function checked(response: Response, allowAccepted = false) {
           : `Сервис вернул ошибку (${response.status}). Повторите запрос.`;
   throw new ApiError(message, response.status);
 }
+async function adminAwareFetch(path: string, options: RequestInit) {
+  const response = await fetch(path, options);
+  if (response.status === 401 && path !== "/api/admin/session" && (
+    path.startsWith("/api/admin/") || path.startsWith("/api/imports/") ||
+    path.startsWith("/api/material-requests") || path === "/api/map/questions"
+  )) window.dispatchEvent(new Event("admin-session-expired"));
+  return response;
+}
+
 export async function request<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
   try {
-    const response = await checked(await fetch(path, options));
+    const response = await checked(await adminAwareFetch(path, options));
     return (await response.json()) as T;
   } catch (error) {
     if (
@@ -58,7 +67,7 @@ async function queueImport(
   options: RequestInit,
 ): Promise<ImportJob> {
   try {
-    return await (await checked(await fetch(path, options), true)).json();
+    return await (await checked(await adminAwareFetch(path, options), true)).json();
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(
@@ -71,10 +80,6 @@ export const jsonBody = (body: unknown): RequestInit => ({
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(body),
 });
-export const adminHeaders = (token: string) => ({
-  Authorization: `Bearer ${token}`,
-});
-
 /** SSE is split on event boundaries, never on network chunks or assumed UTF-8 boundaries. */
 export async function readEvents(
   stream: ReadableStream<Uint8Array>,
@@ -231,10 +236,14 @@ export const api = {
   },
   importStatus: (id: string, signal?: AbortSignal) =>
     request<ImportJob>(`/api/imports/${encodeURIComponent(id)}`, { signal }),
-  materials: (token: string) =>
-    request<{ requests: MaterialRequest[] }>("/api/material-requests", {
-      headers: adminHeaders(token),
-    }),
+  adminSession: (signal?: AbortSignal) =>
+    request<{ username: string }>("/api/admin/session", { signal }),
+  adminLogin: (username: string, password: string) =>
+    request<{ username: string }>("/api/admin/session", jsonBody({ username, password })),
+  adminLogout: () =>
+    request("/api/admin/session", { method: "DELETE" }),
+  materials: () =>
+    request<{ requests: MaterialRequest[] }>("/api/material-requests"),
   createMaterial: (
     question: string,
     message: string,
@@ -251,21 +260,14 @@ export const api = {
         public_data: true,
       }),
     ),
-  updateMaterial: (id: string, status: string, token: string) =>
+  updateMaterial: (id: string, status: string) =>
     request(`/api/material-requests/${encodeURIComponent(id)}`, {
       ...jsonBody({ status }),
       method: "PATCH",
-      headers: { ...adminHeaders(token), "Content-Type": "application/json" },
     }),
-  mail: (token: string) =>
-    request<MailStatus>("/api/admin/mail/status", {
-      headers: adminHeaders(token),
-    }),
-  saveMail: (settings: MailSettings, token: string) =>
-    request<MailSettings>("/api/admin/mail/settings", {
-      ...jsonBody(settings),
-      headers: { ...adminHeaders(token), "Content-Type": "application/json" },
-    }),
+  mail: () => request<MailStatus>("/api/admin/mail/status"),
+  saveMail: (settings: MailSettings) =>
+    request<MailSettings>("/api/admin/mail/settings", jsonBody(settings)),
 };
 
 export function locator(c: Citation) {

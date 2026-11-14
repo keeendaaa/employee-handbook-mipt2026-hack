@@ -119,7 +119,11 @@ class MailPanel(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     with tempfile.TemporaryDirectory(prefix='smena-ui-contract-') as folder:
         os.environ['MATERIAL_REQUEST_DB'] = str(Path(folder)/'requests.sqlite')
-        os.environ['ADMIN_API_TOKEN'] = 'synthetic-e2e-admin'
+        from navigator.admin_auth import password_hash
+        credentials = Path(folder) / 'admin.hash'
+        credentials.write_text(password_hash('synthetic-e2e-password'))
+        os.environ['ADMIN_TEST_USERNAME'] = 'synthetic-admin'
+        os.environ['ADMIN_TEST_PASSWORD_HASH_FILE'] = str(credentials)
         panel = ThreadingHTTPServer(('127.0.0.1',0),MailPanel)
         os.environ['MAILBOT_PANEL_URL'] = f'http://127.0.0.1:{panel.server_port}'
         threading.Thread(target=panel.serve_forever,daemon=True).start()

@@ -306,7 +306,7 @@ def process(inbox, generation, uid, settings, password, tls):
                         reply_without_issue=settings.get("reply_without_issue", False))
         if reply is None:
             with database() as conn:
-                update(conn, generation, uid, "skipped", "Помощь по регламентам не требуется", attempts)
+                update(conn, generation, uid, "skipped", "Нет подтверждённых сведений для ответа", attempts)
             return
         stage = "Resend" if RESEND_KEY.exists() else "SMTP"
         deliver(password, tls, message, sender, subject, reply, generation, uid, attempts)

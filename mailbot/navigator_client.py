@@ -32,7 +32,7 @@ def ask(url, body, *, subject="", reply_without_issue=False):
     if not (subject or text):
         return NO_ACTION_REPLY if reply_without_issue else None
     if len(text) > QUESTION_LIMIT:
-        return "Сократи текст письма до 20 000 символов, чтобы бот смог его разобрать."
+        return None
 
     origin = urlsplit(url)
     prefix = origin.path.removesuffix(ASK_PATH).removesuffix(MAIL_ANALYSIS_PATH)
@@ -64,6 +64,10 @@ def ask(url, body, *, subject="", reply_without_issue=False):
         answer = json.loads(raw)
         if answer == {"result_type": "no_action"}:
             return NO_ACTION_REPLY if reply_without_issue else None
+        if answer["result_type"] == "not_found":
+            return None
+        if answer["result_type"] == "needs_clarification" and not (answer["summary"] or answer["steps"]):
+            return None
         return format_answer(answer, endpoint, subject)
     except (KeyError, TypeError, ValueError) as error:
         raise NavigatorError("Некорректный ответ API") from error

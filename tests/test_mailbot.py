@@ -84,23 +84,27 @@ class MailbotIntegrationTest(unittest.TestCase):
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
-    def test_not_found_replies_once_with_a_next_step(self, opener, deliver):
-        answer = {
-            **ANSWER,
-            "result_type": "not_found",
-            "summary": [],
-            "steps": [],
-            "citations": [],
-            "missing_information": ["В найденных фрагментах не удалось подтвердить ответ на вопрос."],
-        }
-        opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(
-            json.dumps(answer).encode()
-        )
-        self.process("Нужно оформить пропуск для прессы.")
-        reply = deliver.call_args.args[5].text
-        self.assertNotIn("Каких сведений не хватает", reply)
-        self.assertEqual(reply.count("не удалось подтвердить"), 1)
-        self.assertIn("уточни порядок и сроки", reply)
+    def test_no_supported_information_is_skipped(self, opener, deliver):
+        for result in ("not_found", "needs_clarification"):
+            with self.subTest(result=result):
+                with app.database() as conn:
+                    conn.execute("DELETE FROM messages")
+                answer = {
+                    **ANSWER,
+                    "result_type": result,
+                    "summary": [],
+                    "steps": [],
+                    "citations": [],
+                    "clarifications": ["Уточни обстоятельства."] if result == "needs_clarification" else [],
+                }
+                opener.return_value.open.return_value.__enter__.return_value = io.BytesIO(
+                    json.dumps(answer).encode()
+                )
+                self.process("Нужно оформить пропуск для прессы.")
+                deliver.assert_not_called()
+                with app.database() as conn:
+                    row = conn.execute("SELECT status, detail FROM messages").fetchone()
+                self.assertEqual(tuple(row), ("skipped", "Нет подтверждённых сведений для ответа"))
 
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")

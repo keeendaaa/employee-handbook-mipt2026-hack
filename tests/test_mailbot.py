@@ -126,6 +126,41 @@ class MailbotIntegrationTest(unittest.TestCase):
                         row = conn.execute("SELECT status FROM messages").fetchone()
                     self.assertEqual(row["status"], "skipped")
 
+    @patch.object(navigator_client, "build_opener")
+    def test_courtesy_filter_skips_api_and_respects_acknowledgements(self, opener):
+        for subject, body in (
+            ("", "Добрый день!"),
+            ("Re: Спасибо!", "Получила, спасибо."),
+            ("Спасибо за помощь", ""),
+        ):
+            with self.subTest(subject=subject, body=body):
+                self.assertIsNone(navigator_client.ask(URL, body, subject=subject))
+                self.assertEqual(
+                    navigator_client.ask(URL, body, subject=subject, reply_without_issue=True),
+                    navigator_client.NO_ACTION_REPLY,
+                )
+        opener.assert_not_called()
+
+    @patch.object(navigator_client, "build_opener")
+    def test_courtesy_filter_preserves_subjects_and_requests(self, opener):
+        open_request = opener.return_value.open
+        for subject, body in (
+            ("Re: Пропуск для СМИ", "Спасибо!"),
+            ("", "Спасибо, но пропуск ещё не оформлен."),
+            ("Не работает сантехника", ""),
+            ("", "Получено?"),
+            ("Fwd: Спасибо", "Спасибо"),
+        ):
+            with self.subTest(subject=subject, body=body):
+                open_request.reset_mock()
+                open_request.return_value.__enter__.return_value = io.BytesIO(
+                    b'{"result_type":"no_action"}'
+                )
+                navigator_client.ask(URL, body, subject=subject)
+                open_request.assert_called_once()
+                self.assertEqual(json.loads(open_request.call_args.args[0].data),
+                                 {"subject": subject, "body": body})
+
     @patch.object(app, "deliver")
     @patch.object(navigator_client, "build_opener")
     def test_html_only_email_passes_readable_question(self, opener, deliver):

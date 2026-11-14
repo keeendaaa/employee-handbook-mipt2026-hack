@@ -1,6 +1,7 @@
 """Call the Navigator API for incoming mail."""
 
 import json
+import re
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -13,6 +14,25 @@ DEFAULT_URL = "https://smena-mipt.ru" + MAIL_ANALYSIS_PATH
 NO_ACTION_REPLY = "Письмо получено. Ситуаций, требующих помощи по регламентам, не обнаружено."
 QUESTION_LIMIT = 20_000
 RESPONSE_LIMIT = 2_000_000
+
+COURTESY_MESSAGES = frozenset({
+    "доброе утро", "добрый день", "добрый вечер", "здравствуйте",
+    "привет", "спасибо", "большое спасибо", "спасибо большое",
+    "спасибо за ответ", "спасибо за помощь", "благодарю",
+    "получено", "принято", "принято к сведению", "спасибо получил",
+    "спасибо получила", "получил спасибо", "получила спасибо",
+    "thank you", "thanks", "received", "acknowledged",
+})
+REPLY_PREFIX = re.compile(r"^(?:(?:re|ответ):\s*)+", re.IGNORECASE)
+
+
+def is_courtesy_only(subject, body):
+    subject = REPLY_PREFIX.sub("", subject)
+    for field in (subject, body):
+        normalized = " ".join(re.sub(r"[.,!]+", " ", field.casefold()).split())
+        if field and normalized not in COURTESY_MESSAGES:
+            return False
+    return True
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -29,7 +49,7 @@ class NavigatorError(RuntimeError):
 def ask(url, body, *, subject="", reply_without_issue=False):
     text = body.strip()
     subject = subject.strip()
-    if not (subject or text):
+    if is_courtesy_only(subject, text):
         return NO_ACTION_REPLY if reply_without_issue else None
     if len(text) > QUESTION_LIMIT:
         return None

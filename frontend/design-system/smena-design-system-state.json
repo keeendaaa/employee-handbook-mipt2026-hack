@@ -3174,25 +3174,19 @@
     "publicationMethod": "Git push with GitHub CLI credential helper"
   },
   "frontendRevision": {
-    "version": "1.3.0",
+    "version": "1.3.1",
     "date": "2026-11-14",
+    "scope": "frontend_only",
     "figmaSync": {
-      "status": "pending_connection",
-      "figmaVersion": "1.2.0",
-      "frontendVersion": "1.3.0",
-      "checkedAt": "2026-11-14",
-      "reason": "Target Smena file disconnected from Local Bridge; active desktop file is another project. No native nodes or variables changed in this update.",
-      "pending": [
-        "EvidenceCard collapsed/expanded states",
-        "Graph round nodes, search and fullscreen states",
-        "Official MIPT logo and original illustrations",
-        "Document reader and updated responsive source lists"
-      ]
+      "status": "disabled_by_user",
+      "frontendVersion": "1.3.1",
+      "date": "2026-11-14",
+      "reason": "User explicitly requested frontend-only work. Figma reads, writes and automatic synchronization are discontinued. Existing Figma IDs are historical reference metadata, not fresh verification."
     },
     "tokenChanges": false,
     "tests": {
       "unit": 7,
-      "e2e": 22,
+      "e2e": 28,
       "widths": [
         320,
         390,
@@ -3200,6 +3194,7 @@
         1440,
         1920
       ]
-    }
+    },
+    "qa": "frontend/previews/ui-review-1.3.1.json"
   }
 }

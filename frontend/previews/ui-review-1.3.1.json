@@ -1,0 +1,38 @@
+{
+  "version": "1.3.1",
+  "date": "2026-11-14",
+  "scope": "frontend_only",
+  "figma": "not accessed or modified after user requested frontend-only work",
+  "build": "passed",
+  "unit": {
+    "passed": 7
+  },
+  "e2e": {
+    "passed": 28,
+    "widths": [
+      320,
+      390,
+      1024,
+      1440,
+      1920
+    ],
+    "fixtures": "explicitly synthetic FastAPI contract server",
+    "checks": [
+      "static user-supplied emblem",
+      "no mark/background in source preview",
+      "exact mark after explicit source opening",
+      "keyboard disclosure and modal dismissal",
+      "measured card spacing with long text",
+      "reduced motion",
+      "task progress, graph navigation, documents, imports and mail UI"
+    ]
+  },
+  "visual": [
+    "checks-spacing-1440.png",
+    "checks-spacing-390.png",
+    "evidence-neutral-1440.png",
+    "source-highlight-1440.png"
+  ],
+  "backend": "unchanged; not rerun for frontend-only1.3.1",
+  "deployment": "not performed"
+}

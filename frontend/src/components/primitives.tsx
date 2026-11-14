@@ -1,6 +1,7 @@
 import {
   useEffect,
   useState,
+  useRef,
   type ButtonHTMLAttributes,
   type ReactNode,
 } from "react";
@@ -19,6 +20,8 @@ import {
   LoaderCircle,
   X,
 } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { useUiTransition } from "../lib/ui-motion";
 import { api, locator } from "../lib/api";
 import type { Citation } from "../lib/types";
 
@@ -152,7 +155,17 @@ export function Progress({ done, total }: { done: number; total: number }) {
   );
 }
 export function ProgressSegment({ filled }: { filled: boolean }) {
-  return <span className="sm-progress-segment" data-filled={filled} />;
+  const transition = useUiTransition();
+  return (
+    <span className="sm-progress-segment" data-filled={filled}>
+      <motion.span
+        className="progress-fill"
+        initial={false}
+        animate={{ scaleX: filled ? 1 : 0 }}
+        transition={transition}
+      />
+    </span>
+  );
 }
 export function StepItem({
   number,
@@ -207,6 +220,8 @@ export function Modal({
   wide?: boolean;
   fullScreen?: boolean;
 }) {
+  const transition = useUiTransition();
+  const reducedMotion = useReducedMotion();
   return (
     <Dialog
       open={open}
@@ -229,7 +244,15 @@ export function Modal({
             <X size={20} />
           </DialogClose>
         </div>
-        <div className="modal-body">{children}</div>
+        <motion.div
+          key={String(open)}
+          className="modal-body"
+          initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transition}
+        >
+          {children}
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
@@ -241,9 +264,21 @@ export function EvidenceCard({
   citation: Citation;
   onOpen: (id: string) => void;
 }) {
+  const [expanded, setExpanded] = useState(false),
+    [renderOpen, setRenderOpen] = useState(false);
+  const transition = useUiTransition();
+  const expandedRef = useRef(expanded);
+  expandedRef.current = expanded;
   return (
-    <details className="sm-evidence-card">
-      <summary>
+    <details className="sm-evidence-card" open={renderOpen}>
+      <summary
+        aria-expanded={expanded}
+        onClick={(e) => {
+          e.preventDefault();
+          if (!expanded) setRenderOpen(true);
+          setExpanded((v) => !v);
+        }}
+      >
         <span>
           <strong>{citation.document_name}</strong>
           <span className="meta">{locator(citation)}</span>
@@ -252,17 +287,27 @@ export function EvidenceCard({
           ⌄
         </span>
       </summary>
-      <div className="evidence-body">
-        <blockquote>
-          <mark>{citation.quote}</mark>
-        </blockquote>
-        <Button variant="subtle" onClick={() => onOpen(citation.source_id)}>
-          Открыть фрагмент <ArrowUpRight size={16} />
-        </Button>
-        {citation.extraction_method === "ocr" && (
-          <Badge tone="warning">Текст распознан OCR</Badge>
-        )}
-      </div>
+      <motion.div
+        className="evidence-reveal"
+        initial={false}
+        animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
+        transition={transition}
+        onAnimationComplete={() => {
+          if (!expandedRef.current) setRenderOpen(false);
+        }}
+        aria-hidden={!expanded}
+        inert={!expanded}
+      >
+        <div className="evidence-body">
+          <blockquote>{citation.quote}</blockquote>
+          <Button variant="subtle" onClick={() => onOpen(citation.source_id)}>
+            Открыть фрагмент <ArrowUpRight size={16} />
+          </Button>
+          {citation.extraction_method === "ocr" && (
+            <Badge tone="warning">Текст распознан OCR</Badge>
+          )}
+        </div>
+      </motion.div>
     </details>
   );
 }

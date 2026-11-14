@@ -17,9 +17,10 @@
     }
   ],
   "logo": {
-    "path": "/brand/mipt-logo.svg",
-    "source": "https://mipt.ru/upload/iblock/026/gh8ivafm65ve54a6uokw5ahvj8mjmecq/newMIPT-_1_.svg",
-    "official": true,
-    "modified": false
+    "path": "/brand/mipt-emblem.jpg",
+    "source": "User-supplied MIPT emblem reference, photo_2026-11-14_04-44-46_852199.jpg",
+    "sha256": "317d46fcdfb12ff1a3fb4bbf9eb228a36a3abcbbef972aa05601f94772e060fc",
+    "modified": false,
+    "display": "Static raster artwork. CSS trims surrounding whitespace; no motion, recoloring or generated replacement."
   }
 }

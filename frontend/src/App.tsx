@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { useUiTransition } from "./lib/ui-motion";
+import { Brand } from "./components/brand";
 import {
   BookOpen,
   CheckCheck,
@@ -63,6 +66,8 @@ function loadPreferences() {
   }
 }
 export default function App() {
+  const transition = useUiTransition(),
+    reducedMotion = useReducedMotion();
   const route = useRoute(),
     admin = route[0] === "admin",
     page = admin ? route[1] || "documents" : route[0] || "new";
@@ -189,14 +194,7 @@ export default function App() {
       </a>
       <aside className="sm-sidebar">
         <a className="brand" href={admin ? "#/admin/documents" : "#/new"}>
-          <img
-            className="mipt-logo"
-            src="/brand/mipt-logo.svg"
-            alt="МФТИ"
-            width="136"
-            height="35"
-          />
-          <span className="brand-product">Смена</span>
+          <Brand />
         </a>
         <Navigation />
         <div className="sidebar-bottom">
@@ -229,11 +227,19 @@ export default function App() {
           >
             <Menu size={20} />
           </button>
-          <a className="mobile-brand" href="#/new"><img src="/brand/mipt-logo.svg" alt="МФТИ" width="110" height="28" /><span>Смена</span></a>
+          <a className="mobile-brand" href="#/new">
+            <Brand compact />
+          </a>
           <span className="meta">{admin ? "Администрирование" : ""}</span>
         </header>
         <main className="sm-page" id="main" tabIndex={-1}>
-          <div className="page-content">
+          <motion.div
+            key={`${admin}/${page}/${route[1] || ""}/${step ?? ""}`}
+            className="page-content"
+            initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={transition}
+          >
             {storageError && (
               <Notice title="Не удалось сохранить прогресс">
                 Задача доступна до закрытия страницы. Освободите место в
@@ -304,7 +310,7 @@ export default function App() {
                 Откройте нужный раздел в меню.
               </Empty>
             )}
-          </div>
+          </motion.div>
         </main>
       </div>
       <Modal open={menu} onClose={() => setMenu(false)} title="Смена">

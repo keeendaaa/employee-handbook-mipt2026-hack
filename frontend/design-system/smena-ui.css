@@ -1,4 +1,4 @@
-/* Смена UI foundation v1.3.0. Import tokens before this file; self-host Inter in the app. */
+/* Смена UI foundation v1.3.1. Import tokens before this file; self-host Inter in the app. */
 .sm-app,
 .sm-app *,
 .sm-app *::before,
@@ -11,9 +11,8 @@
   min-height: 100dvh;
   color: var(--sm-text);
   background: var(--sm-surface);
-  font: var(--sm-type-body-weight)
-    var(--sm-type-body-size)/var(--sm-type-body-line-height)
-    var(--sm-font-family);
+  font: var(--sm-type-body-weight) var(--sm-type-body-size) /
+    var(--sm-type-body-line-height) var(--sm-font-family);
 }
 .sm-main {
   min-width: 0;
@@ -666,14 +665,85 @@ textarea.sm-input {
 }
 
 /* v1.3 behavior contract: source disclosures and single outer field focus. */
-.sm-content-layout {grid-template-columns:minmax(0,1fr)}
-.sm-input:focus {outline:none;box-shadow:none}
-.sm-input:focus-visible {outline:var(--sm-layout-focus-width) solid var(--sm-focus);outline-offset:3px}
-.sm-checkbox input {appearance:none;border:1px solid var(--sm-line-strong);border-radius:var(--sm-radius-4);background:var(--sm-surface);position:relative;box-shadow:none}
-.sm-checkbox input:checked {background:var(--sm-accent);border-color:var(--sm-accent)}
-.sm-checkbox input:checked::after {content:'';position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid var(--sm-on-accent);border-width:0 2px 2px 0;transform:rotate(45deg)}
-.sm-checkbox input:active {filter:none;box-shadow:none}
-.sm-evidence-card {border:1px solid var(--sm-line);border-radius:var(--sm-radius-8);background:var(--sm-surface);min-width:0;overflow-wrap:anywhere}
-.sm-evidence-card summary {display:flex;align-items:center;gap:var(--sm-space-24);padding:var(--sm-space-20) var(--sm-space-24);cursor:pointer;list-style:none}
-.sm-evidence-card summary::-webkit-details-marker {display:none}
-.evidence-body {display:flex;flex-direction:column;align-items:flex-start;gap:var(--sm-space-20);padding:0 var(--sm-space-24) var(--sm-space-24)}
+.sm-content-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sm-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.sm-input:focus-visible {
+  outline: var(--sm-layout-focus-width) solid var(--sm-focus);
+  outline-offset: 3px;
+}
+.sm-checkbox input {
+  appearance: none;
+  border: 1px solid var(--sm-line-strong);
+  border-radius: var(--sm-radius-4);
+  background: var(--sm-surface);
+  position: relative;
+  box-shadow: none;
+}
+.sm-checkbox input:checked {
+  background: var(--sm-accent);
+  border-color: var(--sm-accent);
+}
+.sm-checkbox input:checked::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 11px;
+  border: solid var(--sm-on-accent);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.sm-checkbox input:active {
+  filter: none;
+  box-shadow: none;
+}
+.sm-evidence-card {
+  border: 1px solid var(--sm-line);
+  border-radius: var(--sm-radius-8);
+  background: var(--sm-surface);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.sm-evidence-card summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sm-space-24);
+  padding: var(--sm-space-20) var(--sm-space-24);
+  cursor: pointer;
+  list-style: none;
+}
+.sm-evidence-card summary::-webkit-details-marker {
+  display: none;
+}
+.evidence-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sm-space-20);
+  padding: 0 var(--sm-space-24) var(--sm-space-24);
+}
+
+/* v1.3.1: preview quotes remain neutral; mark is exclusive to the source viewer. */
+.sm-evidence-card blockquote {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: var(--sm-type-body-line-height);
+}
+.evidence-reveal {
+  overflow: hidden;
+}
+.checked-situation {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sm-space-20);
+  padding: var(--sm-space-24);
+}

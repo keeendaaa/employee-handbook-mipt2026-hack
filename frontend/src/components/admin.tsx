@@ -11,6 +11,8 @@ import {
   RefreshCw,
   Upload,
 } from "lucide-react";
+import { motion } from "motion/react";
+import { useUiTransition } from "../lib/ui-motion";
 import { api, ApiError } from "../lib/api";
 import { GraphExplorer } from "./graph-explorer";
 import type { DocumentSelection } from "./document-reader";
@@ -425,6 +427,7 @@ export function KnowledgeGraph({
   );
 }
 export function Checks({ onSource }: { onSource: (id: string) => void }) {
+  const transition = useUiTransition();
   const { data, error, loading, reload } = useMap(),
     [question, setQuestion] = useState(
       () =>
@@ -529,7 +532,13 @@ export function Checks({ onSource }: { onSource: (id: string) => void }) {
       ) : (
         <div className="stack">
           {data.questions.map((q) => (
-            <article className="surface" key={q.id}>
+            <motion.article
+              className="surface checked-situation"
+              key={q.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={transition}
+            >
               <div className="inline">
                 <Badge
                   tone={
@@ -548,7 +557,7 @@ export function Checks({ onSource }: { onSource: (id: string) => void }) {
                 </Badge>
               </div>
               <h3>{q.question}</h3>
-              <p className="meta">
+              <p className="situation-description">
                 {q.result.missing_information?.join(" ") ||
                   (q.result.result_type === "answered"
                     ? "Ответ найден в базе."
@@ -558,12 +567,15 @@ export function Checks({ onSource }: { onSource: (id: string) => void }) {
                 onClick={() => {
                   setQuestion(q.question);
                   setAnswer(q.result);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  window.scrollTo({
+                    top: 0,
+                    behavior: transition.duration === 0 ? "auto" : "smooth",
+                  });
                 }}
               >
                 Открыть проверку
               </Button>
-            </article>
+            </motion.article>
           ))}
         </div>
       )}

@@ -126,13 +126,11 @@ test("admin: source map, public import, checks, material queue and mail settings
   );
   await page.keyboard.press("Escape");
   await page.goto("/#/admin/import");
-  await page
-    .getByLabel("Файл регламента")
-    .setInputFiles({
-      name: "synthetic.pdf",
-      mimeType: "application/pdf",
-      buffer: Buffer.from("%PDF synthetic UI test"),
-    });
+  await page.getByLabel("Файл регламента").setInputFiles({
+    name: "synthetic.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF synthetic UI test"),
+  });
   await expect(
     page.getByRole("button", { name: "Добавить в базу" }),
   ).toBeDisabled();
@@ -215,11 +213,13 @@ test("new task, plan, search controls, feedback queue and dirty mail settings", 
   await page.getByRole("button", { name: /Вид ответа/ }).click();
   await expect(page.getByText("Краткое резюме", { exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
+  await expect(page.locator(".page-content")).toHaveCSS("opacity", "1");
   await page.screenshot({
     path: "test-results/new-task-1440.png",
     fullPage: true,
   });
   await create(page);
+  await expect(page.locator(".page-content")).toHaveCSS("opacity", "1");
   await page.screenshot({ path: "test-results/plan-1440.png", fullPage: true });
   await page.goto("/#/tasks");
   await page
@@ -403,3 +403,96 @@ test("dense graph keeps readable labels separate through resizing and zoom", asy
     await page.getByRole("button", { name: "Увеличить карту" }).click();
   }
 });
+test("static emblem, fragment-only highlight and reduced motion", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await create(page);
+  await expect(page.locator(".page-content")).toHaveCSS("transform", "none");
+  const check = page.getByRole("checkbox", { name: "Шаг 1 выполнен" });
+  await check.click();
+  await expect(check).toBeChecked();
+  await check.click();
+  await expect(check).not.toBeChecked();
+  const logo = page.locator(".sm-sidebar .brand-emblem img");
+  await expect(logo).toHaveAttribute("src", "/brand/mipt-emblem.jpg");
+  await expect(logo).toHaveCSS("animation-name", "none");
+  await expect(logo).toHaveCSS("transform", "none");
+  expect(
+    await logo.evaluate(
+      (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+    ),
+  ).toBe(true);
+  const evidence = page.locator(".sm-evidence-card").first();
+  await evidence.locator("summary").press("Enter");
+  await expect(evidence.locator("summary")).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
+  await expect(evidence.locator("blockquote")).toBeVisible();
+  await expect(evidence.locator("mark")).toHaveCount(0);
+  await expect(evidence.locator("blockquote")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+  await expect(evidence.locator(".evidence-reveal")).toHaveCSS("opacity", "1");
+  await evidence
+    .locator("summary")
+    .evaluate((node: HTMLElement) => node.blur());
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({
+    path: "test-results/evidence-neutral-1440.png",
+    fullPage: true,
+  });
+  await evidence.getByRole("button", { name: "Открыть фрагмент" }).click();
+  await expect(page.getByRole("dialog").locator("mark")).toHaveCount(1);
+  await expect(page.getByRole("dialog").locator(".modal-body")).toHaveCSS(
+    "opacity",
+    "1",
+  );
+  await page.screenshot({ path: "test-results/source-highlight-1440.png" });
+  await page.keyboard.press("Escape");
+  await expect(page.locator("mark")).toHaveCount(0);
+  await evidence.locator("summary").press("Space");
+  await expect(evidence.locator("summary")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await expect(evidence.locator("blockquote")).toBeHidden();
+});
+for (const width of [320, 390, 1024, 1440, 1920])
+  test(`checked situation spacing ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.route("**/api/map?include_questions=true", async (route) => {
+      const response = await route.fetch();
+      const data = await response.json();
+      data.questions[0].question =
+        "Как оформить заявку на отпуск и согласовать её с несколькими подразделениями?";
+      data.questions[0].result.missing_information = [
+        "В найденных фрагментах не описан порядок оформления заявки. ".repeat(
+          8,
+        ),
+      ];
+      await route.fulfill({ response, json: data });
+    });
+    await page.goto("/#/admin/checks");
+    const card = page.locator(".checked-situation").first();
+    await expect(card).toBeVisible();
+    const text = await card.locator(".situation-description").boundingBox(),
+      button = await card
+        .getByRole("button", { name: "Открыть проверку" })
+        .boundingBox(),
+      heading = await card.locator("h3").boundingBox(),
+      badge = await card.locator(".sm-badge").boundingBox();
+    expect(button!.y - (text!.y + text!.height)).toBeGreaterThanOrEqual(20);
+    expect(heading!.y - (badge!.y + badge!.height)).toBeGreaterThanOrEqual(12);
+    await expect(page.locator("body")).toHaveJSProperty("scrollWidth", width);
+    if (width === 390 || width === 1440) {
+      await expect(card).toHaveCSS("opacity", "1");
+      await expect(page.locator(".page-content")).toHaveCSS("opacity", "1");
+      await page.screenshot({
+        path: `test-results/checks-spacing-${width}.png`,
+        fullPage: true,
+      });
+    }
+  });

@@ -1,7 +1,7 @@
 """Single-process HTTP service: local retrieval and external grounded generation."""
 
 from collections import defaultdict, deque
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 import os
 from pathlib import Path
 import threading
@@ -11,7 +11,7 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 import psycopg
 
 from .generation import Generator, GenerationError
@@ -31,6 +31,18 @@ class Query(BaseModel):
         if not value.strip():
             raise ValueError("Введите вопрос")
         return value.strip()
+
+
+class MailQuery(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True, str_strip_whitespace=True)
+    subject: str = Field(default="", max_length=512)
+    body: str = Field(default="", max_length=20000)
+
+    @model_validator(mode="after")
+    def nonblank(self):
+        if not (self.subject or self.body):
+            raise ValueError("Укажи тему или текст письма")
+        return self
 
 
 class LiveQuery(Query):
@@ -135,7 +147,8 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
     def search(query: Query):
         return retrieve(query)
 
-    def answer_query(query: Query, request: Request, *, progress=None):
+    @contextmanager
+    def generation_slot(request):
         if app.state.generator is None:
             raise HTTPException(503, "API модели не настроен. Доступен поиск без генерации.")
         if not ask_lock.acquire(blocking=False):
@@ -156,23 +169,36 @@ def create_app(*, service=None, generator=None, import_repository=None, import_d
                     raise HTTPException(429, "Лимит демонстрации исчерпан. Повторите позже или используйте поиск.")
                 calls[ip].append(now)
                 global_calls.append(now)
+            yield app.state.generator
+        finally:
+            ask_lock.release()
+
+    def answer_query(query: Query, request: Request, *, progress=None):
+        with generation_slot(request) as generator:
             retrieved = retrieve(query, progress)
             if progress is not None:
                 initial_trace = send_retrieval(progress, retrieved)
-                result = app.state.generator.answer(query.question, retrieved, progress=progress)
+                result = generator.answer(query.question, retrieved, progress=progress)
                 if initial_trace['map_status'] == 'building':
                     updated_trace = make_trace(retrieved)
                     if updated_trace['map_status'] == 'ready':
                         progress({'type': 'map_update', 'trace': updated_trace})
                 progress({'type': 'answer', 'answer': result})
                 return result
-            return app.state.generator.answer(query.question, retrieved)
-        finally:
-            ask_lock.release()
+            return generator.answer(query.question, retrieved)
 
     @app.post("/api/ask")
     def ask(query: Query, request: Request):
         return answer_query(query, request)
+
+    @app.post("/api/mail/analyze")
+    def analyze_mail(mail: MailQuery, request: Request):
+        with generation_slot(request) as generator:
+            intent = generator.classify_mail(mail.subject, mail.body)
+            if intent.question is None:
+                return {"result_type": "no_action"}
+            query = Query(question=intent.question)
+            return generator.answer(query.question, retrieve(query))
 
     def make_trace(retrieved, *, include_context=True):
         from .live import retrieval_trace
